@@ -1,28 +1,27 @@
+import { ethereum } from './../ethereum/ethereum';
 import { auth } from "@/models/firebase/client"
-import { BaseProvider } from "@metamask/providers"
 import { toHex } from "@/utils/toHex"
 import { User } from "@/types/User.type"
 import { getUser } from "../firestore/getUser"
 import { createUser } from "../firestore/createUser"
 import { updateUser } from "../firestore/updateUser"
-import { signInAnonymously, signInWithCustomToken } from "firebase/auth"
-import { userFromFirebase } from "../firestore/dataConverter"
+import { signInAnonymously } from "firebase/auth"
 import { recoverPersonalSignature } from "@metamask/eth-sig-util"
+import { requestAccounts } from '../ethereum/requestAccounts';
+import { requestSignature } from '../ethereum/requestSignature';
 
-export const signInWithMetaMask = async (): Promise<User | null> => {
-  //request access to ethereum account
-  if (typeof window === "undefined") { return null }
-  const ethereum = (window as any).ethereum as BaseProvider
+export const connectToMetaMask = async (): Promise<string | null> => {
+
   if (!ethereum) { return null }
-  const accounts = await ethereum.request({
-    method: 'eth_requestAccounts'
-  }) as string[]
+
+  //request access to ethereum account
+  const accounts = await requestAccounts()
+  if (!accounts) { return null }
 
   //sign in anonymously to get permission to access firestore
   await signInAnonymously(auth)
 
   //get user doc
-  const _ = accounts[0]
   const address = ethereum.selectedAddress
   if (!address) { return null }
   const existingUser = await getUser(address)
@@ -31,13 +30,11 @@ export const signInWithMetaMask = async (): Promise<User | null> => {
   const user = await createNewUserIfNotExists({ existingUser: existingUser, address: address })
 
   //create signature
-  const signature = await ethereum.request({
-    method: "personal_sign",
-    params: [
-      `0x${toHex(user.nonce)}`,
-      address,
-    ],
-  }) as string
+  const signature = await requestSignature({
+    nonce: user.nonce,
+    address: address
+  })
+  if (!signature) { return null }
 
   //verify the signature
   if (!signature) { return null }
@@ -49,19 +46,12 @@ export const signInWithMetaMask = async (): Promise<User | null> => {
   user.nonce = crypto.randomUUID()
   await updateUser(user)
 
-  //generate firebase custom token
-  const customTokenRes = await fetch(`/api/custom-token?address=${address}`)
-  const customToken = await customTokenRes.json() as string
-
-  //authenticate using the custom token
-  const userCredential = await signInWithCustomToken(auth, customToken)
-  const authenticatedUser = userFromFirebase(userCredential.user)
-
-  return authenticatedUser
+  return address
 }
 
 
 const createNewUserIfNotExists = async ({ existingUser, address }: { existingUser: User | null, address: string }): Promise<User> => {
+
   if (existingUser && existingUser.nonce) {
     return existingUser
 
