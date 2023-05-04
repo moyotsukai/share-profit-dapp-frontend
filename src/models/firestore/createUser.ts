@@ -1,9 +1,23 @@
 import { User } from "@/types/User.type"
-import { collection, doc, setDoc } from "firebase/firestore"
+import { doc, setDoc } from "firebase/firestore"
 import { db } from "../firebase/client"
 import { KEYS } from "./keys"
+import { Res } from "@/types/Res"
 
-export const createUser = async (user: User) => {
+export const createUser = async (user: User): Promise<Res<null | null>> => {
   const docRef = doc(db, KEYS.USERS, user.uid)
-  await setDoc(docRef, user)
+
+  try {
+    await setDoc(docRef, user)
+    return {
+      data: null,
+      error: null
+    }
+
+  } catch (error) {
+    return {
+      data: null,
+      error: error
+    }
+  }
 }

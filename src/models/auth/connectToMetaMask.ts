@@ -24,10 +24,12 @@ export const connectToMetaMask = async (): Promise<string | null> => {
   //get user doc
   const address = ethereum.selectedAddress
   if (!address) { return null }
-  const existingUser = await getUser(address)
+  const { data: existingUser, error: existingUserError } = await getUser(address)
+  if (existingUserError) { return null }
 
   //create user doc if not exists
   const user = await createNewUserIfNotExists({ existingUser: existingUser, address: address })
+  if (!user) { return null }
 
   //create signature
   const signature = await requestSignature({
@@ -37,20 +39,20 @@ export const connectToMetaMask = async (): Promise<string | null> => {
   if (!signature) { return null }
 
   //verify the signature
-  if (!signature) { return null }
   const recoveredAddress = recoverPersonalSignature({
     data: `0x${toHex(user.nonce)}`,
     signature: signature
   })
   if (recoveredAddress !== address) { return null }
   user.nonce = crypto.randomUUID()
-  await updateUser(user)
+  const { data: _, error: updateUserError } = await updateUser(user)
+  if (updateUserError) { return null }
 
   return address
 }
 
 
-const createNewUserIfNotExists = async ({ existingUser, address }: { existingUser: User | null, address: string }): Promise<User> => {
+const createNewUserIfNotExists = async ({ existingUser, address }: { existingUser: User | null, address: string }): Promise<User | null> => {
 
   if (existingUser && existingUser.nonce) {
     return existingUser
@@ -60,7 +62,9 @@ const createNewUserIfNotExists = async ({ existingUser, address }: { existingUse
       uid: address,
       nonce: crypto.randomUUID()
     }
-    await createUser(newUser)
+    const { data: _, error: createUserError } = await createUser(newUser)
+    if (createUserError) { return null }
+
     return newUser
   }
 }
