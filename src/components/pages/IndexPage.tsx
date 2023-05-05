@@ -16,7 +16,7 @@ export default function IndexPage() {
             Projects
           </TabBar.Trigger>
           <TabBar.Trigger value="revenue">
-            Revenue
+            Balance
           </TabBar.Trigger>
         </TabBar.List>
 
