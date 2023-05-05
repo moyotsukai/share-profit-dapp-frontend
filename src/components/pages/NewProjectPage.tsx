@@ -88,7 +88,7 @@ export default function NewProjectPage() {
         </div>
 
         <div>
-          <label>Founder's share of the profit</label>
+          <label>Founder&apos;s share of the profit</label>
           <input type="number" {...register("founderProfitShare", { valueAsNumber: true })} />
           {errors.founderProfitShare &&
             <p>{errors.founderProfitShare?.message}</p>
