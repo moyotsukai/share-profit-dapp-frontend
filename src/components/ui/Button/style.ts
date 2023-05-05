@@ -19,8 +19,8 @@ export const buttonStyle = (isEnabled: boolean) => css`
   padding: 0 12px;
   &:hover {
     cursor: ${isEnabled ? "pointer" : "default"};
-    background-color: ${isEnabled ? colors.primaryHovered : colors.primaryDisabled};
+    background-color: ${isEnabled ? colors.primaryElevated : colors.primaryDisabled};
     box-shadow: ${isEnabled ? `0 6px 9px 0 ${colors.primaryShadow}` : "none"}
   }
-  transition: 0.15s ease-in-out;
+  transition: 0.1s ease-in-out;
 `
