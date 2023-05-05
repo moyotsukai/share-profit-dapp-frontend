@@ -1,5 +1,5 @@
 import { auth } from "@/models/firebase/client"
-import { User } from "@/types/User.type"
+import { User } from "../../types/User.type"
 import { signInWithCustomToken } from "firebase/auth"
 import { userFromFirebase } from "../firestore/dataConverter"
 

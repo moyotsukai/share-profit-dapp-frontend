@@ -1,7 +1,7 @@
 import { ethereum } from './../ethereum/ethereum';
 import { auth } from "@/models/firebase/client"
 import { toHex } from "@/utils/toHex"
-import { User } from "@/types/User.type"
+import { User } from "../../types/User.type"
 import { getUser } from "../firestore/getUser"
 import { createUser } from "../firestore/createUser"
 import { updateUser } from "../firestore/updateUser"

@@ -1,4 +1,4 @@
-import { User } from "@/types/User.type"
+import { User } from "../../types/User.type"
 
 export const userFromFirebase = (data: any): User => {
   return {

@@ -14,7 +14,7 @@ export const sideTabStyle = (isActive: boolean) => css`
   padding: 6px;
   display: flex;
   align-items: center;
-  justify-content: left;
+  justify-content: start;
   &:hover {
     color: ${isActive ? "" : colors.primaryElevated};
   }
@@ -24,9 +24,15 @@ export const sideTabStyle = (isActive: boolean) => css`
 export const avatarStyle = css`
   width: 34px;
   height: 34px;
+  margin-right: 6px;
   border-radius: 17px;
   background-color: #eee;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+`
+
+export const textStyle = css`
+  flex-shrink: 1;
 `

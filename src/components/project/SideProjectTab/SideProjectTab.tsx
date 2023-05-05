@@ -24,8 +24,9 @@ const SideProjectTab: React.FC<Props> = ({ href, avatar, children }) => {
       <div css={s.avatarStyle}>
         {image}
       </div>
-      <Spacer size={6} isVertical={false} />
-      {children}
+      <span css={s.textStyle}>
+        {children}
+      </span>
     </Link>
   )
 }

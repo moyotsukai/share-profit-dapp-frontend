@@ -1,10 +1,11 @@
 import { connectToMetaMask } from "@/models/auth/connectToMetaMask"
 import { signIn } from "@/models/auth/signIn"
 import { ethereum } from "@/models/ethereum/ethereum"
-import { User } from "@/types/User.type"
 import { asyncTask } from "@/utils/asyncTask"
-import { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 import Button from "../ui/Button"
+import { useUserState } from "@/states/userState"
+import LoadingCircle from "../ui/LoadingCircle"
 
 type Props = {
   children: React.ReactNode
@@ -12,8 +13,7 @@ type Props = {
 
 const AuthProvider: React.FC<Props> = ({ children }) => {
 
-  //todo: use Recoil
-  const [user, setUser] = useState<User | null | undefined>(undefined)
+  const [user, setUser] = useUserState()
   const [message, setMessage] = useState<string>("")
   const [isButtonEnabled, setIsButtonEnabled] = useState<boolean>(true)
   const [isButtonLoading, setIsButtonLoading] = useState<boolean>(false)
@@ -60,15 +60,16 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
   }
 
   return (
-    <>
+    <React.Fragment>
       {user === undefined
         ? (
-          <p>
-            Loading
-          </p>
+          <div>
+            <p>Loading</p>
+            <LoadingCircle />
+          </div>
         )
         : (
-          <>
+          <React.Fragment>
             {message && (
               <p>
                 {message}
@@ -84,13 +85,13 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
                     isEnabled={isButtonEnabled}
                     isLoading={isButtonLoading}
                   >
-                    Connect
+                    Connect with MetaMask
                   </Button>
                 </div>
               )}
-          </>
+          </React.Fragment>
         )}
-    </>
+    </React.Fragment>
   )
 
 }
