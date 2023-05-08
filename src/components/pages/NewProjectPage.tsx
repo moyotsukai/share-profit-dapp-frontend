@@ -5,7 +5,7 @@ import Button from "../ui/Button"
 
 const formInputSchema = z
   .object({
-    projectName: z
+    title: z
       .string()
       .nonempty({ message: "Required" }),
     image: z
@@ -22,7 +22,7 @@ const formInputSchema = z
       .nonempty({ message: "Required" }),
     founderProfitShare: z
       .number()
-      .int({ message: "EntValue must be an integer" })
+      .int({ message: "Value must be an integer" })
       .min(0, { message: "Value must be between 0 and 100" })
       .max(100, { message: "Value must be between 0 and 100" })
   })
@@ -50,9 +50,9 @@ export default function NewProjectPage() {
 
       <form>
         <label>Project name</label>
-        <input type="text" {...register("projectName")} />
-        {errors.projectName && (
-          <p>{errors.projectName?.message}</p>
+        <input type="text" {...register("title")} />
+        {errors.title && (
+          <p>{errors.title?.message}</p>
         )}
 
         <div>
