@@ -11,6 +11,7 @@ import { PATHS } from "../paths"
 import { randomDigits } from "@/utils/randomDigits"
 import { uploadProjectImage } from "@/models/storage/uploadProjectImage"
 import { updateProject } from "@/models/firestore/updateProject"
+import { useState } from "react"
 
 const formInputSchema = z
   .object({
@@ -50,10 +51,11 @@ export default function NewProjectAboutProjectPage() {
   const router = useRouter()
   const user = useUserValue()
   const setEditingProjectState = useSetEditingProjectState()
-  const { register, handleSubmit, formState, formState: { errors } } = useForm<NewProjectAboutProject>({ resolver: zodResolver(formInputSchema) })
+  const [isButtonEnabled, setIsButtonEnabled] = useState<boolean>(true)
+  const [isButtonLoading, setIsButtonLoading] = useState<boolean>(false)
+  const { register, handleSubmit, formState: { errors } } = useForm<NewProjectAboutProject>({ resolver: zodResolver(formInputSchema) })
 
   const createProjectFromFormData = async (data: NewProjectAboutProject) => {
-    console.log("create project method")
     if (!user || !user.uid) { return null }
 
     const invitationCode = randomDigits(4)
@@ -91,6 +93,9 @@ export default function NewProjectAboutProjectPage() {
   }
 
   const onSubmit: SubmitHandler<NewProjectAboutProject> = async (data) => {
+    setIsButtonEnabled(false)
+    setIsButtonLoading(true)
+
     //set project data to firestore
     const project = await createProjectFromFormData(data)
 
@@ -159,8 +164,8 @@ export default function NewProjectAboutProjectPage() {
 
         <Button
           onClick={handleSubmit(onSubmit)}
-          isEnabled={formState.isValid}
-          isLoading={false}
+          isEnabled={isButtonEnabled}
+          isLoading={isButtonLoading}
         >
           Create and go next
         </Button>
