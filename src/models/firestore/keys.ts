@@ -1,3 +1,4 @@
 export const KEYS = {
-  USERS: "users"
+  USERS: "users",
+  PROJECTS: "projects"
 }

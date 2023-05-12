@@ -1,11 +1,19 @@
+import { useEffect, useState } from "react";
 import TabBar from "../radix/TabBar";
 import Button from "../ui/Button";
 import Spacer from "../ui/Spacer/Spacer";
 
 export default function IndexPage() {
 
+  const [unreceivedDistributionBalance, setUnreceivedDistributionBalance] = useState<number | null>(null)
+
+  useEffect(() => {
+    //TODO
+    setUnreceivedDistributionBalance(0)
+  }, [])
+
   const onClickReceiveDistribution = () => {
-    //
+    //TODO
   }
 
   return (
@@ -30,7 +38,9 @@ export default function IndexPage() {
 
         <TabBar.Content value="revenue">
           <p>Unreceived distribution balance</p>
-          <p>0 ETH</p>
+          {unreceivedDistributionBalance !== null &&
+            <p>{`${unreceivedDistributionBalance} USDC`}</p>
+          }
           <Spacer size={60} />
           <p>Receive distribution</p>
           <Button

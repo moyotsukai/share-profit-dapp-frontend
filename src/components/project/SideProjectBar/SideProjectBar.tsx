@@ -3,6 +3,7 @@ import * as s from "./style"
 import Spacer from "@/components/ui/Spacer/Spacer"
 import React from "react"
 import Divider from "@/components/ui/Divider/Divider"
+import { PATHS } from "@/components/pages/paths"
 
 const projects = [
   {
@@ -20,7 +21,7 @@ const SideBar: React.FC = () => {
     <div css={s.sideProjectBarStyle}>
       <Spacer size={6} />
       <SideTab
-        href="/"
+        href={PATHS.INDEX}
         avatar="home"
       >
         Home
@@ -35,7 +36,7 @@ const SideBar: React.FC = () => {
         <React.Fragment key={index}>
           <Spacer size={6} />
           <SideTab
-            href={`/projects?id=${project.id}`}
+            href={`${PATHS.PROJECTS}/${project.id}`}
             avatar={null}
           >
             {project.name}
@@ -45,7 +46,7 @@ const SideBar: React.FC = () => {
 
       <Spacer size={6} />
       <SideTab
-        href={"/new-project"}
+        href={PATHS.NEW_PROJECT.ABOUT_PROJECT}
         avatar="new">
         Create new
       </SideTab>
