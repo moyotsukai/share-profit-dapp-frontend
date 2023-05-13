@@ -19,6 +19,11 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
   const [isButtonLoading, setIsButtonLoading] = useState<boolean>(false)
 
   useEffect(() => {
+    console.log("user", user)
+  }, [user])
+
+  useEffect(() => {
+    console.log(user)
     if (user) {
       //user is already signed in
       //do nothing
@@ -27,6 +32,7 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
         const address = ethereum.selectedAddress
         if (address) {
           //connected, sign in
+          console.log("connected, authenticate with firebase and sign in")
           asyncTask(async () => {
             const authenticatedUser = await signIn({ address: address })
             setUser(authenticatedUser)

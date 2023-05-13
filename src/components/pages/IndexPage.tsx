@@ -2,10 +2,16 @@ import { useEffect, useState } from "react";
 import TabBar from "../radix/TabBar";
 import Button from "../ui/Button";
 import Spacer from "../ui/Spacer/Spacer";
+import { useUserValue } from "@/states/userState";
 
 export default function IndexPage() {
 
   const [unreceivedDistributionBalance, setUnreceivedDistributionBalance] = useState<number | null>(null)
+
+  const user = useUserValue()
+  useEffect(() => {
+    console.log("user", user)
+  }, [user])
 
   useEffect(() => {
     //TODO

@@ -1,7 +1,6 @@
 import Link from "next/link"
 import * as s from "./style"
 import { useRouter } from "next/router"
-import Spacer from "@/components/ui/Spacer"
 
 type Props = {
   href: string,

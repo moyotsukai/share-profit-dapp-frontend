@@ -6,5 +6,6 @@ export const colors = {
   primaryDisabled: "rgba(51, 85, 255, 0.3)",
   primaryShadow: "rgba(0, 43, 255, 0.2)",
   primarySelected: "#d9deff",
+  error: "#cc0025",
   sideBar: "#f0f4fa"
 }

@@ -5,7 +5,7 @@ export const buttonStyle = ({ isEnabled, style }: { isEnabled: boolean, style: "
   min-width: 95px;
   min-height: 42px;
   font-family: 'Noto Sans JP', sans-serif;
-  font-size: 12pt;
+  font-size: 16px;
   border-radius: 6px;
   cursor: ${isEnabled ? "pointer" : "default"};
   text-align: center;

@@ -12,6 +12,10 @@ import { randomDigits } from "@/utils/randomDigits"
 import { uploadProjectImage } from "@/models/storage/uploadProjectImage"
 import { updateProject } from "@/models/firestore/updateProject"
 import { useState } from "react"
+import ErrorMessage from "@/components/ui/ErrorMessage"
+import Spacer from "@/components/ui/Spacer"
+import Title from "@/components/ui/Title"
+import { usePageLeaveConfirmation } from "@/models/project/usePageLeaveConfirmation"
 
 const formInputSchema = z
   .object({
@@ -19,7 +23,8 @@ const formInputSchema = z
       .string()
       .nonempty({ message: "Required" }),
     image: z
-      .custom<FileList>(),
+      .custom<FileList>()
+      .transform((data) => data[0]),
     details: z
       .string(),
     twitterUrl: z
@@ -36,13 +41,6 @@ const formInputSchema = z
       .min(0, { message: "Value must be between 0 and 100" })
       .max(100, { message: "Value must be between 0 and 100" }),
   })
-  .transform((data) => {
-    const selectedImage = data.image[0]
-    return {
-      ...data,
-      selectedImage
-    }
-  })
 
 type NewProjectAboutProject = z.infer<typeof formInputSchema>
 
@@ -53,6 +51,8 @@ export default function NewProjectAboutProjectPage() {
   const setEditingProjectState = useSetEditingProjectState()
   const [isButtonEnabled, setIsButtonEnabled] = useState<boolean>(true)
   const [isButtonLoading, setIsButtonLoading] = useState<boolean>(false)
+  const [isPageLeaveAllowed, setIsPageLeaveAllowed] = useState<boolean>(false)
+  usePageLeaveConfirmation(isPageLeaveAllowed)
   const { register, handleSubmit, formState: { errors } } = useForm<NewProjectAboutProject>({ resolver: zodResolver(formInputSchema) })
 
   const createProjectFromFormData = async (data: NewProjectAboutProject) => {
@@ -82,10 +82,10 @@ export default function NewProjectAboutProjectPage() {
   }
 
   const addProjectImageFromFormData = async ({ data, projectId }: { data: NewProjectAboutProject, projectId?: string }) => {
-    if (!data.selectedImage) { return null }
+    if (!data.image) { return null }
     if (!projectId) { return null }
 
-    const { data: projectImageUrl } = await uploadProjectImage({ projectId: projectId, file: data.selectedImage })
+    const { data: projectImageUrl } = await uploadProjectImage({ projectId: projectId, file: data.image })
 
     if (!projectImageUrl) { return null }
 
@@ -95,6 +95,7 @@ export default function NewProjectAboutProjectPage() {
   const onSubmit: SubmitHandler<NewProjectAboutProject> = async (data) => {
     setIsButtonEnabled(false)
     setIsButtonLoading(true)
+    setIsPageLeaveAllowed(true)
 
     //set project data to firestore
     const project = await createProjectFromFormData(data)
@@ -113,54 +114,101 @@ export default function NewProjectAboutProjectPage() {
 
   return (
     <div>
-      <p>New project</p>
+      <Title>
+        New project
+      </Title>
+      <Spacer size={30} />
 
       <form>
-        <label>Project name</label>
-        <input type="text" {...register("title")} />
-        {errors.title && (
-          <p>{errors.title?.message}</p>
-        )}
+        <div>
+          <label>
+            <p>
+              Project name
+            </p>
+            <input type="text" {...register("title")} />
+            {errors.title && (
+              <ErrorMessage>
+                {errors.title?.message}
+              </ErrorMessage>
+            )}
+          </label>
+        </div>
+        <Spacer size={20} />
 
         <div>
-          <label>Cover image</label>
+          <label>
+            <p>
+              Cover image
+            </p>
+          </label>
           <input type="file" accept=".jpg, .jpeg, .png" {...register("image")} />
           {errors.image && (
-            <p>{errors.image?.message}</p>
+            <ErrorMessage>
+              {errors.image?.message}
+            </ErrorMessage>
           )}
         </div>
+        <Spacer size={20} />
 
         <div>
-          <label>Details</label>
-          <input type="text" {...register("details")} />
-          {errors.details && (
-            <p>{errors.details?.message}</p>
-          )}
+          <label>
+            <p>
+              Details
+            </p>
+            <textarea {...register("details")} />
+            {errors.details && (
+              <ErrorMessage>
+                {errors.details?.message}
+              </ErrorMessage>
+            )}
+          </label>
         </div>
+        <Spacer size={20} />
 
         <div>
-          <label>Twitter</label>
-          <input type="text" {...register("twitterUrl")} />
-          {errors.twitterUrl && (
-            <p>{errors.twitterUrl?.message}</p>
-          )}
+          <label>
+            <p>
+              Twitter
+            </p>
+            <input type="text" {...register("twitterUrl")} />
+            {errors.twitterUrl && (
+              <ErrorMessage>
+                {errors.twitterUrl?.message}
+              </ErrorMessage>
+            )}
+          </label>
         </div>
+        <Spacer size={20} />
 
         <div>
-          <label>Discord</label>
-          <input type="text" {...register("discordUrl")} />
-          {errors.discordUrl && (
-            <p>{errors.discordUrl?.message}</p>
-          )}
+          <label>
+            <p>
+              Discord
+            </p>
+            <input type="text" {...register("discordUrl")} />
+            {errors.discordUrl && (
+              <ErrorMessage>
+                {errors.discordUrl?.message}
+              </ErrorMessage>
+            )}
+          </label>
         </div>
+        <Spacer size={20} />
 
         <div>
-          <label>Founder&apos;s share of the profit</label>
-          <input type="number" {...register("ownerProfitShare", { valueAsNumber: true })} />
-          {errors.ownerProfitShare &&
-            <p>{errors.ownerProfitShare?.message}</p>
-          }
+          <label>
+            <p>
+              Founder&apos;s share of the profit
+            </p>
+            <input type="number" {...register("ownerProfitShare", { valueAsNumber: true })} />
+            {errors.ownerProfitShare &&
+              <ErrorMessage>
+                {errors.ownerProfitShare?.message}
+              </ErrorMessage>
+            }
+          </label>
         </div>
+        <Spacer size={20} />
 
         <Button
           onClick={handleSubmit(onSubmit)}
