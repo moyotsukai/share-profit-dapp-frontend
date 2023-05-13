@@ -166,6 +166,7 @@ export default function NewProjectAboutProjectPage() {
           onClick={handleSubmit(onSubmit)}
           isEnabled={isButtonEnabled}
           isLoading={isButtonLoading}
+          style="outlined"
         >
           Create and go next
         </Button>
