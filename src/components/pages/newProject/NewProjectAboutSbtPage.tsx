@@ -55,18 +55,14 @@ export default function NewProjectAboutSbtPage() {
     setIsButtonLoading(true)
     setIsPageLeaveAllowed(true)
 
-    console.log("A")
-
     //upload image, get url
     if (!editingProject?.id) { return }
     const sbtImageUrl = await addSbtImageFromFormData({ data: data, projectId: editingProject.id })
     if (!sbtImageUrl) { return }
-    console.log("B")
 
     //update firestore doc
     if (!editingProject) { return }
     await updateProject({ projectId: editingProject.id, project: { sbtImageUrl: sbtImageUrl } })
-    console.log("C")
 
     //set editing project globally
     setEditingProject({
@@ -146,7 +142,7 @@ export default function NewProjectAboutSbtPage() {
           isLoading={isButtonLoading}
           style="outlined"
         >
-          Set up and go Next
+          Set up and go next
         </Button>
       </form>
     </div>
