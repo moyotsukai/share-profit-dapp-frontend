@@ -4,15 +4,15 @@ import { KEYS } from "./keys"
 import { Res } from "../../types/Res"
 import { Project } from "@/types/Project.type"
 
-export const updateProject = async (project: Partial<Project>): Promise<Res<null>> => {
-  if (!project.id) {
+export const updateProject = async ({ projectId, project }: { projectId: string, project: Partial<Project> }): Promise<Res<null>> => {
+  if (!projectId) {
     return {
       data: null,
       error: new Error("No project found")
     }
   }
 
-  const docRef = doc(db, KEYS.PROJECTS, project.id)
+  const docRef = doc(db, KEYS.PROJECTS, projectId)
   try {
     await updateDoc(docRef, project)
     return {

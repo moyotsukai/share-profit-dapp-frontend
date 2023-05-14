@@ -10,7 +10,8 @@ import { useRouter } from "next/router"
 import { PATHS } from "../paths"
 import { usePageLeaveConfirmation } from "@/models/project/usePageLeaveConfirmation"
 import { useEditingProjectState } from "@/states/editingProjectState"
-import { Project } from "@/types/Project.type"
+import { uploadSbtImage } from "@/models/storage/uploadSbtImage"
+import { updateProject } from "@/models/firestore/updateProject"
 
 const formInputSchema = z
   .object({
@@ -37,32 +38,46 @@ export default function NewProjectAboutSbtPage() {
   usePageLeaveConfirmation(isPageLeaveAllowed)
   const { register, handleSubmit, formState: { errors } } = useForm<NewProjectAboutSbt>({ resolver: zodResolver(formInputSchema) })
 
+  const addSbtImageFromFormData = async ({ data, projectId }: { data: NewProjectAboutSbt, projectId?: string }) => {
+    if (!data.sbtImage) { return null }
+    if (!projectId) { return null }
+
+    const { data: sbtImageUrl } = await uploadSbtImage({ projectId: projectId, file: data.sbtImage })
+    if (!sbtImageUrl) { return null }
+
+    await updateProject({ projectId: projectId, project: { sbtImageUrl: sbtImageUrl } })
+
+    return sbtImageUrl
+  }
+
   const onSubmit: SubmitHandler<NewProjectAboutSbt> = async (data) => {
     setIsButtonEnabled(false)
     setIsButtonLoading(true)
     setIsPageLeaveAllowed(true)
 
-    //TODO
+    console.log("A")
+
     //upload image, get url
+    if (!editingProject?.id) { return }
+    const sbtImageUrl = await addSbtImageFromFormData({ data: data, projectId: editingProject.id })
+    if (!sbtImageUrl) { return }
+    console.log("B")
 
-    const projectAboutSbt: Partial<Project> = {
-      sbtImageUrl: "",
-      sbtTokenName: data.sbtTokenName,
-      sbtTokenSymbol: data.sbtTokenSymbol
-    }
-
+    //update firestore doc
     if (!editingProject) { return }
+    await updateProject({ projectId: editingProject.id, project: { sbtImageUrl: sbtImageUrl } })
+    console.log("C")
+
+    //set editing project globally
     setEditingProject({
       ...editingProject,
-      ...projectAboutSbt
-    })
-    console.log({
-      ...editingProject,
-      ...projectAboutSbt
+      sbtImageUrl: sbtImageUrl,
+      sbtTokenName: data.sbtTokenName,
+      sbtTokenSymbol: data.sbtTokenSymbol
     })
 
     //TODO
-    //update firestore doc
+    //オンチェーン処理
 
     router.push(PATHS.NEW_PROJECT.ABOUT_VAULT)
   }

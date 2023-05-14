@@ -48,7 +48,7 @@ export default function NewProjectAboutProjectPage() {
 
   const router = useRouter()
   const user = useUserValue()
-  const setEditingProjectState = useSetEditingProjectState()
+  const setEditingProject = useSetEditingProjectState()
   const [isButtonEnabled, setIsButtonEnabled] = useState<boolean>(true)
   const [isButtonLoading, setIsButtonLoading] = useState<boolean>(false)
   const [isPageLeaveAllowed, setIsPageLeaveAllowed] = useState<boolean>(false)
@@ -89,7 +89,10 @@ export default function NewProjectAboutProjectPage() {
 
     if (!projectImageUrl) { return null }
 
-    await updateProject({ imageUrl: projectImageUrl })
+    const { data: _, error } = await updateProject({ projectId: projectId, project: { imageUrl: projectImageUrl } })
+    if (error) { return null }
+
+    return projectImageUrl
   }
 
   const onSubmit: SubmitHandler<NewProjectAboutProject> = async (data) => {
@@ -99,14 +102,22 @@ export default function NewProjectAboutProjectPage() {
 
     //set project data to firestore
     const project = await createProjectFromFormData(data)
-
     if (!project) { return }
 
     //post image, get url, and update project doc
-    await addProjectImageFromFormData({ data: data, projectId: project.id })
+    const projectImageUrl = await addProjectImageFromFormData({ data: data, projectId: project.id })
 
     //set editing project globally
-    setEditingProjectState(project)
+    if (projectImageUrl) {
+      setEditingProject({
+        ...project,
+        imageUrl: projectImageUrl
+      })
+    } else {
+      setEditingProject({
+        ...project
+      })
+    }
 
     //go to next page
     router.push(PATHS.NEW_PROJECT.ABOUT_SBT)
