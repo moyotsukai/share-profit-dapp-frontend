@@ -56,21 +56,24 @@ export default function NewProjectAboutSbtPage() {
     setIsPageLeaveAllowed(true)
 
     //upload image, get url
-    if (!editingProject?.id) { return }
+    if (!editingProject || !editingProject?.id) { return }
     const sbtImageUrl = await addSbtImageFromFormData({ data: data, projectId: editingProject.id })
-    if (!sbtImageUrl) { return }
-
-    //update firestore doc
-    if (!editingProject) { return }
-    await updateProject({ projectId: editingProject.id, project: { sbtImageUrl: sbtImageUrl } })
 
     //set editing project globally
-    setEditingProject({
-      ...editingProject,
-      sbtImageUrl: sbtImageUrl,
-      sbtTokenName: data.sbtTokenName,
-      sbtTokenSymbol: data.sbtTokenSymbol
-    })
+    if (sbtImageUrl) {
+      setEditingProject({
+        ...editingProject,
+        sbtImageUrl: sbtImageUrl,
+        sbtTokenName: data.sbtTokenName,
+        sbtTokenSymbol: data.sbtTokenSymbol
+      })
+    } else {
+      setEditingProject({
+        ...editingProject,
+        sbtTokenName: data.sbtTokenName,
+        sbtTokenSymbol: data.sbtTokenSymbol
+      })
+    }
 
     //TODO
     //オンチェーン処理

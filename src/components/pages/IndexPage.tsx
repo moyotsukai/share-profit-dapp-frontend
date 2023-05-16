@@ -9,14 +9,18 @@ export default function IndexPage() {
   const [unreceivedDistributionBalance, setUnreceivedDistributionBalance] = useState<number | null>(null)
 
   const user = useUserValue()
-  useEffect(() => {
-    console.log("user", user)
-  }, [user])
 
   useEffect(() => {
     //TODO
     setUnreceivedDistributionBalance(0)
   }, [])
+
+  const onClickSearch = () => {
+    //TODO
+    //get projects where title matches exactly
+    //go to project page
+    //project pageでデータを再取得するので効率悪いが一旦無視
+  }
 
   const onClickReceiveDistribution = () => {
     //TODO

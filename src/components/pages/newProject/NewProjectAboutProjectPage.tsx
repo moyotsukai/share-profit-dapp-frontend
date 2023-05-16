@@ -3,7 +3,7 @@ import { SubmitHandler, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import Button from "../../ui/Button"
 import { createProject } from "@/models/firestore/createProject"
-import { Project } from "@/types/Project.type"
+import { EditingProject } from "@/types/Project.type"
 import { useRouter } from "next/router"
 import { useUserValue } from "@/states/userState"
 import { useSetEditingProjectState } from "@/states/editingProjectState"
@@ -60,7 +60,7 @@ export default function NewProjectAboutProjectPage() {
 
     const invitationCode = randomDigits(4)
 
-    const project: Project = {
+    const project: EditingProject = {
       title: data.title,
       details: data.details,
       twitterUrl: data.twitterUrl,
@@ -74,14 +74,13 @@ export default function NewProjectAboutProjectPage() {
       lastModifiedAt: new Date()
     }
 
-    const { data: projectId } = await createProject(project)
-    if (!projectId) { return null }
-    project.id = projectId
+    const { data: createdProject } = await createProject(project)
+    if (!createdProject) { return null }
 
-    return project
+    return createdProject
   }
 
-  const addProjectImageFromFormData = async ({ data, projectId }: { data: NewProjectAboutProject, projectId?: string }) => {
+  const addProjectImageFromFormData = async ({ data, projectId }: { data: NewProjectAboutProject, projectId: string }) => {
     if (!data.image) { return null }
     if (!projectId) { return null }
 

@@ -1,5 +1,4 @@
-export type Project = {
-  id?: string,
+type ProjectCoreInformation = {
   title: string,
   imageUrl?: string,
   details?: string,
@@ -10,10 +9,26 @@ export type Project = {
   state: "ongoing" | "uncompleted",
   createdBy: string,
   ownerIds: string[],
-  memberIds?: string[],
+  memberIds: string[],
   lastModifiedAt: Date,
   sbtImageUrl?: string,
-  sbtTokenName?: string,
-  sbtTokenSymbol?: string,
-  vaultAddress?: string
 }
+
+type ProjectWithId = {
+  id: string
+}
+
+type ProjectWithServerInformation = {
+  sbtTokenName: string,
+  sbtTokenSymbol: string,
+  vaultAddress: string
+}
+
+//project being edited, id is not required
+export type EditingProject = ProjectCoreInformation & Partial<ProjectWithId> & Partial<ProjectWithServerInformation>
+
+//project being edited, but id is required
+export type EditingProjectWithId = ProjectCoreInformation & ProjectWithId & Partial<ProjectWithServerInformation>
+
+//project from database
+export type Project = ProjectCoreInformation & ProjectWithId & ProjectWithServerInformation

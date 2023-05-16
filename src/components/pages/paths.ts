@@ -7,6 +7,7 @@ export const PATHS = {
     ABOUT_VAULT: "/new-project/about-vault"
   },
   PROJECTS: "/projects",
+  PROJECT: (projectId: string) => `/projects/${projectId}`,
   API: {
     CUSTOM_TOKEN: "/api/custom-token"
   }
