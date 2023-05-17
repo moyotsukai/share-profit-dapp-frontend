@@ -3,23 +3,19 @@ import Spacer from "@/components/ui/Spacer"
 import Title from "@/components/ui/Title"
 import { updateProject } from "@/models/firestore/updateProject"
 import { usePageLeaveConfirmation } from "@/models/project/usePageLeaveConfirmation"
-import { useEditingProjectState } from "@/states/editingProjectState"
+import { useEditingProjectValue } from "@/states/editingProjectState"
 import { useRouter } from "next/router"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { PATHS } from "../paths"
 
 export default function NewProjectAboutVaultPage() {
 
   const router = useRouter()
-  const [editingProject, setEditingProject] = useEditingProjectState()
+  const editingProject = useEditingProjectValue()
   const [isButtonEnabled, setIsButtonEnabled] = useState<boolean>(true)
   const [isButtonLoading, setIsButtonLoading] = useState<boolean>(false)
   const [isPageLeaveAllowed, setIsPageLeaveAllowed] = useState<boolean>(false)
   usePageLeaveConfirmation(isPageLeaveAllowed)
-
-  useEffect(() => {
-    return () => setEditingProject(null)
-  }, [])
 
   const onClickComplete = async () => {
     setIsButtonEnabled(false)
@@ -28,7 +24,6 @@ export default function NewProjectAboutVaultPage() {
 
     //TODO
     //オンチェーン処理, get vault address
-
     if (!editingProject || !editingProject.id) { return }
     const { error } = await updateProject({
       projectId: editingProject.id,

@@ -58,7 +58,7 @@ export default function NewProjectAboutProjectPage() {
   const createProjectFromFormData = async (data: NewProjectAboutProject) => {
     if (!user || !user.uid) { return null }
 
-    const invitationCode = randomDigits(4)
+    const invitationCode = randomDigits(6)
 
     const project: EditingProject = {
       title: data.title,

@@ -5,14 +5,15 @@ import { Res } from "../../types/Res"
 import { EditingProject, EditingProjectWithId } from "@/types/Project.type"
 
 export const createProject = async (project: EditingProject): Promise<Res<EditingProjectWithId | null>> => {
-  const docRef = doc(collection(db, KEYS.PROJECTS))
+  const docId = doc(collection(db, KEYS.PROJECTS)).id
+  const docRef = doc(collection(db, KEYS.PROJECTS), docId)
 
   try {
     await setDoc(docRef, project)
     return {
       data: {
         ...project,
-        id: docRef.id
+        id: docId
       },
       error: null
     }

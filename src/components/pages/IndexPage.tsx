@@ -17,7 +17,8 @@ export default function IndexPage() {
 
   const onClickSearch = () => {
     //TODO
-    //get projects where title matches exactly
+    //get projects where invitatoin code matches
+    //add user.uid to member ids
     //go to project page
     //project pageでデータを再取得するので効率悪いが一旦無視
   }
