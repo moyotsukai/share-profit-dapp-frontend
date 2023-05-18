@@ -1,5 +1,11 @@
 export const PATHS = {
   ROOT: "gs://share-profit-dapp.appspot.com",
-  projectImage: ({ projectId, fileName }: { projectId: string, fileName: string }) => `/projects/${projectId}/projectImage/${fileName}`,
-  sbtImage: ({ projectId, fileName }: { projectId: string, fileName: string }) => `/projects/${projectId}/sbtImage/${fileName}`
+  projectImage: ({ projectId, fileName }: { projectId: string, fileName: string }) => {
+    const fileExtension = fileName.substring(fileName.lastIndexOf("."))
+    return `/projects/${projectId}/projectImage/project${fileExtension}`
+  },
+  sbtImage: ({ projectId, fileName }: { projectId: string, fileName: string }) => {
+    const fileExtension = fileName.substring(fileName.lastIndexOf("."))
+    return `/projects/${projectId}/sbtImage/sbt${fileExtension}`
+  }
 }

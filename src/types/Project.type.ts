@@ -21,7 +21,8 @@ type ProjectWithId = {
 type ProjectWithServerInformation = {
   sbtTokenName: string,
   sbtTokenSymbol: string,
-  vaultAddress: string
+  vaultAddress: string,
+  downloadImageUrl?: string | null
 }
 
 //project being edited, id is not required
