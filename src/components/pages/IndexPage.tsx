@@ -20,7 +20,6 @@ export default function IndexPage() {
     //get projects where invitatoin code matches
     //add user.uid to member ids
     //go to project page
-    //project pageでデータを再取得するので効率悪いが一旦無視
   }
 
   const onClickReceiveDistribution = () => {

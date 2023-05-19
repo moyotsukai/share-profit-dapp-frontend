@@ -29,5 +29,5 @@ export const fallbackStyle = css`
   font-size: 18px;
   line-height: 1;
   font-weight: 500;
-  background-color: #aa80ff;
+  background-color: #b38cff;
 `
