@@ -48,7 +48,7 @@ export default function NewProjectAboutVaultPage() {
       <Spacer size={30} />
 
       <p>
-        [About SBT here]
+        [About vault here]
       </p>
       <Spacer size={20} />
 
