@@ -76,7 +76,13 @@ export default function NewProjectAboutSbtPage() {
     }
 
     //TODO
-    //オンチェーン処理
+    //<<<Hashimoto
+    //deploy SBT contract
+
+    //get address and transaction
+
+    const address = ""
+    //Hashimoto>>>
 
     router.push(PATHS.NEW_PROJECT.ABOUT_VAULT)
   }
@@ -145,7 +151,7 @@ export default function NewProjectAboutSbtPage() {
           isLoading={isButtonLoading}
           style="outlined"
         >
-          Set up and go next
+          Set up SBT and go next
         </Button>
       </form>
     </div>

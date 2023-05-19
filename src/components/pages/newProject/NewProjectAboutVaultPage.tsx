@@ -23,7 +23,14 @@ export default function NewProjectAboutVaultPage() {
     setIsPageLeaveAllowed(true)
 
     //TODO
-    //オンチェーン処理, get vault address
+    //<<<Hashimoto
+    //金庫コントラクト作成
+
+    //get 金庫のaddress
+
+    const address = ""
+    //Hashimoto>>>
+
     if (!editingProject || !editingProject.id) { return }
     const { error } = await updateProject({
       projectId: editingProject.id,

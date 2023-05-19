@@ -11,6 +11,7 @@ import { updateProjectArray } from "@/models/firestore/updateProject"
 import LoadingCircle from "../ui/LoadingCircle/LoadingCircle"
 import { downloadImageFromUrl } from "@/models/storage/downloadProjectImage"
 import { Avatar } from "../radix/Avatar/Avatar"
+import { SbtOwner } from "@/types/SbtOwner.type"
 
 export default function ProjectPage() {
 
@@ -20,7 +21,9 @@ export default function ProjectPage() {
   const [project, setProject] = useState<Project | null | undefined>(undefined)
   const [isVerified, setIsVerified] = useState<boolean>(false)
   const [isProjectOwner, setIsProjectOwner] = useState<boolean>(false)
+  const [sbtOwners, setSbtOwners] = useState<SbtOwner[]>([])
 
+  //get project
   useFetchEffect(async () => {
     if (typeof projectId !== "string") { return }
     if (!projectId) { return }
@@ -41,15 +44,32 @@ export default function ProjectPage() {
     //setProject globally
   }, [projectId])
 
+  //set if user needs to enter invitation code
   useEffect(() => {
     if (!project || !user) { return }
     if (project.ownerIds.includes(user.uid)) {
       setIsProjectOwner(true)
       setIsVerified(true)
     } else {
-      project.memberIds.includes(user.uid)
+      setIsVerified(project.memberIds.includes(user.uid))
     }
   }, [project, user])
+
+  //get SBT owners
+  useFetchEffect(async () => {
+    //TODO
+    //Hashimoto
+    //get sbt owners
+    const owners: SbtOwner[] = [
+      {
+        address: "",
+        amount: 0
+      }
+    ]
+
+    //set sbt owner state
+    setSbtOwners(owners)
+  }, [])
 
   const onChangeInvitationCode = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const text = event.target.value

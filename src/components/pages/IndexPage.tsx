@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import TabBar from "../radix/TabBar";
 import Button from "../ui/Button";
 import Spacer from "../ui/Spacer/Spacer";
@@ -7,10 +7,10 @@ import { z } from "zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { getProjectFromInvitationCode } from "@/models/firestore/getProjectsFromInvitationCode";
-import { Project } from "@/types/Project.type";
 import { updateProjectArray } from "@/models/firestore/updateProject";
 import { useRouter } from "next/router";
 import { PATHS } from "./paths";
+import { useFetchEffect } from "@/models/project/useFetchEffect";
 
 const formInputSchema = z
   .object({
@@ -26,20 +26,24 @@ export default function IndexPage() {
   const user = useUserValue()
   const router = useRouter()
   const { register, handleSubmit } = useForm<SearchProject>({ resolver: zodResolver(formInputSchema) })
-  const [projects, setProjects] = useState<Project | null | undefined>()
 
   const [unreceivedDistributionBalance, setUnreceivedDistributionBalance] = useState<number | null>(null)
 
-  useEffect(() => {
+  //get unreceived distribution balance
+  useFetchEffect(async () => {
     //TODO
+    //<<<Hashimoto
+    //分配金残高を取得
+
+    //表示
     setUnreceivedDistributionBalance(0)
+    //Hashimoto>>>
   }, [])
 
   const onClickSearch: SubmitHandler<SearchProject> = async (data) => {
     //get projects where invitatoin code matches
     const { data: project } = await getProjectFromInvitationCode(data.enteredText)
     if (!project) { return }
-    setProjects(project)
 
     //add user.uid to member ids
     if (!user) { return }
@@ -54,9 +58,19 @@ export default function IndexPage() {
     router.push(PATHS.PROJECT(project.id))
   }
 
+  const onEnterDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key !== "Enter") { return }
+    handleSubmit(onClickSearch)
+  }
+
   const onClickReceiveDistribution = () => {
     //TODO
-    //Hashimoto
+    //<<<Hashimoto
+    //分配金の残高を受け取る
+
+    //表示を更新
+    setUnreceivedDistributionBalance(0)
+    //Hashimoto>>>
   }
 
   return (
@@ -78,6 +92,7 @@ export default function IndexPage() {
               <input
                 type="text"
                 placeholder="Search projects..."
+                onKeyDown={onEnterDown}
                 {...register("enteredText")}
               />
             </label>
