@@ -1,13 +1,20 @@
-import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore'
+import { WhereFilterOp, collection, getDocs, query, where } from 'firebase/firestore'
 import { db } from '../firebase/client'
 import { KEYS } from './keys'
 import { projectFromFirebase } from './dataConverter'
 import { Res } from '../../types/Res'
 import { Project } from '@/types/Project.type'
 
-export const getProjectFromInvitationCode = async (invitationCode: string): Promise<Res<Project | null>> => {
+type Props = {
+  key: string,
+  operation: WhereFilterOp,
+  value: string
+}
+
+export const getProjectsWhere = async ({ key, operation, value }: Props): Promise<Res<Project[] | null>> => {
+
   const projectsRef = collection(db, KEYS.PROJECTS)
-  const q = query(projectsRef, where(KEYS.PROJECT.INVITATION_CODE, "==", invitationCode))
+  const q = query(projectsRef, where(key, operation, value))
 
   try {
     const querySnapshot = await getDocs(q)
@@ -18,16 +25,9 @@ export const getProjectFromInvitationCode = async (invitationCode: string): Prom
       projects.push(project)
     })
 
-    if (projects) {
-      return {
-        data: projects[0],
-        error: null
-      }
-    } else {
-      return {
-        data: null,
-        error: null
-      }
+    return {
+      data: projects,
+      error: null
     }
 
   } catch (error) {

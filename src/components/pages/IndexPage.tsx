@@ -6,11 +6,12 @@ import { useUserValue } from "@/states/userState";
 import { z } from "zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { getProjectFromInvitationCode } from "@/models/firestore/getProjectsFromInvitationCode";
 import { updateProjectArray } from "@/models/firestore/updateProject";
 import { useRouter } from "next/router";
 import { PATHS } from "./paths";
 import { useFetchEffect } from "@/models/project/useFetchEffect";
+import { getProjectsWhere } from "@/models/firestore/getProjectsWhere";
+import { KEYS } from "@/models/firestore/keys";
 
 const formInputSchema = z
   .object({
@@ -42,8 +43,13 @@ export default function IndexPage() {
 
   const onClickSearch: SubmitHandler<SearchProject> = async (data) => {
     //get projects where invitatoin code matches
-    const { data: project } = await getProjectFromInvitationCode(data.enteredText)
-    if (!project) { return }
+    const { data: projects } = await getProjectsWhere({
+      key: KEYS.PROJECT.INVITATION_CODE,
+      operation: "==",
+      value: data.enteredText
+    })
+    if (!projects || !projects.length) { return }
+    const project = projects[0]
 
     //add user.uid to member ids
     if (!user) { return }

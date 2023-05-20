@@ -21,7 +21,7 @@ export const sideTabStyle = (isActive: boolean) => css`
   transition: 0.1s ease-in-out;
 `
 
-export const avatarStyle = css`
+export const avatarContainerStyle = css`
   width: 34px;
   height: 34px;
   margin-right: 6px;

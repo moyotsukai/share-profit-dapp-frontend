@@ -3,6 +3,7 @@ export const KEYS = {
   PROJECTS: "projects",
   PROJECT: {
     ID: "id",
-    INVITATION_CODE: "invitationCode"
+    INVITATION_CODE: "invitationCode",
+    MEMBER_IDS: "memberIds"
   }
 }

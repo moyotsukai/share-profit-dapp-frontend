@@ -8,7 +8,6 @@ import { useRouter } from "next/router"
 import { useUserValue } from "@/states/userState"
 import { useSetEditingProjectState } from "@/states/editingProjectState"
 import { PATHS } from "../paths"
-import { randomDigits } from "@/utils/randomDigits"
 import { uploadProjectImage } from "@/models/storage/uploadProjectImage"
 import { updateProject } from "@/models/firestore/updateProject"
 import { useState } from "react"
@@ -16,6 +15,7 @@ import ErrorMessage from "@/components/ui/ErrorMessage"
 import Spacer from "@/components/ui/Spacer"
 import Title from "@/components/ui/Title"
 import { usePageLeaveConfirmation } from "@/models/project/usePageLeaveConfirmation"
+import { randomCharactors } from "@/utils/randomCharactors"
 
 const formInputSchema = z
   .object({
@@ -58,7 +58,7 @@ export default function NewProjectAboutProjectPage() {
   const createProjectFromFormData = async (data: NewProjectAboutProject) => {
     if (!user || !user.uid) { return null }
 
-    const invitationCode = randomDigits(6)
+    const invitationCode = randomCharactors(6)
 
     const project: EditingProject = {
       title: data.title,

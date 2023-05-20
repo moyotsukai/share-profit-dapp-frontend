@@ -1,14 +1,14 @@
 import { css } from '@emotion/react'
 
-export const rootStyle = css`
+export const rootStyle = (size: "normal" | "sideTab") => css`
   display: inline-flex;
   align-items: center;
   justify-content: center;
   vertical-align: middle;
   overflow: hidden;
   user-select: none;
-  width: 60px;
-  height: 60px;
+  width: ${size === "normal" ? "60px" : "34px"};
+  height: ${size === "normal" ? "60px" : "34px"};
   border-radius: 100%;
   background-color: #fff;
 `
@@ -29,5 +29,5 @@ export const fallbackStyle = css`
   font-size: 18px;
   line-height: 1;
   font-weight: 500;
-  background-color: #b38cff;
+  background-color: #f6f2fc;
 `

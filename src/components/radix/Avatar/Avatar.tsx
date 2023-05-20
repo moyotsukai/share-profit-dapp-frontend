@@ -3,13 +3,14 @@ import * as s from './style'
 
 type Props = {
   src?: string,
-  alt?: string
-  fallback: string
+  alt?: string,
+  fallback: string,
+  size?: "normal" | "sideTab"
 }
 
-export const Avatar: React.FC<Props> = ({ src, alt, fallback }) => {
+export const Avatar: React.FC<Props> = ({ src, alt, fallback, size = "normal" }) => {
   return (
-    <AvatarPrimitive.Root css={s.rootStyle}>
+    <AvatarPrimitive.Root css={() => s.rootStyle(size)}>
       <AvatarPrimitive.Image
         src={src}
         alt={alt}
