@@ -2,9 +2,11 @@ import { colors } from '@/styles/colors'
 import { css } from '@emotion/react'
 
 export const rootStyle = css`
-  width: 100%;
-  height: 60px;
   text-align: center;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 `
 
 export const listStyle = css`
@@ -35,4 +37,7 @@ export const triggerLabelStyle = css`
 
 export const contentStyle = css`
   text-align: left;
+  width: 100%;
+  height: 100%;
+  flex-grow: 1;
 `

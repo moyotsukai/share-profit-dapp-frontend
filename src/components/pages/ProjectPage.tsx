@@ -12,6 +12,7 @@ import LoadingCircle from "../ui/LoadingCircle/LoadingCircle"
 import { downloadImageFromUrl } from "@/models/storage/downloadProjectImage"
 import { Avatar } from "../radix/Avatar/Avatar"
 import { SbtOwner } from "@/types/SbtOwner.type"
+import TaskBoard from "../task/TaskBoard"
 
 export default function ProjectPage() {
 
@@ -87,7 +88,7 @@ export default function ProjectPage() {
   }
 
   return (
-    <div>
+    <>
       {project
         ? isVerified
           ? <TabBar.Root defaultValue="overview">
@@ -171,7 +172,7 @@ export default function ProjectPage() {
             </TabBar.Content>
 
             <TabBar.Content value="tasks">
-              <p>List tasks here</p>
+              <TaskBoard />
             </TabBar.Content>
 
             <TabBar.Content value="sbt-owners">
@@ -198,6 +199,6 @@ export default function ProjectPage() {
             </Title>
           </div>
       }
-    </div>
+    </>
   )
 }

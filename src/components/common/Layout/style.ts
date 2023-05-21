@@ -12,11 +12,4 @@ export const layoutStyle = css`
 
 export const contentContainerStyle = css`
   margin-left: 200px;
-  display: flex;
-  flex-direction: row;
-  height: 800px;
-`
-
-export const contentStyle = css`
-  flex-grow: 1;
 `
