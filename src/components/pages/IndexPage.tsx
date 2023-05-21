@@ -60,9 +60,6 @@ export default function IndexPage() {
     abi: accountAbi,
     functionName: "withdrawToken",
     args: [tokenAddr],
-    overrides: {
-      from: userAddr,
-    },
   });
   const { data, isLoading, isSuccess, write } = useContractWrite({
     ...config,
