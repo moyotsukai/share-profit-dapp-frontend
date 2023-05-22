@@ -1,3 +1,5 @@
+import { Task, TaskIndex } from "./Task"
+
 type ProjectCoreInformation = {
   title: string,
   imageUrl?: string,
@@ -12,6 +14,8 @@ type ProjectCoreInformation = {
   memberIds: string[],
   lastModifiedAt: Date,
   sbtImageUrl?: string,
+  tasks: Task[],
+  taskIndexes: TaskIndex[]
 }
 
 type ProjectWithId = {

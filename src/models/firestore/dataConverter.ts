@@ -26,6 +26,8 @@ export const projectFromFirebase = (data: any): Project => {
     sbtImageUrl: data.sbtImageUrl,
     sbtTokenName: data.sbtTokenName,
     sbtTokenSymbol: data.sbtTokenSymbol,
-    vaultAddress: data.vaultAddress
+    vaultAddress: data.vaultAddress,
+    tasks: data.tasks ?? [],
+    taskIndexes: data.taskIndexes ?? []
   }
 }

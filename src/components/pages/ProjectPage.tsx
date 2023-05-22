@@ -13,13 +13,14 @@ import { downloadImageFromUrl } from "@/models/storage/downloadProjectImage"
 import { Avatar } from "../radix/Avatar/Avatar"
 import { SbtOwner } from "@/types/SbtOwner.type"
 import TaskBoard from "../task/TaskBoard"
+import { useProjectState } from "@/states/projectState"
 
 export default function ProjectPage() {
 
   const router = useRouter()
   const { projectId } = router.query
   const user = useUserValue()
-  const [project, setProject] = useState<Project | null | undefined>(undefined)
+  const [project, setProject] = useProjectState()
   const [isVerified, setIsVerified] = useState<boolean>(false)
   const [isProjectOwner, setIsProjectOwner] = useState<boolean>(false)
   const [sbtOwners, setSbtOwners] = useState<SbtOwner[]>([])
@@ -40,9 +41,6 @@ export default function ProjectPage() {
     } else {
       setProject(projectData)
     }
-
-    //TODO
-    //setProject globally
   }, [projectId])
 
   //set if user needs to enter invitation code

@@ -1,12 +1,13 @@
 import React from "react"
 import { useDrop } from "react-dnd"
 import * as s from "./style"
-import { useTasksValue } from "@/states/tasksState"
 import DraggableTask from "../DraggableTask/DraggableTask"
 import { TaskStage } from "@/types/Task"
-import { useTaskIndexesValue } from "@/states/taskIndexesState"
 import Divider from "@/components/ui/Divider"
 import Spacer from "@/components/ui/Spacer"
+import AddNewTaskDialog from "../AddNewTaskDialog"
+import { useUserValue } from "@/states/userState"
+import { useProjectValue, useTaskIndexesValue, useTasksValue } from "@/states/projectState"
 
 export type DropResult = {
   taskStage: TaskStage
@@ -18,6 +19,10 @@ type Props = {
 }
 
 const DroppableTaskColumn: React.FC<Props> = ({ columnStage, title }) => {
+
+  const user = useUserValue()
+  const project = useProjectValue()
+  const isProjectOwner = project && user && project.ownerIds.includes(user.uid)
 
   const [_, drop] = useDrop<DraggableTask>({
     accept: ["item"],
@@ -32,13 +37,9 @@ const DroppableTaskColumn: React.FC<Props> = ({ columnStage, title }) => {
   const tasks = useTasksValue()
   const taskIndexes = useTaskIndexesValue()
   const sortedTasks = taskIndexes.concat().sort((a, b) => a.index - b.index).map((taskIndex) => {
-    const task = tasks.find(($0) => $0.id === taskIndex.taskId) ?? { id: "", title: "", stage: "todo" }
+    const task = tasks.find(($0) => $0.id === taskIndex.taskId) ?? { id: "", title: "not found", stage: "todo" }
     return task
   })
-
-  const onClickAddNewTask = () => {
-
-  }
 
   return (
     <div css={s.colmnStyle}>
@@ -59,10 +60,8 @@ const DroppableTaskColumn: React.FC<Props> = ({ columnStage, title }) => {
             key={task.id}
           />
         ))}
-        {columnStage === "todo" &&
-          <button onClick={onClickAddNewTask} css={s.addNewButtonStyle}>
-            + Add New
-          </button>
+        {isProjectOwner && columnStage === "todo" &&
+          <AddNewTaskDialog />
         }
       </ul>
     </div>

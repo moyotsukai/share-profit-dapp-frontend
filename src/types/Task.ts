@@ -4,10 +4,11 @@ export type Task = {
   id: string,
   title: string,
   stage: TaskStage,
-  details?: string,
-  bountySbt?: number,
-  ownerId?: string,
-  asigneeIds?: string[]
+  outline?: string,
+  details: string,
+  bountySbt: number,
+  ownerId: string,
+  asigneeIds: string[]
 }
 
 export type TaskIndex = {

@@ -2,8 +2,7 @@ import React, { useRef } from "react"
 import { useDrag, useDrop } from "react-dnd"
 import * as s from "./style"
 import { DropResult } from "../DroppableTaskColumn/DroppableTaskColumn"
-import { useSetTasksState } from "@/states/tasksState"
-import { useSetTaskIndexesState } from "@/states/taskIndexesState"
+import { useSetProjectState } from "@/states/projectState"
 
 type DraggableTask = {
   id: string,
@@ -19,8 +18,7 @@ type Props = {
 const DraggableTask: React.FC<Props> = ({ id, title, index }) => {
 
   const ref = useRef<HTMLLIElement>(null)
-  const setTasksState = useSetTasksState()
-  const setTaskIndexesState = useSetTaskIndexesState()
+  const setProject = useSetProjectState()
 
   const [, drag] = useDrag<DraggableTask>({
     type: "item",
@@ -30,8 +28,10 @@ const DraggableTask: React.FC<Props> = ({ id, title, index }) => {
       const dropResult = monitor.getDropResult() as DropResult
 
       if (dropResult) {
-        setTasksState((currentTasks) => {
-          return currentTasks.map((task) => {
+        setProject((currentProject) => {
+          if (!currentProject) { return currentProject }
+          const currentTasks = currentProject.tasks
+          const newTasks = currentTasks.map((task) => {
             if (task.id === id) {
               return {
                 ...task,
@@ -41,6 +41,7 @@ const DraggableTask: React.FC<Props> = ({ id, title, index }) => {
               return task
             }
           })
+          return { ...currentProject, tasks: newTasks }
         })
       }
     }
@@ -53,8 +54,10 @@ const DraggableTask: React.FC<Props> = ({ id, title, index }) => {
       const fromIndex = item.index
       const newIndex = index
 
-      setTaskIndexesState((currentTaskIndexes) => {
-        return currentTaskIndexes.map((currentTaskIndex) => {
+      setProject((currentProject) => {
+        if (!currentProject) { return currentProject }
+        const currentTaskIndexes = currentProject.taskIndexes
+        const newTaskIndexes = currentTaskIndexes.map((currentTaskIndex) => {
           const index = currentTaskIndex.index
           if (newIndex < fromIndex) {
             if (index < newIndex) { return currentTaskIndex }
@@ -76,6 +79,7 @@ const DraggableTask: React.FC<Props> = ({ id, title, index }) => {
 
           return currentTaskIndex
         })
+        return { ...currentProject, taskIndexes: newTaskIndexes }
       })
     }
   })
