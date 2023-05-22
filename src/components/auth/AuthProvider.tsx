@@ -6,7 +6,6 @@ import React, { useEffect, useState } from "react";
 import Button from "../ui/Button";
 import { useUserState } from "@/states/userState";
 import LoadingCircle from "../ui/LoadingCircle";
-
 type Props = {
   children: React.ReactNode;
 };
@@ -77,7 +76,7 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
                 isEnabled={isButtonEnabled}
                 isLoading={isButtonLoading}
               >
-                Connect Metamask
+                Connect MetaMask
               </Button>
             </div>
           )}

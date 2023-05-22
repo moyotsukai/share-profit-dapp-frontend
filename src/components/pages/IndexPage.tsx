@@ -12,13 +12,8 @@ import { PATHS } from "./paths";
 import { useFetchEffect } from "@/models/project/useFetchEffect";
 import { getProjectsWhere } from "@/models/firestore/getProjectsWhere";
 import { KEYS } from "@/models/firestore/keys";
-import {
-  useContractRead,
-  useContractWrite,
-  usePrepareContractWrite,
-} from "wagmi";
 import accountAbi from "../../../constants/Account.json";
-import { ethers } from "ethers";
+import { useWeb3Contract } from "react-moralis";
 import { useNotification } from "web3uikit";
 
 const formInputSchema = z.object({
@@ -33,41 +28,30 @@ export default function IndexPage() {
   const accountAddr = "0x068419813Bd03FaeeAD20370B0FB106f3A9217E4";
   const tokenAddr = "0x07865c6e87b9f70255377e024ace6630c1eaa37f";
   const router = useRouter();
+  const dispatch = useNotification();
   const { register, handleSubmit } = useForm<SearchProject>({
     resolver: zodResolver(formInputSchema),
   });
 
-  const dispatch = useNotification();
-
   const [unreceivedDistributionBalance, setUnreceivedDistributionBalance] =
     useState<string | null>(null);
 
-  const { data: releasableToken, isError } = useContractRead({
-    address: accountAddr,
+  const { runContractFunction: getReleasableBalance } = useWeb3Contract({
     abi: accountAbi,
+    contractAddress: accountAddr,
     functionName: "releasableToken",
-    args: [tokenAddr, userAddr],
-  });
-  console.log(typeof (releasableToken as bigint));
-  console.log(
-    ethers.utils
-      .parseUnits((releasableToken as bigint).toString(), 6)
-      .toString()
-  );
-
-  const { config } = usePrepareContractWrite({
-    address: accountAddr,
-    abi: accountAbi,
-    functionName: "withdrawToken",
-    args: [tokenAddr],
-  });
-  const { data, isLoading, isSuccess, write } = useContractWrite({
-    ...config,
-    onSuccess() {
-      handleWithdrawSuccess();
+    params: {
+      _token: tokenAddr,
+      _addr: userAddr,
     },
-    onError(error) {
-      console.log("Error", error);
+  });
+
+  const { runContractFunction: withdrawToken } = useWeb3Contract({
+    abi: accountAbi,
+    contractAddress: accountAddr,
+    functionName: "withdrawToken",
+    params: {
+      _tokenAddr: tokenAddr,
     },
   });
 
@@ -76,13 +60,19 @@ export default function IndexPage() {
     //TODO
     //<<<Hashimoto
     //表示
-    setUnreceivedDistributionBalance(
-      ethers.utils
-        .parseUnits((releasableToken as bigint).toString(), 6)
-        .toString()
-    );
+    setUnreceivedDistributionBalance((await getReleasableBalance()) as string);
+    console.log(await getReleasableBalance());
     //Hashimoto>>>
   }, []);
+
+  const handleWithdrawSuccess = () => {
+    dispatch({
+      type: "success",
+      message: "withdrawing proceeds",
+      title: "Withdrawing!",
+      position: "topR",
+    });
+  };
 
   const onClickSearch: SubmitHandler<SearchProject> = async (data) => {
     //get projects where invitatoin code matches
@@ -118,27 +108,19 @@ export default function IndexPage() {
     handleSubmit(onClickSearch);
   };
 
-  const onClickReceiveDistribution = () => {
+  const onClickReceiveDistribution = async () => {
     //TODO
     //<<<Hashimoto
     //分配金の残高を受け取る
-    if (write) {
-      write();
-    }
+    withdrawToken({
+      onError: (error) => console.log(error),
+      onSuccess: () => handleWithdrawSuccess(),
+    });
 
     //表示を更新
     setUnreceivedDistributionBalance("0");
     //Hashimoto>>>
   };
-
-  async function handleWithdrawSuccess() {
-    dispatch({
-      type: "success",
-      message: "Withdrawing proceeds!",
-      title: "Withdrawing!",
-      position: "topR",
-    });
-  }
 
   return (
     <div>
