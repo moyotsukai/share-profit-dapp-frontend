@@ -55,7 +55,7 @@ export default function NewProjectAboutVaultPage() {
     //TODO
     //<<<Hashimoto
     //金庫コントラクト、Sbtコントラクト作成
-    deploy({
+    const addrs = await deploy({
       onSuccess: () => handleDeployContractsSuccess(),
       onError: (error) => console.log(error),
     });
