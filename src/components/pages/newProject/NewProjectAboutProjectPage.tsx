@@ -71,6 +71,8 @@ export default function NewProjectAboutProjectPage() {
       createdBy: user.uid,
       ownerIds: [user.uid],
       memberIds: [],
+      tasks: [],
+      taskIndexes: [],
       lastModifiedAt: new Date()
     }
 

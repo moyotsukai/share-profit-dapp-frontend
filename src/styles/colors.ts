@@ -7,5 +7,7 @@ export const colors = {
   primaryShadow: "rgba(0, 43, 255, 0.2)",
   primarySelected: "#d9deff",
   error: "#cc0025",
-  sideBar: "#f0f4fa"
+  sideBar: "#344199",
+  card: "#f0f5fc",
+  divider: "#b8c4cc"
 }

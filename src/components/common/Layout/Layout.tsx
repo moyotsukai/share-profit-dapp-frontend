@@ -18,11 +18,9 @@ const Layout: React.FC<Props> = ({ children }) => {
       {!hideSideBar &&
         <SideBar />
       }
-      <div css={s.contentStyle}>
-        <div css={s.layoutStyle}>
-          {children}
-          <Footer />
-        </div>
+      <div css={s.layoutStyle}>
+        {children}
+        <Footer />
       </div>
     </div>
 

@@ -14,4 +14,5 @@ export const sideProjectBarStyle = css`
 
 export const labelStyle = css`
   font-size: 16px;
+  color: #fff;
 `

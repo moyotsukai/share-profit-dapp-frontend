@@ -3,6 +3,7 @@ import { db } from "../firebase/client"
 import { KEYS } from "./keys"
 import { Res } from "../../types/Res"
 import { Project } from "@/types/Project.type"
+import { Task } from "@/types/Task"
 
 export const updateProject = async ({ projectId, project }: { projectId: string, project: Partial<Project> }): Promise<Res<null>> => {
 
@@ -22,9 +23,8 @@ export const updateProject = async ({ projectId, project }: { projectId: string,
   }
 }
 
-export const updateProjectArray = async ({ projectId, key, value, method }: { projectId: string, key: keyof Project, value: string, method: "union" | "remove" }): Promise<Res<null>> => {
+export const updateProjectArray = async ({ projectId, key, value, method }: { projectId: string, key: keyof Project, value: string | Task, method: "union" | "remove" }): Promise<Res<null>> => {
 
-  console.log(db, projectId)
   const docRef = doc(db, KEYS.PROJECTS, projectId)
   try {
     if (method === "union") {

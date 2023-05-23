@@ -14,10 +14,11 @@ import { Avatar } from "../radix/Avatar/Avatar";
 import { SbtOwner } from "@/types/SbtOwner.type";
 import { useWeb3Contract } from "react-moralis";
 import securitiesAbi from "../../../constants/Securities.json";
+import TaskBoard from "../task/TaskBoard"
+import { useProjectState } from "@/states/projectState"
 
 export default function ProjectPage() {
   const sbtAddr = "0xa271BdAd273e282B909419d29074Ec2B56100368";
-
   const router = useRouter();
   const { projectId } = router.query;
   const user = useUserValue();
@@ -58,7 +59,6 @@ export default function ProjectPage() {
       setProject(projectData);
     }
 
-    //TODO
     //setProject globally
   }, [projectId]);
 
@@ -167,7 +167,7 @@ export default function ProjectPage() {
             </TabBar.Content>
 
             <TabBar.Content value="tasks">
-              <p>List tasks here</p>
+              <TaskBoard />
             </TabBar.Content>
 
             <TabBar.Content value="sbt-owners">
