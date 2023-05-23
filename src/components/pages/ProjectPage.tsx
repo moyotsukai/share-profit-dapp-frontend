@@ -20,9 +20,9 @@ import { useProjectState } from "@/states/projectState"
 export default function ProjectPage() {
   const sbtAddr = "0xa271BdAd273e282B909419d29074Ec2B56100368";
   const router = useRouter();
-  const { projectId } = router.query;
+  const { projectId, taskId } = router.query;
   const user = useUserValue();
-  const [project, setProject] = useState<Project | null | undefined>(undefined);
+  const [project, setProject] = useProjectState()
   const [isVerified, setIsVerified] = useState<boolean>(false);
   const [isProjectOwner, setIsProjectOwner] = useState<boolean>(false);
   const [sbtOwners, setSbtOwners] = useState<SbtOwner[]>([]);
@@ -111,7 +111,7 @@ export default function ProjectPage() {
     <div>
       {project ? (
         isVerified ? (
-          <TabBar.Root defaultValue="overview">
+          <TabBar.Root defaultValue={taskId ? "tasks" : "overview"}>
             <div>
               {project.downloadImageUrl ? (
                 <div>

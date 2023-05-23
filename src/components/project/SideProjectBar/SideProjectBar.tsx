@@ -8,7 +8,6 @@ import { getProjectsWhere } from "@/models/firestore/getProjectsWhere";
 import { KEYS } from "@/models/firestore/keys";
 import { useUserValue } from "@/states/userState";
 import { useAttendingProjectState } from "@/states/attendingProjects";
-import { ConnectButton } from "web3uikit";
 
 const SideBar: React.FC = () => {
   const user = useUserValue();
@@ -51,7 +50,6 @@ const SideBar: React.FC = () => {
 
       <Spacer size={6} />
       <SideTab type="new" project={null} />
-      <ConnectButton moralisAuth={false} />
     </div>
   );
 };

@@ -3,6 +3,7 @@ import SideBar from "../../project/SideProjectBar"
 import * as s from "./style"
 import { useRouter } from "next/router"
 import { PATHS } from "@/components/pages/paths"
+import Header from "../Header"
 
 type Props = {
   children: React.ReactNode
@@ -15,6 +16,8 @@ const Layout: React.FC<Props> = ({ children }) => {
 
   return (
     <div css={s.contentContainerStyle}>
+      <Header />
+
       {!hideSideBar &&
         <SideBar />
       }

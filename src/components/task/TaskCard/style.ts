@@ -1,18 +1,18 @@
 import { colors } from "@/styles/colors";
 import { css } from "@emotion/react";
 
-export const addNewTaskButtonStyle = css`
-  border: solid 1px ${colors.divider};
-  border-radius: 6px;
-  background-color: transparent;
-  width: 100%;
-  height: 40px;
-  margin: 5px 0;
+export const taskCardStyle = css`
+  border: none;
   text-align: left;
-  padding: 5px;
-  cursor: pointer;
+  width: 100%;
+  height: 90px;
+  background-color: #fff;
+  margin: 10px 0;
+  overflow: hidden;
+  border-radius: 6px;
+  padding: 6px;
   &:hover {
-    background-color: ${colors.primarySelected};
+    cursor: pointer;
   }
 `
 
@@ -31,11 +31,11 @@ export const dialogContentStyle = css`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 90vw;
-  max-width: 450px;
-  max-height: 85vh;
+  width: 65vw;
+  height: 85vh;
   padding: 25px;
   animation: contentShow 150ms cubic-bezier(0.16, 1, 0.3, 1);
+  overflow-y: scroll;
 `
 
 export const titleContainerStyle = css`

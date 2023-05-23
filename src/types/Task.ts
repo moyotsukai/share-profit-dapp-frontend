@@ -15,3 +15,11 @@ export type TaskIndex = {
   taskId: string,
   index: number
 }
+
+export const taskStageDisplayText = (stage: TaskStage): string => {
+  if (stage === "todo") { return "To Do" }
+  if (stage === "inProgress") { return "In Progress" }
+  if (stage === "inReview") { return "In Review" }
+  if (stage === "done") { return "Done" }
+  return ""
+}

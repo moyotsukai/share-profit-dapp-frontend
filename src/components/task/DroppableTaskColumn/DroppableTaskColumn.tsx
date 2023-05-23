@@ -37,8 +37,7 @@ const DroppableTaskColumn: React.FC<Props> = ({ columnStage, title }) => {
   const tasks = useTasksValue()
   const taskIndexes = useTaskIndexesValue()
   const sortedTasks = taskIndexes.concat().sort((a, b) => a.index - b.index).map((taskIndex) => {
-    const task = tasks.find(($0) => $0.id === taskIndex.taskId) ?? { id: "", title: "not found", stage: "todo" }
-    return task
+    return tasks.find(($0) => $0.id === taskIndex.taskId)
   })
 
   return (
@@ -52,12 +51,10 @@ const DroppableTaskColumn: React.FC<Props> = ({ columnStage, title }) => {
 
       <ul ref={drop} css={s.draggableAreaStyle}>
         {sortedTasks.map((task, index) => (
-          task.stage === columnStage &&
+          task && task.stage === columnStage &&
           <DraggableTask
-            id={task.id}
-            title={task.title}
+            task={task}
             index={index}
-            key={task.id}
           />
         ))}
         {isProjectOwner && columnStage === "todo" &&

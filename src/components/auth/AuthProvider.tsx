@@ -21,6 +21,7 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
       //user is already signed in
       //do nothing
     } else {
+      //<<はっしー任せた！
       if (ethereum) {
         const address = ethereum.selectedAddress;
         if (address) {
@@ -33,6 +34,7 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
           //not connected, user needs to connect and sign in manually
           setUser(null);
         }
+        //>>はっしー任せた！
       } else {
         //user needs to install MetaMask
         setMessage("Please install MetaMask");
