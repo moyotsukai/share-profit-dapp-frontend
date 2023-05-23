@@ -4,11 +4,11 @@ export const PATHS = {
   NEW_PROJECT: {
     ABOUT_PROJECT: "/new-project/about-project",
     ABOUT_SBT: "/new-project/about-sbt",
-    ABOUT_VAULT: "/new-project/about-vault"
+    ABOUT_VAULT: "/new-project/about-vault",
   },
   PROJECTS: "/projects",
   PROJECT: (projectId: string) => `/projects/${projectId}`,
   API: {
-    CUSTOM_TOKEN: "/api/custom-token"
-  }
-}
+    CUSTOM_TOKEN: "/api/custom-token",
+  },
+};

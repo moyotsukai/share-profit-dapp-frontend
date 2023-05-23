@@ -1,0 +1,1 @@
+[{"type":"function","name":"deploy","constant":false,"payable":false,"gas":29000000,"inputs":[{"type":"address","name":"_adminAddr"},{"type":"string","name":"_uri"},{"type":"uint256","name":"_share"}],"outputs":[{"type":"address"},{"type":"address"}]}]
