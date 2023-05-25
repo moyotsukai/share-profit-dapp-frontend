@@ -43,6 +43,13 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
     }
   }, []);
 
+  useEffect(() => {
+    //TODO
+    //Aoi
+    //ユーザー名設定してもらうAlert Dialogを出す if !user.name
+    //stateを作ってchildrenとの間で画面を出し分ける
+  }, [user])
+
   const onClickConnect = async () => {
     setIsButtonEnabled(false);
     setIsButtonLoading(true);
@@ -70,6 +77,7 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
         <React.Fragment>
           {message && <p>{message}</p>}
           {user ? (
+            //TODO ここの中でさらにユーザー名設定済みかどうか条件分岐
             children
           ) : (
             <div>
