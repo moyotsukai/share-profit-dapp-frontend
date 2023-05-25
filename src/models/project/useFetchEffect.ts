@@ -7,10 +7,10 @@ export const useFetchEffect = (action: () => void, deps: DependencyList) => {
 
   useEffect(() => {
     if (hasFetched.current) { return }
-    hasFetched.current = true
 
     asyncTask(async () => {
       action()
+      hasFetched.current = true
     })
   }, [deps])
 }

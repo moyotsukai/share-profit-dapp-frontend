@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { getProjectFromId } from "@/models/firestore/getProjectFromId";
 import { useFetchEffect } from "@/models/project/useFetchEffect";
-import Link from "next/link";
 import TabBar from "../radix/TabBar";
 import { useUserValue } from "@/states/userState";
 import { updateProjectArray } from "@/models/firestore/updateProject";
@@ -16,6 +15,12 @@ import securitiesAbi from "../../../constants/Securities.json";
 import TaskBoard from "../task/TaskBoard"
 import { useProjectState } from "@/states/projectState"
 import { getTasksFromId } from "@/models/firestore/getTasksFromId";
+import Assignments from "../task/Assignments";
+import ProjectOverview from "../project/ProjectOverview/ProjectOverview";
+import { AssignmentApplication } from "@/types/assignmentApplication";
+import { getAssignmentApplicationFromId } from "@/models/firestore/getAssignmentApplicationFromId";
+import { Submission } from "@/types/submission";
+import { getSubmissionFromId } from "@/models/firestore/getSubmissionFromId";
 
 export default function ProjectPage() {
   const sbtAddr = "0xa271BdAd273e282B909419d29074Ec2B56100368";
@@ -32,17 +37,22 @@ export default function ProjectPage() {
     functionName: "getHolders",
     params: {},
   });
+  const [assignmentApplications, setAssignmentApplications] = useState<AssignmentApplication[]>([])
+  const [submissions, setSubmissions] = useState<Submission[]>([])
 
   //get project
   useFetchEffect(async () => {
     if (typeof projectId !== "string") { return }
     if (!projectId) { return }
 
+    //get project
     const { data: projectData } = await getProjectFromId(projectId)
     if (!projectData) { return }
+
+    //get tasks
     const { data: tasksData } = await getTasksFromId(projectId)
 
-    //setProject globally
+    //set project state
     if (projectData.imageUrl) {
       const { data: downloadImageUrl } = await downloadImageFromUrl(projectData.imageUrl)
       setProject({
@@ -56,7 +66,27 @@ export default function ProjectPage() {
         tasks: tasksData ?? []
       })
     }
-  }, [projectId])
+
+    //get assignment applications
+    if (!user || !tasksData || !projectData) { return }
+    if (!projectData.ownerIds.includes(user.uid)) { return }
+    const allAssignmentApplicationIds: string[] = tasksData.map((task) => task.assignmentApplicationIds).flat()
+    for (let i = 0; i < allAssignmentApplicationIds.length; i++) {
+      const assignmentApplicationId = allAssignmentApplicationIds[i]
+      const { data } = await getAssignmentApplicationFromId(assignmentApplicationId)
+      if (!data) { continue }
+      setAssignmentApplications((currentValue) => [...currentValue, data])
+    }
+
+    //get submissions
+    const allSubmissionIds: string[] = tasksData.map((task) => task.submissionIds).flat()
+    for (let i = 0; i < allSubmissionIds.length; i++) {
+      const submissionId = allSubmissionIds[i]
+      const { data } = await getSubmissionFromId(submissionId)
+      if (!data) { continue }
+      setSubmissions((currentValue) => [...currentValue, data])
+    }
+  }, [])
 
   //set if user needs to enter invitation code
   useEffect(() => {
@@ -129,37 +159,16 @@ export default function ProjectPage() {
               <TabBar.Trigger value="overview">Overview</TabBar.Trigger>
               <TabBar.Trigger value="tasks">Tasks</TabBar.Trigger>
               <TabBar.Trigger value="sbt-owners">SBT owners</TabBar.Trigger>
+              {isProjectOwner &&
+                <TabBar.Trigger value="assignments">Assignments</TabBar.Trigger>
+              }
             </TabBar.List>
 
             <TabBar.Content value="overview">
-              <div>
-                {isProjectOwner && (
-                  <div>
-                    <p>Share the following information with project members.</p>
-                    <p>Invitation code</p>
-                    <p>{project.invitationCode}</p>
-                  </div>
-                )}
-                {project.twitterUrl && (
-                  <div>
-                    <Link href={project.twitterUrl}>Twitter</Link>
-                  </div>
-                )}
-                {project.discordUrl && (
-                  <div>
-                    <Link href={project.discordUrl}>Discord</Link>
-                  </div>
-                )}
-                {project.details && (
-                  <div>
-                    <p>{project.details}</p>
-                  </div>
-                )}
-                <div>
-                  <p>Project vault address</p>
-                  <p>{project.vaultAddress}</p>
-                </div>
-              </div>
+              <ProjectOverview
+                project={project}
+                isProjectOwner={isProjectOwner}
+              />
             </TabBar.Content>
 
             <TabBar.Content value="tasks">
@@ -169,6 +178,15 @@ export default function ProjectPage() {
             <TabBar.Content value="sbt-owners">
               <p>Show SBT owners here</p>
             </TabBar.Content>
+
+            {isProjectOwner &&
+              <TabBar.Content value="assignments">
+                <Assignments
+                  assignmentApplications={assignmentApplications}
+                  submissions={submissions}
+                />
+              </TabBar.Content>
+            }
           </TabBar.Root>
         ) : (
           <div>

@@ -1,6 +1,8 @@
 import { Project } from "@/types/Project.type"
 import { User } from "../../types/User.type"
 import { Task } from "@/types/Task"
+import { AssignmentApplication } from "@/types/assignmentApplication"
+import { Submission } from "@/types/submission"
 
 export const userFromFirebase = (data: any): User => {
   return {
@@ -45,5 +47,29 @@ export const taskFromFirebase = (data: any): Task => {
     asigneeIds: data.asigneeIds ?? [],
     assignmentApplicationIds: data.assignmentApplicationIds ?? [],
     submissionIds: data.submissionIds ?? []
+  }
+}
+
+export const assignmentApplicationFromFirebase = (data: any): AssignmentApplication => {
+  return {
+    id: data.id ?? "",
+    projectId: data.projectId ?? "",
+    taskId: data.taskId ?? "",
+    userId: data.userId ?? "",
+    message: data.message,
+    stage: data.stage ?? "inReview"
+  }
+}
+
+export const submissionFromFirebase = (data: any): Submission => {
+  return {
+    id: data.id ?? "",
+    projectId: data.projectId ?? "",
+    taskId: data.taskId ?? "",
+    userId: data.userId ?? "",
+    link: data.link,
+    fileUrl: data.fileUrl,
+    message: data.message,
+    stage: data.stage ?? "inReview"
   }
 }

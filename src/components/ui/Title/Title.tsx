@@ -6,11 +6,19 @@ type Props = {
 }
 
 const Title: React.FC<Props> = ({ style = "title", children }) => {
-  return (
-    <h1 css={() => s.titleStyle(style)}>
-      {children}
-    </h1>
-  )
+  if (style === "title") {
+    return (
+      <h1 css={() => s.titleStyle(style)}>
+        {children}
+      </h1>
+    )
+  } else {
+    return (
+      <h2 css={() => s.titleStyle(style)}>
+        {children}
+      </h2>
+    )
+  }
 }
 
 export default Title
