@@ -8,7 +8,8 @@ export type EditingTask = {
   bountySbt: number,
   ownerId: string,
   asigneeIds: string[],
-  applyingForAssignmentIds: string[]
+  assignmentApplicationIds: string[],
+  submissionIds: string[]
 }
 
 export type Task = EditingTask & {

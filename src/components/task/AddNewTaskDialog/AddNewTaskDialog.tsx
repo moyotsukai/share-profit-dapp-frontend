@@ -55,7 +55,8 @@ const AddNewTaskDialog: React.FC = () => {
       bountySbt: data.bountySbt,
       ownerId: user.uid,
       asigneeIds: [],
-      applyingForAssignmentIds: []
+      assignmentApplicationIds: [],
+      submissionIds: []
     }
     const { data: createdTask } = await createTask({
       projectId: project.id,

@@ -2,22 +2,18 @@ import { collection, doc, setDoc } from "firebase/firestore"
 import { db } from "../firebase/client"
 import { KEYS } from "./keys"
 import { Res } from "../../types/Res"
-import { EditingTask, Task } from "@/types/Task"
+import { AssignmentApplication, EditingAssignmentApplication } from "@/types/assignmentApplication"
 
-type Props = {
-  projectId: string,
-  task: EditingTask
-}
+export const createAssignmentApplication = async (assignmentApplication: EditingAssignmentApplication): Promise<Res<AssignmentApplication | null>> => {
 
-export const createTask = async ({ projectId, task }: Props): Promise<Res<Task | null>> => {
-  const docId = doc(collection(db, KEYS.PROJECTS, projectId, KEYS.PROJECT.TASKS)).id
-  const docRef = doc(collection(db, KEYS.PROJECTS, projectId, KEYS.PROJECT.TASKS), docId)
+  const docId = doc(collection(db, KEYS.ASSIGNMENT_APPLICATIONS)).id
+  const docRef = doc(collection(db, KEYS.ASSIGNMENT_APPLICATIONS), docId)
 
   try {
-    await setDoc(docRef, task)
+    await setDoc(docRef, assignmentApplication)
     return {
       data: {
-        ...task,
+        ...assignmentApplication,
         id: docId
       },
       error: null

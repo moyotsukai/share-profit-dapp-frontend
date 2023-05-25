@@ -43,6 +43,7 @@ export const taskFromFirebase = (data: any): Task => {
     bountySbt: data.bountySbt ?? 0,
     ownerId: data.ownerId ?? "",
     asigneeIds: data.asigneeIds ?? [],
-    applyingForAssignmentIds: data.applyingForAssignmentIds ?? []
+    assignmentApplicationIds: data.assignmentApplicationIds ?? [],
+    submissionIds: data.submissionIds ?? []
   }
 }

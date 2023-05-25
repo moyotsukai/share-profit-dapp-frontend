@@ -7,10 +7,12 @@ import { SubmitHandler, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import Title from "@/components/ui/Title"
 import Spacer from "@/components/ui/Spacer"
-import { updateProjectArray } from "@/models/firestore/updateProject"
 import { useProjectState } from "@/states/projectState"
 import { updateTaskArray } from "@/models/firestore/updateTask"
 import { useUserValue } from "@/states/userState"
+import { EditingAssignmentApplication } from "@/types/assignmentApplication"
+import { createAssignmentApplication } from "@/models/firestore/createAssignmentApplication"
+import { Project } from "@/types/Project.type"
 
 const formInputSchema = z
   .object({
@@ -46,16 +48,45 @@ const AssignmentForm: React.FC<Props> = ({ task }) => {
     setIsButtonEnabled(false)
     setIsButtonLoading(true)
 
+    //create assignment application
+    const assignmentApplication: EditingAssignmentApplication = {
+      projectId: project.id,
+      taskId: task.id,
+      userId: user.uid,
+      message: data.message,
+      stage: "inReview"
+    }
+    const { data: createdAssignmentApplication } = await createAssignmentApplication(assignmentApplication)
+    if (!createdAssignmentApplication) { return }
+
     //update task
-    // await updateTaskArray({
-    //   projectId: project.id,
-    //   taskId: task.id,
-    //   key: "applyingForAssignmentIds",
-    //   value: user.uid,
-    //   method: "union"
-    // })
+    await updateTaskArray({
+      projectId: project.id,
+      taskId: task.id,
+      key: "assignmentApplicationIds",
+      value: createdAssignmentApplication.id,
+      method: "union"
+    })
 
     //update project state
+    const newProject: Project = {
+      ...project,
+      tasks: project.tasks.map(($0) => {
+        if ($0.id === task.id) {
+          return {
+            ...$0,
+            assignmentApplicationIds: [
+              ...$0.assignmentApplicationIds,
+              createdAssignmentApplication.id
+            ]
+          }
+        } else {
+          return $0
+        }
+      })
+    }
+    setProject(newProject)
+    console.log(newProject)
 
     setIsApplying(false)
   }
