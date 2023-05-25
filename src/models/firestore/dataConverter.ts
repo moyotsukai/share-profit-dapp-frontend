@@ -1,5 +1,6 @@
 import { Project } from "@/types/Project.type"
 import { User } from "../../types/User.type"
+import { Task } from "@/types/Task"
 
 export const userFromFirebase = (data: any): User => {
   return {
@@ -10,7 +11,7 @@ export const userFromFirebase = (data: any): User => {
 
 export const projectFromFirebase = (data: any): Project => {
   return {
-    id: data.id,
+    id: data.id ?? "",
     title: data.title ?? "",
     imageUrl: data.imageUrl,
     details: data.details,
@@ -27,7 +28,21 @@ export const projectFromFirebase = (data: any): Project => {
     sbtTokenName: data.sbtTokenName,
     sbtTokenSymbol: data.sbtTokenSymbol,
     vaultAddress: data.vaultAddress,
-    tasks: data.tasks ?? [],
+    tasks: [],
     taskIndexes: data.taskIndexes ?? []
+  }
+}
+
+export const taskFromFirebase = (data: any): Task => {
+  return {
+    id: data.id ?? "",
+    title: data.title ?? "",
+    stage: data.stage ?? "todo",
+    outline: data.outline,
+    details: data.details ?? "",
+    bountySbt: data.bountySbt ?? 0,
+    ownerId: data.ownerId ?? "",
+    asigneeIds: data.asigneeIds ?? [],
+    applyingForAssignmentIds: data.applyingForAssignmentIds ?? []
   }
 }

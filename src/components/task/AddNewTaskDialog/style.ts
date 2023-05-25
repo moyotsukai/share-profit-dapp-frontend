@@ -31,9 +31,9 @@ export const dialogContentStyle = css`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 90vw;
-  max-width: 450px;
-  max-height: 85vh;
+  width: 55vw;
+  height: 85vh;
+  overflow-y: scroll;
   padding: 25px;
   animation: contentShow 150ms cubic-bezier(0.16, 1, 0.3, 1);
 `

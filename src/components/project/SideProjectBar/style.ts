@@ -2,7 +2,7 @@ import { colors } from "@/styles/colors"
 import { css } from "@emotion/react"
 
 export const sideProjectBarStyle = css`
-  width: 200px;
+  width: 220px;
   background-color: ${colors.sideBar};
   padding: 6px;
   height: 100vh;

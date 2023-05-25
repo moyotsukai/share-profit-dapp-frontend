@@ -2,15 +2,14 @@ import { arrayRemove, arrayUnion, doc, updateDoc } from "firebase/firestore"
 import { db } from "../firebase/client"
 import { KEYS } from "./keys"
 import { Res } from "../../types/Res"
-import { Project } from "@/types/Project.type"
 import { Task } from "@/types/Task"
 
-export const updateProject = async ({ projectId, project }: { projectId: string, project: Partial<Project> }): Promise<Res<null>> => {
+export const updateTask = async ({ projectId, taskId, task }: { projectId: string, taskId: string, task: Partial<Task> }): Promise<Res<null>> => {
 
-  const docRef = doc(db, KEYS.PROJECTS, projectId)
+  const docRef = doc(db, KEYS.PROJECTS, projectId, KEYS.PROJECT.TASKS, taskId)
 
   try {
-    await updateDoc(docRef, project)
+    await updateDoc(docRef, task)
     return {
       data: null,
       error: null
@@ -24,9 +23,9 @@ export const updateProject = async ({ projectId, project }: { projectId: string,
   }
 }
 
-export const updateProjectArray = async ({ projectId, key, value, method }: { projectId: string, key: keyof Project, value: string | Task, method: "union" | "remove" }): Promise<Res<null>> => {
+export const updateTaskArray = async ({ projectId, taskId, key, value, method }: { projectId: string, taskId: string, key: keyof Task, value: string, method: "union" | "remove" }): Promise<Res<null>> => {
 
-  const docRef = doc(db, KEYS.PROJECTS, projectId)
+  const docRef = doc(db, KEYS.PROJECTS, projectId, KEYS.PROJECT.TASKS, taskId)
 
   try {
     if (method === "union") {

@@ -4,6 +4,8 @@ import { Task, taskStageDisplayText } from "@/types/Task"
 import * as Dialog from "@radix-ui/react-dialog"
 import { useRouter } from "next/router"
 import { useFetchEffect } from "@/models/project/useFetchEffect"
+import AssignmentForm from "../AssignmentForm"
+import Spacer from "@/components/ui/Spacer"
 
 type Props = {
   task: Task
@@ -58,6 +60,13 @@ const TaskCard: React.FC<Props> = ({ task }) => {
             <p>
               {`${task.bountySbt} tokens`}
             </p>
+            {!task.asigneeIds.length && !task.applyingForAssignmentIds.length &&
+              <>
+                <Spacer size={30} />
+                <AssignmentForm task={task} />
+              </>
+            }
+
           </div>
         </Dialog.Content>
       </Dialog.Portal>

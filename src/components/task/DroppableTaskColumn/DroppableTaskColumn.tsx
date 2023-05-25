@@ -55,6 +55,7 @@ const DroppableTaskColumn: React.FC<Props> = ({ columnStage, title }) => {
           <DraggableTask
             task={task}
             index={index}
+            key={task.id}
           />
         ))}
         {isProjectOwner && columnStage === "todo" &&

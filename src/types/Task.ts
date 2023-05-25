@@ -1,14 +1,18 @@
 export type TaskStage = "todo" | "inProgress" | "inReview" | "done"
 
-export type Task = {
-  id: string,
+export type EditingTask = {
   title: string,
   stage: TaskStage,
   outline?: string,
   details: string,
   bountySbt: number,
   ownerId: string,
-  asigneeIds: string[]
+  asigneeIds: string[],
+  applyingForAssignmentIds: string[]
+}
+
+export type Task = EditingTask & {
+  id: string
 }
 
 export type TaskIndex = {

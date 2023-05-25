@@ -11,5 +11,5 @@ export const layoutStyle = css`
 `
 
 export const contentContainerStyle = css`
-  margin-left: 200px;
+  margin-left: 220px;
 `

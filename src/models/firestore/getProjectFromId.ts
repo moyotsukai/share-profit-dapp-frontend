@@ -12,7 +12,7 @@ export const getProjectFromId = async (projectId: string): Promise<Res<Project |
     const docSnapshot = await getDoc(docRef)
 
     if (docSnapshot.exists()) {
-      const project = projectFromFirebase(docSnapshot.data())
+      const project = projectFromFirebase({ ...docSnapshot.data(), id: docSnapshot.id })
       return {
         data: project,
         error: null

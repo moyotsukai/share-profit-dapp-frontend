@@ -1,4 +1,3 @@
-import { Project } from "@/types/Project.type";
 import Title from "../ui/Title/Title";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
@@ -16,6 +15,7 @@ import { useWeb3Contract } from "react-moralis";
 import securitiesAbi from "../../../constants/Securities.json";
 import TaskBoard from "../task/TaskBoard"
 import { useProjectState } from "@/states/projectState"
+import { getTasksFromId } from "@/models/firestore/getTasksFromId";
 
 export default function ProjectPage() {
   const sbtAddr = "0xa271BdAd273e282B909419d29074Ec2B56100368";
@@ -26,7 +26,6 @@ export default function ProjectPage() {
   const [isVerified, setIsVerified] = useState<boolean>(false);
   const [isProjectOwner, setIsProjectOwner] = useState<boolean>(false);
   const [sbtOwners, setSbtOwners] = useState<SbtOwner[]>([]);
-
   const { runContractFunction: getHolders } = useWeb3Contract({
     abi: securitiesAbi,
     contractAddress: sbtAddr,
@@ -36,31 +35,28 @@ export default function ProjectPage() {
 
   //get project
   useFetchEffect(async () => {
-    if (typeof projectId !== "string") {
-      return;
-    }
-    if (!projectId) {
-      return;
-    }
+    if (typeof projectId !== "string") { return }
+    if (!projectId) { return }
 
-    const { data: projectData } = await getProjectFromId(projectId);
-    if (!projectData) {
-      return;
-    }
-    if (projectData.imageUrl) {
-      const { data: downloadImageUrl } = await downloadImageFromUrl(
-        projectData.imageUrl
-      );
-      setProject({
-        ...projectData,
-        downloadImageUrl: downloadImageUrl,
-      });
-    } else {
-      setProject(projectData);
-    }
+    const { data: projectData } = await getProjectFromId(projectId)
+    if (!projectData) { return }
+    const { data: tasksData } = await getTasksFromId(projectId)
 
     //setProject globally
-  }, [projectId]);
+    if (projectData.imageUrl) {
+      const { data: downloadImageUrl } = await downloadImageFromUrl(projectData.imageUrl)
+      setProject({
+        ...projectData,
+        tasks: tasksData ?? [],
+        downloadImageUrl: downloadImageUrl
+      })
+    } else {
+      setProject({
+        ...projectData,
+        tasks: tasksData ?? []
+      })
+    }
+  }, [projectId])
 
   //set if user needs to enter invitation code
   useEffect(() => {
