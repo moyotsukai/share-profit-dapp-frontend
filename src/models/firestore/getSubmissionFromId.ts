@@ -4,6 +4,7 @@ import { KEYS } from './keys'
 import { submissionFromFirebase } from './dataConverter'
 import { Res } from '../../types/Res'
 import { Submission } from '@/types/submission'
+import { getUser } from './getUser'
 
 export const getSubmissionFromId = async (submissionId: string): Promise<Res<Submission | null>> => {
 
@@ -17,8 +18,19 @@ export const getSubmissionFromId = async (submissionId: string): Promise<Res<Sub
         ...docSnapshot.data(),
         id: docSnapshot.id
       })
+      const { data: user, error: getUserError } = await getUser(submission.userId)
+      if (!user) {
+        return {
+          data: null,
+          error: getUserError
+        }
+      }
+
       return {
-        data: submission,
+        data: {
+          ...submission,
+          user: user
+        },
         error: null
       }
 

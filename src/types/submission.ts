@@ -13,9 +13,6 @@ export type EditingSubmission = {
 }
 
 export type Submission = EditingSubmission & {
-  id: string
-}
-
-export type LocalSubmission = Submission & {
+  id: string,
   user: User
 }

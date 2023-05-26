@@ -2,16 +2,20 @@ import React from "react"
 import * as s from "./style"
 import Title from "@/components/ui/Title"
 import Spacer from "@/components/ui/Spacer"
-import { LocalAssignmentApplication } from "@/types/assignmentApplication"
-import { LocalSubmission } from "@/types/submission"
+import { Submission } from "@/types/submission"
+import { AssignmentApplication } from "@/types/assignmentApplication"
+import { Task } from "@/types/Task"
 
 type Props = {
-  assignmentApplications: LocalAssignmentApplication[],
-  submissions: LocalSubmission[]
+  assignmentApplications: AssignmentApplication[],
+  submissions: Submission[],
+  tasks: Task[]
 }
 
-const Assignments: React.FC<Props> = ({ assignmentApplications, submissions }) => {
+const Assignments: React.FC<Props> = ({ assignmentApplications, submissions, tasks }) => {
 
+  //TODO
+  //リストアイテムをAssignmentApplicationApprovalDialog, submissionApprovalDialogに切り出す
   return (
     <div>
       <Title style="subtitle">
@@ -21,10 +25,10 @@ const Assignments: React.FC<Props> = ({ assignmentApplications, submissions }) =
         {assignmentApplications.map((assignmentApplication, index) => (
           <li key={index}>
             <p>
-              {assignmentApplication.user.name}
+              {tasks.find(($0) => $0.id === assignmentApplication.taskId)?.title ?? ""}
             </p>
             <p>
-              {assignmentApplication.taskId}
+              {assignmentApplication.user.name}
             </p>
           </li>
         ))}
@@ -38,10 +42,10 @@ const Assignments: React.FC<Props> = ({ assignmentApplications, submissions }) =
         {submissions.map((submission, index) => (
           <li key={index}>
             <p>
-              {submission.user.name}
+              {tasks.find(($0) => $0.id === submission.userId)?.title ?? ""}
             </p>
             <p>
-              {submission.userId}
+              {submission.user.name}
             </p>
           </li>
         ))}

@@ -11,9 +11,6 @@ export type EditingAssignmentApplication = {
 }
 
 export type AssignmentApplication = EditingAssignmentApplication & {
-  id: string
-}
-
-export type LocalAssignmentApplication = AssignmentApplication & {
+  id: string,
   user: User
 }

@@ -106,6 +106,7 @@ export default function ProjectPage() {
                 <Assignments
                   assignmentApplications={assignmentApplications}
                   submissions={submissions}
+                  tasks={project.tasks}
                 />
               </TabBar.Content>
             }
