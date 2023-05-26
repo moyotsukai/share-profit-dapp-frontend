@@ -9,9 +9,6 @@ import { updateProjectArray } from "@/models/firestore/updateProject";
 import LoadingCircle from "../ui/LoadingCircle/LoadingCircle";
 import { downloadImageFromUrl } from "@/models/storage/downloadProjectImage";
 import { Avatar } from "../radix/Avatar/Avatar";
-import { Holder, SbtOwner } from "@/types/SbtOwner";
-import { useWeb3Contract } from "react-moralis";
-import securitiesAbi from "../../../constants/Securities.json";
 import TaskBoard from "../task/TaskBoard"
 import { useProjectState } from "@/states/projectState"
 import { getTasksFromId } from "@/models/firestore/getTasksFromId";
@@ -21,27 +18,19 @@ import { AssignmentApplication } from "@/types/assignmentApplication";
 import { getAssignmentApplicationFromId } from "@/models/firestore/getAssignmentApplicationFromId";
 import { Submission } from "@/types/submission";
 import { getSubmissionFromId } from "@/models/firestore/getSubmissionFromId";
-import { getUser } from "@/models/firestore/getUser";
-import { holdersFromMoralis } from "@/models/firestore/dataConverter";
 import SbtOwners from "../project/SbtOwners";
+import { useSbtOwners } from "@/models/project/useSbtOwners";
 
 export default function ProjectPage() {
-  const sbtAddr = "0xa271BdAd273e282B909419d29074Ec2B56100368";
   const router = useRouter();
   const { projectId, taskId } = router.query;
   const user = useUserValue();
   const [project, setProject] = useProjectState()
   const [isVerified, setIsVerified] = useState<boolean>(false);
   const [isProjectOwner, setIsProjectOwner] = useState<boolean>(false);
-  const [sbtOwners, setSbtOwners] = useState<SbtOwner[]>([]);
-  const { runContractFunction: getHolders } = useWeb3Contract({
-    abi: securitiesAbi,
-    contractAddress: sbtAddr,
-    functionName: "getHolders",
-    params: {},
-  });
   const [assignmentApplications, setAssignmentApplications] = useState<AssignmentApplication[]>([])
   const [submissions, setSubmissions] = useState<Submission[]>([])
+  const sbtOwners = useSbtOwners()
 
   //get project
   useFetchEffect(async () => {
@@ -72,64 +61,40 @@ export default function ProjectPage() {
 
     //get assignment applications
     if (!user || !tasksData || !projectData) { return }
-    if (!projectData.ownerIds.includes(user.uid)) { return }
-    const allAssignmentApplicationIds: string[] = tasksData.map((task) => task.assignmentApplicationIds).flat()
-    for (let i = 0; i < allAssignmentApplicationIds.length; i++) {
-      const assignmentApplicationId = allAssignmentApplicationIds[i]
-      const { data } = await getAssignmentApplicationFromId(assignmentApplicationId)
-      if (!data) { continue }
-      setAssignmentApplications((currentValue) => [...currentValue, data])
-    }
+    if (projectData.ownerIds.includes(user.uid)) {
+      setIsProjectOwner(true)
+      const allAssignmentApplicationIds: string[] = tasksData.map((task) => task.assignmentApplicationIds).flat()
+      for (let i = 0; i < allAssignmentApplicationIds.length; i++) {
+        const assignmentApplicationId = allAssignmentApplicationIds[i]
+        const { data } = await getAssignmentApplicationFromId(assignmentApplicationId)
+        if (!data) { continue }
+        setAssignmentApplications((currentValue) => [...currentValue, data])
+      }
 
-    //get submissions
-    const allSubmissionIds: string[] = tasksData.map((task) => task.submissionIds).flat()
-    for (let i = 0; i < allSubmissionIds.length; i++) {
-      const submissionId = allSubmissionIds[i]
-      const { data } = await getSubmissionFromId(submissionId)
-      if (!data) { continue }
-      setSubmissions((currentValue) => [...currentValue, data])
+      //get submissions
+      const allSubmissionIds: string[] = tasksData.map((task) => task.submissionIds).flat()
+      for (let i = 0; i < allSubmissionIds.length; i++) {
+        const submissionId = allSubmissionIds[i]
+        const { data } = await getSubmissionFromId(submissionId)
+        if (!data) { continue }
+        setSubmissions((currentValue) => [...currentValue, data])
+      }
+
+    } else {
+      setIsProjectOwner(false)
     }
   }, [])
 
   //set if user needs to enter invitation code
   useEffect(() => {
-    if (!project || !user) {
-      return;
-    }
-    if (project.ownerIds.includes(user.uid)) {
-      setIsProjectOwner(true);
-      setIsVerified(true);
+    if (!project || !user) { return }
+    if (isProjectOwner) {
+      setIsVerified(true)
     } else {
-      setIsVerified(project.memberIds.includes(user.uid));
+      setIsVerified(project.memberIds.includes(user.uid))
     }
-  }, [project, user]);
+  }, [project, user, isProjectOwner])
 
-  //get SBT owners
-  useFetchEffect(async () => {
-    //get sbt owners
-    let holders: Holder[] = []
-    try {
-      const receivedHolders = await getHolders()
-      holders = holdersFromMoralis(receivedHolders)
-    } catch { }
-
-    //get users
-    for (let i = 0; i < holders.length; i++) {
-      const holder = holders[i]
-      const { data: owner } = await getUser(holder.address)
-      if (!owner) { continue }
-      setSbtOwners((currentVallue) => {
-        if (!currentVallue) { return currentVallue }
-        return [
-          ...currentVallue,
-          {
-            ...owner,
-            address: holder.address
-          }
-        ]
-      })
-    }
-  }, []);
 
   const onChangeInvitationCode = async (
     event: React.ChangeEvent<HTMLInputElement>
