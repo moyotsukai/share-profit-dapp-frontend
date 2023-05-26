@@ -3,7 +3,7 @@ import { db } from '../firebase/client'
 import { KEYS } from './keys'
 import { projectFromFirebase } from './dataConverter'
 import { Res } from '../../types/Res'
-import { Project } from '@/types/Project.type'
+import { Project } from '@/types/Project'
 
 type Props = {
   key: string,

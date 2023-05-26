@@ -1,5 +1,5 @@
-import { Project } from "@/types/Project.type"
-import { User } from "../../types/User.type"
+import { Project } from "@/types/Project"
+import { User } from "../../types/User"
 import { Task } from "@/types/Task"
 import { AssignmentApplication } from "@/types/assignmentApplication"
 import { Submission } from "@/types/submission"
@@ -7,7 +7,8 @@ import { Submission } from "@/types/submission"
 export const userFromFirebase = (data: any): User => {
   return {
     uid: data.uid ?? "",
-    nonce: data.nonce ?? ""
+    nonce: data.nonce ?? "",
+    name: data.name ?? ""
   }
 }
 

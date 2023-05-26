@@ -9,7 +9,7 @@ import { updateProjectArray } from "@/models/firestore/updateProject";
 import LoadingCircle from "../ui/LoadingCircle/LoadingCircle";
 import { downloadImageFromUrl } from "@/models/storage/downloadProjectImage";
 import { Avatar } from "../radix/Avatar/Avatar";
-import { SbtOwner } from "@/types/SbtOwner.type";
+import { SbtOwner } from "@/types/SbtOwner";
 import { useWeb3Contract } from "react-moralis";
 import securitiesAbi from "../../../constants/Securities.json";
 import TaskBoard from "../task/TaskBoard"

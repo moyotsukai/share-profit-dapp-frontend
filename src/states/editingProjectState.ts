@@ -1,4 +1,4 @@
-import { EditingProject } from "@/types/Project.type"
+import { EditingProject } from "@/types/Project"
 import { atom, useRecoilState, useRecoilValue, useSetRecoilState } from "recoil"
 
 const editingProjectState = atom<EditingProject | null>({

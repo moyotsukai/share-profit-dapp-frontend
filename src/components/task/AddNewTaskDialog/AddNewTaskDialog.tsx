@@ -10,7 +10,7 @@ import ErrorMessage from "@/components/ui/ErrorMessage/ErrorMessage"
 import Button from "@/components/ui/Button"
 import { useUserValue } from "@/states/userState"
 import { useProjectState } from "@/states/projectState"
-import { Project } from "@/types/Project.type"
+import { Project } from "@/types/Project"
 import { updateProject } from "@/models/firestore/updateProject"
 import { createTask } from "@/models/firestore/createTask"
 

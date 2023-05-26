@@ -12,7 +12,7 @@ import { updateTaskArray } from "@/models/firestore/updateTask"
 import { useUserValue } from "@/states/userState"
 import { EditingAssignmentApplication } from "@/types/assignmentApplication"
 import { createAssignmentApplication } from "@/models/firestore/createAssignmentApplication"
-import { Project } from "@/types/Project.type"
+import { Project } from "@/types/Project"
 
 const formInputSchema = z
   .object({

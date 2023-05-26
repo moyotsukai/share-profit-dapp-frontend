@@ -1,4 +1,4 @@
-import { Project } from "@/types/Project.type";
+import { Project } from "@/types/Project";
 import * as s from "./style";
 import React from "react"
 import Link from "next/link";

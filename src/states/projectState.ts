@@ -1,5 +1,5 @@
 import { atom, selector, useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
-import { Project } from './../types/Project.type';
+import { Project } from '../types/Project';
 
 const projectState = atom<Project | null | undefined>({
   key: "projectState",

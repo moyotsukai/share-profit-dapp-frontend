@@ -1,4 +1,4 @@
-import { User } from "../../types/User.type"
+import { User } from "../../types/User"
 import { doc, setDoc } from "firebase/firestore"
 import { db } from "../firebase/client"
 import { KEYS } from "./keys"

@@ -1,7 +1,7 @@
 import { ethereum } from './../ethereum/ethereum';
 import { auth } from "@/models/firebase/client"
 import { toHex } from "@/utils/toHex"
-import { User } from "../../types/User.type"
+import { User } from "../../types/User"
 import { getUser } from "../firestore/getUser"
 import { createUser } from "../firestore/createUser"
 import { updateUser } from "../firestore/updateUser"
@@ -45,7 +45,10 @@ export const connectToMetaMask = async (): Promise<string | null> => {
   })
   if (recoveredAddress !== address) { return null }
   user.nonce = crypto.randomUUID()
-  const { data: _, error: updateUserError } = await updateUser(user)
+  const { data: _, error: updateUserError } = await updateUser({
+    userId: user.uid,
+    user: user
+  })
   if (updateUserError) { return null }
 
   return address
@@ -60,7 +63,8 @@ const createNewUserIfNotExists = async ({ existingUser, address }: { existingUse
   } else {
     const newUser: User = {
       uid: address,
-      nonce: crypto.randomUUID()
+      nonce: crypto.randomUUID(),
+      name: ""
     }
     const { data: _, error: createUserError } = await createUser(newUser)
     if (createUserError) { return null }

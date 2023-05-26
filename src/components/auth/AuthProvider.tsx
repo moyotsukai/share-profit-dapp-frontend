@@ -6,6 +6,7 @@ import React, { useEffect, useState } from "react";
 import Button from "../ui/Button";
 import { useUserState } from "@/states/userState";
 import LoadingCircle from "../ui/LoadingCircle";
+import UserNameDialog from "../user/UserNameDialog";
 type Props = {
   children: React.ReactNode;
 };
@@ -15,6 +16,7 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
   const [message, setMessage] = useState<string>("");
   const [isButtonEnabled, setIsButtonEnabled] = useState<boolean>(true);
   const [isButtonLoading, setIsButtonLoading] = useState<boolean>(false);
+  const hasNoUserName = !user?.name
 
   useEffect(() => {
     if (user) {
@@ -43,13 +45,6 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
     }
   }, []);
 
-  useEffect(() => {
-    //TODO
-    //Aoi
-    //ユーザー名設定してもらうAlert Dialogを出す if !user.name
-    //stateを作ってchildrenとの間で画面を出し分ける
-  }, [user])
-
   const onClickConnect = async () => {
     setIsButtonEnabled(false);
     setIsButtonLoading(true);
@@ -77,8 +72,10 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
         <React.Fragment>
           {message && <p>{message}</p>}
           {user ? (
-            //TODO ここの中でさらにユーザー名設定済みかどうか条件分岐
-            children
+            hasNoUserName ? (
+              <UserNameDialog />
+            ) :
+              children
           ) : (
             <div>
               <Button
