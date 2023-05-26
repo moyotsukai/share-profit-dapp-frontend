@@ -1,13 +1,13 @@
-import React, { useState } from "react"
+import React from "react"
 import * as s from "./style"
 import Title from "@/components/ui/Title"
 import Spacer from "@/components/ui/Spacer"
-import { AssignmentApplication } from "@/types/assignmentApplication"
-import { Submission } from "@/types/submission"
+import { LocalAssignmentApplication } from "@/types/assignmentApplication"
+import { LocalSubmission } from "@/types/submission"
 
 type Props = {
-  assignmentApplications: AssignmentApplication[],
-  submissions: Submission[]
+  assignmentApplications: LocalAssignmentApplication[],
+  submissions: LocalSubmission[]
 }
 
 const Assignments: React.FC<Props> = ({ assignmentApplications, submissions }) => {
@@ -21,10 +21,10 @@ const Assignments: React.FC<Props> = ({ assignmentApplications, submissions }) =
         {assignmentApplications.map((assignmentApplication, index) => (
           <li key={index}>
             <p>
-              {assignmentApplication.taskId}
+              {assignmentApplication.user.name}
             </p>
             <p>
-              {assignmentApplication.userId}
+              {assignmentApplication.taskId}
             </p>
           </li>
         ))}
@@ -38,7 +38,7 @@ const Assignments: React.FC<Props> = ({ assignmentApplications, submissions }) =
         {submissions.map((submission, index) => (
           <li key={index}>
             <p>
-              {submission.taskId}
+              {submission.user.name}
             </p>
             <p>
               {submission.userId}

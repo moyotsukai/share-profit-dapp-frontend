@@ -1,3 +1,5 @@
+import { User } from "./User"
+
 export type SubmissionStage = "inReview" | "accepted" | "rejected"
 
 export type EditingSubmission = {
@@ -12,4 +14,8 @@ export type EditingSubmission = {
 
 export type Submission = EditingSubmission & {
   id: string
+}
+
+export type LocalSubmission = Submission & {
+  user: User
 }
