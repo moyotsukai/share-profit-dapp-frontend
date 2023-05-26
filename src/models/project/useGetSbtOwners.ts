@@ -9,7 +9,7 @@ import { getUser } from "../firestore/getUser";
 
 const sbtAddr = "0xa271BdAd273e282B909419d29074Ec2B56100368"
 
-export const useSbtOwners = () => {
+export const useGetSbtOwners = () => {
 
   const [sbtOwners, setSbtOwners] = useState<SbtOwner[]>([])
   const { runContractFunction: getHolders } = useWeb3Contract({
@@ -67,7 +67,9 @@ export const useSbtOwners = () => {
         })
       }
     }
-  }, [])
+  }, [], {
+    skipFetch: []
+  })
 
   return sbtOwners
 }

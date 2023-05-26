@@ -21,7 +21,9 @@ const TaskCard: React.FC<Props> = ({ task }) => {
     if (taskId === task.id) {
       setIsDialogOpen(true)
     }
-  }, [])
+  }, [], {
+    skipFetch: []
+  })
 
   return (
     <Dialog.Root open={isDialogOpen} onOpenChange={setIsDialogOpen}>

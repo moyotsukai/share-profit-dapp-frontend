@@ -15,21 +15,21 @@ const SideBar: React.FC = () => {
 
   //get attending projects
   useFetchEffect(async () => {
-    if (!user) {
-      return;
-    }
+    if (!user) { return }
 
     const { data } = await getProjectsWhere({
       key: KEYS.PROJECT.MEMBER_IDS,
       operation: "array-contains",
       value: user.uid,
-    });
+    })
 
     if (!data) {
       return;
     }
     setProjects(data);
-  }, []);
+  }, [user], {
+    skipFetch: [!user]
+  })
 
   return (
     <div css={s.sideProjectBarStyle}>

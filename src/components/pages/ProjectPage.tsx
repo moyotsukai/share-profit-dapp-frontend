@@ -1,89 +1,27 @@
 import Title from "../ui/Title/Title";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { getProjectFromId } from "@/models/firestore/getProjectFromId";
-import { useFetchEffect } from "@/models/project/useFetchEffect";
 import TabBar from "../radix/TabBar";
 import { useUserValue } from "@/states/userState";
 import { updateProjectArray } from "@/models/firestore/updateProject";
 import LoadingCircle from "../ui/LoadingCircle/LoadingCircle";
-import { downloadImageFromUrl } from "@/models/storage/downloadProjectImage";
 import { Avatar } from "../radix/Avatar/Avatar";
 import TaskBoard from "../task/TaskBoard"
-import { useProjectState } from "@/states/projectState"
-import { getTasksFromId } from "@/models/firestore/getTasksFromId";
 import Assignments from "../task/Assignments";
 import ProjectOverview from "../project/ProjectOverview/ProjectOverview";
-import { AssignmentApplication } from "@/types/assignmentApplication";
-import { getAssignmentApplicationFromId } from "@/models/firestore/getAssignmentApplicationFromId";
-import { Submission } from "@/types/submission";
-import { getSubmissionFromId } from "@/models/firestore/getSubmissionFromId";
 import SbtOwners from "../project/SbtOwners";
-import { useSbtOwners } from "@/models/project/useSbtOwners";
+import { useGetSbtOwners } from "@/models/project/useGetSbtOwners";
+import { useGetProject } from "@/models/project/useGetProject";
+import { useGetAssignment } from "@/models/project/useGetAssignment";
 
 export default function ProjectPage() {
   const router = useRouter();
   const { projectId, taskId } = router.query;
   const user = useUserValue();
-  const [project, setProject] = useProjectState()
   const [isVerified, setIsVerified] = useState<boolean>(false);
-  const [isProjectOwner, setIsProjectOwner] = useState<boolean>(false);
-  const [assignmentApplications, setAssignmentApplications] = useState<AssignmentApplication[]>([])
-  const [submissions, setSubmissions] = useState<Submission[]>([])
-  const sbtOwners = useSbtOwners()
-
-  //get project
-  useFetchEffect(async () => {
-    if (typeof projectId !== "string") { return }
-    if (!projectId) { return }
-
-    //get project
-    const { data: projectData } = await getProjectFromId(projectId)
-    if (!projectData) { return }
-
-    //get tasks
-    const { data: tasksData } = await getTasksFromId(projectId)
-
-    //set project state
-    if (projectData.imageUrl) {
-      const { data: downloadImageUrl } = await downloadImageFromUrl(projectData.imageUrl)
-      setProject({
-        ...projectData,
-        tasks: tasksData ?? [],
-        downloadImageUrl: downloadImageUrl
-      })
-    } else {
-      setProject({
-        ...projectData,
-        tasks: tasksData ?? []
-      })
-    }
-
-    //get assignment applications
-    if (!user || !tasksData || !projectData) { return }
-    if (projectData.ownerIds.includes(user.uid)) {
-      setIsProjectOwner(true)
-      const allAssignmentApplicationIds: string[] = tasksData.map((task) => task.assignmentApplicationIds).flat()
-      for (let i = 0; i < allAssignmentApplicationIds.length; i++) {
-        const assignmentApplicationId = allAssignmentApplicationIds[i]
-        const { data } = await getAssignmentApplicationFromId(assignmentApplicationId)
-        if (!data) { continue }
-        setAssignmentApplications((currentValue) => [...currentValue, data])
-      }
-
-      //get submissions
-      const allSubmissionIds: string[] = tasksData.map((task) => task.submissionIds).flat()
-      for (let i = 0; i < allSubmissionIds.length; i++) {
-        const submissionId = allSubmissionIds[i]
-        const { data } = await getSubmissionFromId(submissionId)
-        if (!data) { continue }
-        setSubmissions((currentValue) => [...currentValue, data])
-      }
-
-    } else {
-      setIsProjectOwner(false)
-    }
-  }, [])
+  const { project } = useGetProject(projectId)
+  const { isProjectOwner, assignmentApplications, submissions } = useGetAssignment(project)
+  const sbtOwners = useGetSbtOwners()
 
   //set if user needs to enter invitation code
   useEffect(() => {

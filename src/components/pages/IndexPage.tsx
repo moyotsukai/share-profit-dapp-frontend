@@ -63,7 +63,9 @@ export default function IndexPage() {
     setUnreceivedDistributionBalance((await getReleasableBalance()) as string);
     console.log(await getReleasableBalance());
     //Hashimoto>>>
-  }, []);
+  }, [], {
+    skipFetch: []
+  })
 
   const handleWithdrawSuccess = () => {
     dispatch({
