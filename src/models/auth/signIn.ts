@@ -3,6 +3,7 @@ import { User } from "../../types/User"
 import { signInWithCustomToken } from "firebase/auth"
 import { userFromFirebase } from "../firestore/dataConverter"
 import { PATHS } from "@/components/pages/paths"
+import { getUser } from "../firestore/getUser"
 
 type Props = {
   address: string
@@ -18,5 +19,12 @@ export const signIn = async ({ address }: Props): Promise<User | null> => {
   const userCredential = await signInWithCustomToken(auth, customToken)
   const authenticatedUser = userFromFirebase(userCredential.user)
 
-  return authenticatedUser
+  //get user data
+  const { data: user } = await getUser(authenticatedUser.uid)
+
+  if (user) {
+    return user
+  } else {
+    return authenticatedUser
+  }
 }

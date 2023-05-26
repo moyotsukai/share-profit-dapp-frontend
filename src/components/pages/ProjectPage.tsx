@@ -9,7 +9,7 @@ import { updateProjectArray } from "@/models/firestore/updateProject";
 import LoadingCircle from "../ui/LoadingCircle/LoadingCircle";
 import { downloadImageFromUrl } from "@/models/storage/downloadProjectImage";
 import { Avatar } from "../radix/Avatar/Avatar";
-import { SbtOwner } from "@/types/SbtOwner";
+import { Holder, SbtOwner } from "@/types/SbtOwner";
 import { useWeb3Contract } from "react-moralis";
 import securitiesAbi from "../../../constants/Securities.json";
 import TaskBoard from "../task/TaskBoard"
@@ -21,6 +21,9 @@ import { AssignmentApplication } from "@/types/assignmentApplication";
 import { getAssignmentApplicationFromId } from "@/models/firestore/getAssignmentApplicationFromId";
 import { Submission } from "@/types/submission";
 import { getSubmissionFromId } from "@/models/firestore/getSubmissionFromId";
+import { getUser } from "@/models/firestore/getUser";
+import { holdersFromMoralis } from "@/models/firestore/dataConverter";
+import SbtOwners from "../project/SbtOwners";
 
 export default function ProjectPage() {
   const sbtAddr = "0xa271BdAd273e282B909419d29074Ec2B56100368";
@@ -103,13 +106,29 @@ export default function ProjectPage() {
 
   //get SBT owners
   useFetchEffect(async () => {
-    //TODO
-    //Hashimoto
     //get sbt owners
-    const owners: SbtOwner[] = (await getHolders()) as SbtOwner[];
+    let holders: Holder[] = []
+    try {
+      const receivedHolders = await getHolders()
+      holders = holdersFromMoralis(receivedHolders)
+    } catch { }
 
-    //set sbt owner state
-    setSbtOwners(owners);
+    //get users
+    for (let i = 0; i < holders.length; i++) {
+      const holder = holders[i]
+      const { data: owner } = await getUser(holder.address)
+      if (!owner) { continue }
+      setSbtOwners((currentVallue) => {
+        if (!currentVallue) { return currentVallue }
+        return [
+          ...currentVallue,
+          {
+            ...owner,
+            address: holder.address
+          }
+        ]
+      })
+    }
   }, []);
 
   const onChangeInvitationCode = async (
@@ -176,7 +195,7 @@ export default function ProjectPage() {
             </TabBar.Content>
 
             <TabBar.Content value="sbt-owners">
-              <p>Show SBT owners here</p>
+              <SbtOwners sbtOwners={sbtOwners} />
             </TabBar.Content>
 
             {isProjectOwner &&

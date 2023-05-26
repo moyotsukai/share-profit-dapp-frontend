@@ -3,6 +3,7 @@ import { User } from "../../types/User"
 import { Task } from "@/types/Task"
 import { AssignmentApplication } from "@/types/assignmentApplication"
 import { Submission } from "@/types/submission"
+import { Holder } from "@/types/SbtOwner"
 
 export const userFromFirebase = (data: any): User => {
   return {
@@ -72,5 +73,18 @@ export const submissionFromFirebase = (data: any): Submission => {
     fileUrl: data.fileUrl,
     message: data.message,
     stage: data.stage ?? "inReview"
+  }
+}
+
+export const holdersFromMoralis = (data: any): Holder[] => {
+  if (Array.isArray(data)) {
+    return data.map(($0) => {
+      return {
+        address: $0.address ?? ""
+      }
+    })
+
+  } else {
+    return []
   }
 }
