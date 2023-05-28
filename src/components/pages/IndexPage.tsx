@@ -15,6 +15,7 @@ import { KEYS } from "@/models/firestore/keys"
 import accountAbi from "../../../constants/Account.json"
 import { useWeb3Contract } from "react-moralis"
 import { useNotification } from "web3uikit"
+import { ethers } from "ethers"
 
 const formInputSchema = z.object({
   enteredText: z.string().nonempty(),
@@ -61,7 +62,9 @@ export default function IndexPage() {
     //TODO
     //<<<Hashimoto
     //表示
-    setUnreceivedDistributionBalance((await getReleasableBalance()) as string)
+    setUnreceivedDistributionBalance(
+      ethers.utils.formatEther(parseInt((await getReleasableBalance()) as string))
+    )
     console.log(await getReleasableBalance())
     //Hashimoto>>>
   }, [])
