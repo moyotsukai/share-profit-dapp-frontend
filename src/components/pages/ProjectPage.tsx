@@ -1,111 +1,107 @@
-import { Project } from "@/types/Project.type";
-import Title from "../ui/Title/Title";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
-import { getProjectFromId } from "@/models/firestore/getProjectFromId";
-import { useFetchEffect } from "@/models/project/useFetchEffect";
-import Link from "next/link";
-import TabBar from "../radix/TabBar";
-import { useUserValue } from "@/states/userState";
-import { updateProjectArray } from "@/models/firestore/updateProject";
-import LoadingCircle from "../ui/LoadingCircle/LoadingCircle";
-import { downloadImageFromUrl } from "@/models/storage/downloadProjectImage";
-import { Avatar } from "../radix/Avatar/Avatar";
-import { SbtOwner } from "@/types/SbtOwner.type";
-import { useWeb3Contract } from "react-moralis";
-import securitiesAbi from "../../../constants/Securities.json";
+import { Project } from "@/types/Project.type"
+import Title from "../ui/Title/Title"
+import { useEffect, useState } from "react"
+import { useRouter } from "next/router"
+import { getProjectFromId } from "@/models/firestore/getProjectFromId"
+import { useFetchEffect } from "@/models/project/useFetchEffect"
+import Link from "next/link"
+import TabBar from "../radix/TabBar"
+import { useUserValue } from "@/states/userState"
+import { updateProjectArray } from "@/models/firestore/updateProject"
+import LoadingCircle from "../ui/LoadingCircle/LoadingCircle"
+import { downloadImageFromUrl } from "@/models/storage/downloadProjectImage"
+import { Avatar } from "../radix/Avatar/Avatar"
+import { SbtOwner } from "@/types/SbtOwner.type"
+import { useWeb3Contract } from "react-moralis"
+import securitiesAbi from "../../../constants/Securities.json"
 import TaskBoard from "../task/TaskBoard"
 import { useProjectState } from "@/states/projectState"
 
 export default function ProjectPage() {
-  const sbtAddr = "0xa271BdAd273e282B909419d29074Ec2B56100368";
-  const router = useRouter();
-  const { projectId } = router.query;
-  const user = useUserValue();
-  const [project, setProject] = useState<Project | null | undefined>(undefined);
-  const [isVerified, setIsVerified] = useState<boolean>(false);
-  const [isProjectOwner, setIsProjectOwner] = useState<boolean>(false);
-  const [sbtOwners, setSbtOwners] = useState<SbtOwner[]>([]);
+  const sbtAddr = "0xa271BdAd273e282B909419d29074Ec2B56100368"
+  const router = useRouter()
+  const { projectId } = router.query
+  const user = useUserValue()
+  const [project, setProject] = useState<Project | null | undefined>(undefined)
+  const [isVerified, setIsVerified] = useState<boolean>(false)
+  const [isProjectOwner, setIsProjectOwner] = useState<boolean>(false)
+  const [sbtOwners, setSbtOwners] = useState<SbtOwner[]>([])
 
   const { runContractFunction: getHolders } = useWeb3Contract({
     abi: securitiesAbi,
     contractAddress: sbtAddr,
     functionName: "getHolders",
     params: {},
-  });
+  })
 
   //get project
   useFetchEffect(async () => {
     if (typeof projectId !== "string") {
-      return;
+      return
     }
     if (!projectId) {
-      return;
+      return
     }
 
-    const { data: projectData } = await getProjectFromId(projectId);
+    const { data: projectData } = await getProjectFromId(projectId)
     if (!projectData) {
-      return;
+      return
     }
     if (projectData.imageUrl) {
-      const { data: downloadImageUrl } = await downloadImageFromUrl(
-        projectData.imageUrl
-      );
+      const { data: downloadImageUrl } = await downloadImageFromUrl(projectData.imageUrl)
       setProject({
         ...projectData,
         downloadImageUrl: downloadImageUrl,
-      });
+      })
     } else {
-      setProject(projectData);
+      setProject(projectData)
     }
 
     //setProject globally
-  }, [projectId]);
+  }, [projectId])
 
   //set if user needs to enter invitation code
   useEffect(() => {
     if (!project || !user) {
-      return;
+      return
     }
     if (project.ownerIds.includes(user.uid)) {
-      setIsProjectOwner(true);
-      setIsVerified(true);
+      setIsProjectOwner(true)
+      setIsVerified(true)
     } else {
-      setIsVerified(project.memberIds.includes(user.uid));
+      setIsVerified(project.memberIds.includes(user.uid))
     }
-  }, [project, user]);
+  }, [project, user])
 
   //get SBT owners
   useFetchEffect(async () => {
     //TODO
     //Hashimoto
     //get sbt owners
-    const owners: SbtOwner[] = (await getHolders()) as SbtOwner[];
+    const owners: SbtOwner[] = (await getHolders()) as SbtOwner[]
 
     //set sbt owner state
-    setSbtOwners(owners);
-  }, []);
+    setSbtOwners(owners)
+  }, [])
 
-  const onChangeInvitationCode = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const text = event.target.value;
+  const onChangeInvitationCode = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const text = event.target.value
     if (!project) {
-      return;
+      return
     }
     if (!user) {
-      return;
+      return
     }
     if (text === project.invitationCode) {
-      setIsVerified(true);
+      setIsVerified(true)
       await updateProjectArray({
         projectId: project.id,
         key: "memberIds",
         value: user.uid,
         method: "union",
-      });
+      })
     }
-  };
+  }
 
   return (
     <div>
@@ -191,5 +187,5 @@ export default function ProjectPage() {
         </div>
       )}
     </div>
-  );
+  )
 }

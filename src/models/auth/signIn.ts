@@ -9,10 +9,11 @@ type Props = {
 }
 
 export const signIn = async ({ address }: Props): Promise<User | null> => {
+  // 認証処理
 
   //generate firebase custom token
   const customTokenRes = await fetch(`${PATHS.API.CUSTOM_TOKEN}?address=${address}`)
-  const customToken = await customTokenRes.json() as string
+  const customToken = (await customTokenRes.json()) as string
 
   //authenticate using the custom token
   const userCredential = await signInWithCustomToken(auth, customToken)
