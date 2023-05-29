@@ -13,7 +13,8 @@ import { useFetchEffect } from "@/models/project/useFetchEffect"
 import { getProjectsWhere } from "@/models/firestore/getProjectsWhere"
 import { KEYS } from "@/models/firestore/keys"
 import accountAbi from "../../../constants/Account.json"
-import { useWeb3Contract } from "react-moralis"
+import networkConfig from "../../../constants/networkMapping.json"
+import { useMoralis, useWeb3Contract } from "react-moralis"
 import { useNotification } from "web3uikit"
 import { ethers } from "ethers"
 
@@ -23,11 +24,20 @@ const formInputSchema = z.object({
 
 type SearchProject = z.infer<typeof formInputSchema>
 
+interface contractAddressesInterface {
+  [key: string]: contractAddressesItemInterface
+}
+
+interface contractAddressesItemInterface {
+  [key: string]: string[]
+}
+
 export default function IndexPage() {
-  const user = useUserValue()
-  const userAddr = user ? user.uid : ""
+  const { chainId, account } = useMoralis()
+  const addresses: contractAddressesInterface = networkConfig
+  const chainString = chainId ? parseInt(chainId).toString() : "31337"
   const accountAddr = "0x068419813Bd03FaeeAD20370B0FB106f3A9217E4"
-  const tokenAddr = "0x07865c6e87b9f70255377e024ace6630c1eaa37f"
+  const tokenAddr = chainId ? addresses[chainString].Usdc[0] : null
   const router = useRouter()
   const dispatch = useNotification()
   const { register, handleSubmit } = useForm<SearchProject>({
@@ -44,7 +54,7 @@ export default function IndexPage() {
     functionName: "releasableToken",
     params: {
       _token: tokenAddr,
-      _addr: userAddr,
+      _addr: account,
     },
   })
 
@@ -62,9 +72,17 @@ export default function IndexPage() {
     //TODO
     //<<<Hashimoto
     //表示
-    setUnreceivedDistributionBalance(
-      ethers.utils.formatEther(parseInt((await getReleasableBalance()) as string))
-    )
+    const releasableBalance = await getReleasableBalance()
+    account
+      ? releasableBalance
+        ? setUnreceivedDistributionBalance(
+            parseInt(
+              ethers.utils.formatUnits(ethers.BigNumber.from(releasableBalance), 6)
+            ).toString()
+          )
+        : setUnreceivedDistributionBalance("0")
+      : setUnreceivedDistributionBalance(null)
+
     console.log(await getReleasableBalance())
     //Hashimoto>>>
   }, [])
@@ -91,13 +109,13 @@ export default function IndexPage() {
     const project = projects[0]
 
     //add user.uid to member ids
-    if (!user) {
+    if (!account) {
       return
     }
     await updateProjectArray({
       projectId: project.id,
       key: "memberIds",
-      value: user.uid,
+      value: account,
       method: "union",
     })
 

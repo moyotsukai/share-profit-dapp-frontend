@@ -51,7 +51,6 @@ const SideBar: React.FC = () => {
 
       <Spacer size={6} />
       <SideTab type="new" project={null} />
-      <ConnectButton moralisAuth={false} />
     </div>
   );
 };

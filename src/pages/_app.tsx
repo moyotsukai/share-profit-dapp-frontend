@@ -11,11 +11,11 @@ export default function App({ Component, pageProps }: AppProps) {
     <MoralisProvider initializeOnMount={false}>
       <NotificationProvider>
         <RecoilRoot>
-          <AuthProvider>
-            <Layout>
-              <Component {...pageProps} />
-            </Layout>
-          </AuthProvider>
+          {/* <AuthProvider> */}
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
+          {/* </AuthProvider> */}
         </RecoilRoot>
       </NotificationProvider>
     </MoralisProvider>
