@@ -3,8 +3,14 @@ import { db } from "../firebase/client"
 import { KEYS } from "./keys"
 import { Res } from "../../types/Res"
 import { EditingSubmission, Submission } from "@/types/submission"
+import { User } from "@/types/User"
 
-export const createSubmission = async (submission: EditingSubmission): Promise<Res<Submission | null>> => {
+type Props = {
+  submission: EditingSubmission,
+  user: User
+}
+
+export const createSubmission = async ({ submission, user }: Props): Promise<Res<Submission | null>> => {
 
   const docId = doc(collection(db, KEYS.SUBMISSIONS)).id
   const docRef = doc(collection(db, KEYS.SUBMISSIONS), docId)
@@ -14,7 +20,8 @@ export const createSubmission = async (submission: EditingSubmission): Promise<R
     return {
       data: {
         ...submission,
-        id: docId
+        id: docId,
+        user: user
       },
       error: null
     }

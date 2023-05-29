@@ -56,7 +56,10 @@ const AssignmentForm: React.FC<Props> = ({ task }) => {
       message: data.message,
       stage: "inReview"
     }
-    const { data: createdAssignmentApplication } = await createAssignmentApplication(assignmentApplication)
+    const { data: createdAssignmentApplication } = await createAssignmentApplication({
+      assignmentApplication: assignmentApplication,
+      user: user
+    })
     if (!createdAssignmentApplication) { return }
 
     //update task

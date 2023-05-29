@@ -1,5 +1,5 @@
 import Title from "../ui/Title/Title";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import TabBar from "../radix/TabBar";
 import { useUserValue } from "@/states/userState";
@@ -15,13 +15,25 @@ import { useGetProject } from "@/models/project/useGetProject";
 import { useGetAssignment } from "@/models/project/useGetAssignment";
 
 export default function ProjectPage() {
-  const router = useRouter();
-  const { projectId, taskId } = router.query;
-  const user = useUserValue();
-  const [isVerified, setIsVerified] = useState<boolean>(false);
+  const router = useRouter()
+  const { projectId, taskId } = router.query
+  const user = useUserValue()
+  const [isVerified, setIsVerified] = useState<boolean>(false)
   const { project } = useGetProject(projectId)
   const { isProjectOwner, assignmentApplications, submissions } = useGetAssignment(project)
   const sbtOwners = useGetSbtOwners()
+  const [_, setProjectIdQueryString] = useState<string>("")
+
+  useEffect(() => {
+    setProjectIdQueryString((currentValue) => {
+      if (typeof projectId !== "string") { return currentValue }
+      if (!projectId) { return currentValue }
+      if (currentValue && projectId !== currentValue) {
+        router.reload()
+      }
+      return projectId
+    })
+  }, [projectId])
 
   //set if user needs to enter invitation code
   useEffect(() => {
@@ -33,17 +45,12 @@ export default function ProjectPage() {
     }
   }, [project, user, isProjectOwner])
 
-
   const onChangeInvitationCode = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const text = event.target.value;
-    if (!project) {
-      return;
-    }
-    if (!user) {
-      return;
-    }
+    if (!project) { return }
+    if (!user) { return }
     if (text === project.invitationCode) {
       setIsVerified(true);
       await updateProjectArray({
