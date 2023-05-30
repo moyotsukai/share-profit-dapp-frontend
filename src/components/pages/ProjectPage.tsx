@@ -1,19 +1,11 @@
-import { Project } from "@/types/Project.type"
 import Title from "../ui/Title/Title"
 import { useEffect, useState } from "react"
 import { useRouter } from "next/router"
-import { getProjectFromId } from "@/models/firestore/getProjectFromId"
-import { useFetchEffect } from "@/models/project/useFetchEffect"
-import Link from "next/link"
 import TabBar from "../radix/TabBar"
 import { useUserValue } from "@/states/userState"
 import { updateProjectArray } from "@/models/firestore/updateProject"
 import LoadingCircle from "../ui/LoadingCircle/LoadingCircle"
-import { downloadImageFromUrl } from "@/models/storage/downloadProjectImage"
 import { Avatar } from "../radix/Avatar/Avatar"
-import { SbtOwner } from "@/types/SbtOwner.type"
-import { useMoralis, useWeb3Contract } from "react-moralis"
-import securitiesAbi from "../../../constants/Securities.json"
 import TaskBoard from "../task/TaskBoard"
 import Assignments from "../task/Assignments";
 import ProjectOverview from "../project/ProjectOverview/ProjectOverview";
@@ -28,20 +20,11 @@ export default function ProjectPage() {
   const router = useRouter()
   const { projectId, taskId } = router.query
   const user = useUserValue()
-  const [project, setProject] = useState<Project | null | undefined>(undefined)
   const [isVerified, setIsVerified] = useState<boolean>(false)
-  const [isProjectOwner, setIsProjectOwner] = useState<boolean>(false)
   const { project } = useGetProject(projectId)
   const { isProjectOwner, assignmentApplications, submissions } = useGetAssignment(project)
   const sbtOwners = useGetSbtOwners()
   const [_, setProjectIdQueryString] = useState<string>("")
-    
-  const { runContractFunction: getHolders } = useWeb3Contract({
-    abi: securitiesAbi,
-    contractAddress: sbtAddr,
-    functionName: "getHolders",
-    params: {},
-  })
 
   useEffect(() => {
     setProjectIdQueryString((currentValue) => {
@@ -63,17 +46,6 @@ export default function ProjectPage() {
       setIsVerified(project.memberIds.includes(user.uid))
     }
   }, [project, user, isProjectOwner])
-
-  //get SBT owners
-  useFetchEffect(async () => {
-    //TODO
-    //Hashimoto
-    //get sbt owners
-    const owners: SbtOwner[] = (await getHolders()) as SbtOwner[]
-
-    //set sbt owner state
-    setSbtOwners(owners)
-  }, [])
 
   const onChangeInvitationCode = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const text = event.target.value
