@@ -1,16 +1,21 @@
-import { signIn } from "@/models/auth/signIn";
-import { asyncTask } from "@/utils/asyncTask";
-import React, { useEffect } from "react";
-import { useUserState } from "@/states/userState";
-import LoadingCircle from "../ui/LoadingCircle";
+import { connectToMetaMask } from "@/models/auth/connectToMetaMask"
+import { signIn } from "@/models/auth/signIn"
+import { ethereum } from "@/models/ethereum/ethereum"
+import { asyncTask } from "@/utils/asyncTask"
+import React, { useEffect, useState } from "react"
+import Button from "../ui/Button"
+import { useUserState } from "@/states/userState"
+import LoadingCircle from "../ui/LoadingCircle"
+import { useMoralis } from "react-moralis"
+import { ConnectButton } from "web3uikit"
 import UserNameDialog from "../user/UserNameDialog";
-import { useMoralis } from "react-moralis";
 
 type Props = {
-  children: React.ReactNode;
-};
+  children: React.ReactNode
+}
 
 const AuthProvider: React.FC<Props> = ({ children }) => {
+
   const { account } = useMoralis()
   const [user, setUser] = useUserState();
   const hasNoUserName = !user?.name
@@ -50,13 +55,14 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
               children
           ) : (
             <div>
+              <ConnectButton onClick={onClickConnect} />
               Landing page
             </div>
           )}
         </React.Fragment>
       )}
     </React.Fragment>
-  );
-};
+  )
+}
 
-export default AuthProvider;
+export default AuthProvider

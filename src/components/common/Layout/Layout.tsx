@@ -10,14 +10,12 @@ type Props = {
 }
 
 const Layout: React.FC<Props> = ({ children }) => {
-
   const router = useRouter()
   const hideSideBar = router.asPath.startsWith(PATHS.NEW_PROJECT_PAGE)
 
   return (
     <div css={s.contentContainerStyle}>
       <Header />
-
       {!hideSideBar &&
         <SideBar />
       }
@@ -26,8 +24,6 @@ const Layout: React.FC<Props> = ({ children }) => {
         <Footer />
       </div>
     </div>
-
-
   )
 }
 

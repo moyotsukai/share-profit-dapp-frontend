@@ -11,4 +11,4 @@ export const PATHS = {
   API: {
     CUSTOM_TOKEN: "/api/custom-token",
   },
-};
+}
