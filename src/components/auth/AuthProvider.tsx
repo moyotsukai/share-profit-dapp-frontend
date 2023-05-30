@@ -5,6 +5,7 @@ import { useUserState } from "@/states/userState"
 import LoadingCircle from "../ui/LoadingCircle"
 import { useMoralis } from "react-moralis"
 import UserNameDialog from "../user/UserNameDialog";
+import Header from "../common/Header"
 
 type Props = {
   children: React.ReactNode
@@ -13,7 +14,7 @@ type Props = {
 const AuthProvider: React.FC<Props> = ({ children }) => {
 
   const { account } = useMoralis()
-  const [user, setUser] = useUserState();
+  const [user, setUser] = useUserState()
   const hasNoUserName = !user?.name
 
   useEffect(() => {
@@ -22,6 +23,7 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
       //do nothing
     } else {
       const address = account
+
       if (address) {
         //connected, sign in
         asyncTask(async () => {
@@ -33,10 +35,10 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
         setUser(null)
       }
     }
-  }, [])
+  }, [account])
 
   return (
-    <React.Fragment>
+    <>
       {user === undefined ? (
         <div>
           <p>Loading</p>
@@ -44,19 +46,21 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
         </div>
       ) : (
         <React.Fragment>
+          <Header />
+
           {user ? (
             hasNoUserName ? (
               <UserNameDialog />
             ) :
               children
           ) : (
-            <div>
+            <>
               Landing page
-            </div>
+            </>
           )}
         </React.Fragment>
       )}
-    </React.Fragment>
+    </>
   )
 }
 

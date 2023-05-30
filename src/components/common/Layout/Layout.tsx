@@ -15,7 +15,6 @@ const Layout: React.FC<Props> = ({ children }) => {
 
   return (
     <div css={s.contentContainerStyle}>
-      <Header />
       {!hideSideBar &&
         <SideBar />
       }
