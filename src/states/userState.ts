@@ -1,4 +1,4 @@
-import { User } from "@/types/User.type"
+import { User } from "@/types/User"
 import { atom, useRecoilState, useRecoilValue, useSetRecoilState } from "recoil"
 
 const userState = atom<User | null | undefined>({

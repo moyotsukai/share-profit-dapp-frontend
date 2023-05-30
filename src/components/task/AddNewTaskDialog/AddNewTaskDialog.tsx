@@ -2,7 +2,7 @@ import React, { useState } from "react"
 import * as s from "./style"
 import * as Dialog from "@radix-ui/react-dialog"
 import { z } from "zod"
-import { Task, TaskIndex } from "@/types/Task"
+import { EditingTask, TaskIndex } from "@/types/Task"
 import { SubmitHandler, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import Spacer from "@/components/ui/Spacer/Spacer"
@@ -10,8 +10,9 @@ import ErrorMessage from "@/components/ui/ErrorMessage/ErrorMessage"
 import Button from "@/components/ui/Button"
 import { useUserValue } from "@/states/userState"
 import { useProjectState } from "@/states/projectState"
-import { Project } from "@/types/Project.type"
-import { updateProject, updateProjectArray } from "@/models/firestore/updateProject"
+import { Project } from "@/types/Project"
+import { updateProject } from "@/models/firestore/updateProject"
+import { createTask } from "@/models/firestore/createTask"
 
 const formInputSchema = z
   .object({
@@ -40,45 +41,46 @@ const AddNewTaskDialog: React.FC = () => {
   const [isButtonLoading, setIsButtonLoading] = useState<boolean>(false)
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false)
 
-
   const onSubmitNewTask: SubmitHandler<NewTask> = async (data) => {
     setIsButtonEnabled(false)
     setIsButtonLoading(true)
     if (!user || !project) { return }
 
-    const newTask: Task = {
-      id: crypto.randomUUID(),
+    //create task
+    const newTask: EditingTask = {
       title: data.title,
       stage: "todo",
       outline: data.outline,
       details: data.details,
       bountySbt: data.bountySbt,
       ownerId: user.uid,
-      asigneeIds: []
+      asigneeIds: [],
+      assignmentApplicationIds: [],
+      submissionIds: []
     }
+    const { data: createdTask } = await createTask({
+      projectId: project.id,
+      task: newTask
+    })
 
+    if (!createdTask) { return }
+
+    //update taskIndexes
     const newTaskIndexes: TaskIndex[] = [
       ...project.taskIndexes.map(($0) => (
         { taskId: $0.taskId, index: $0.index + 1 }
       )),
-      { taskId: newTask.id, index: 0 }
+      { taskId: createdTask.id, index: 0 }
     ]
-
-    await updateProjectArray({
-      projectId: project.id,
-      key: "tasks",
-      value: newTask,
-      method: "union"
-    })
-
     await updateProject({
       projectId: project.id,
       project: { taskIndexes: newTaskIndexes }
     })
 
+    //update project state
     const newProject: Project = {
       ...project,
-      tasks: [...project.tasks, newTask],
+      tasks: [...project.tasks, createdTask],
       taskIndexes: newTaskIndexes
     }
     setProject(newProject)

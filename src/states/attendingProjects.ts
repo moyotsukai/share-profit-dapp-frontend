@@ -1,4 +1,4 @@
-import { Project } from "@/types/Project.type"
+import { Project } from "@/types/Project"
 import { atom, useRecoilState, useRecoilValue, useSetRecoilState } from "recoil"
 
 const attendingProjectsState = atom<Project[]>({

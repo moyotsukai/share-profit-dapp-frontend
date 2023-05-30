@@ -85,7 +85,9 @@ export default function IndexPage() {
 
     console.log(await getReleasableBalance())
     //Hashimoto>>>
-  }, [])
+  }, [], {
+    skipFetch: []
+  })
 
   const handleWithdrawSuccess = () => {
     dispatch({

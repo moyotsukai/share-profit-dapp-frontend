@@ -2,7 +2,7 @@ import Link from "next/link"
 import * as s from "./style"
 import { useRouter } from "next/router"
 import { Avatar } from "@/components/radix/Avatar/Avatar"
-import { Project } from "@/types/Project.type"
+import { Project } from "@/types/Project"
 import { PATHS } from "@/components/pages/paths"
 
 type Props = {

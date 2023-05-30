@@ -8,71 +8,36 @@ import { useUserState } from "@/states/userState"
 import LoadingCircle from "../ui/LoadingCircle"
 import { useMoralis } from "react-moralis"
 import { ConnectButton } from "web3uikit"
+import UserNameDialog from "../user/UserNameDialog";
 
 type Props = {
   children: React.ReactNode
 }
 
 const AuthProvider: React.FC<Props> = ({ children }) => {
-  const [user, setUser] = useUserState()
-  const [message, setMessage] = useState<string>("")
-  const [isButtonEnabled, setIsButtonEnabled] = useState<boolean>(true)
-  const [isButtonLoading, setIsButtonLoading] = useState<boolean>(false)
 
   const { account } = useMoralis()
+  const [user, setUser] = useUserState();
+  const hasNoUserName = !user?.name
 
-  // useEffect(() => {
-  //   if (user) {
-  //     //user is already signed in
-  //     //do nothing
-  //   } else {
-  //     if (ethereum) {
-  //       // metamaskから以前アドレスを取得したことがある場合
-  //       // このアドレスをmoralisから取得
-  //       const address = account
-  //       if (address) {
-  //         //connected, sign in
-  //         asyncTask(async () => {
-  //           const authenticatedUser = await signIn({ address: address })
-  //           setUser(authenticatedUser)
-  //         })
-  //       } else {
-  //         //not connected, user needs to connect and sign in manually
-  //         setUser(null)
-  //       }
-  //     } else {
-  //       //user needs to install MetaMask
-  //       setMessage("Please install MetaMask")
-  //       setUser(null)
-  //     }
-  //   }
-  // }, [])
-
-  const onClickConnect = async () => {
-    // setIsButtonEnabled(false)
-    // setIsButtonLoading(true)
-
-    // const address = await connectToMetaMask()
-    // if (address) {
-    //   const user = await signIn({ address: address })
-    //   setUser(user)
-    // } else {
-    //   setUser(null)
-    // }
-
-    // setIsButtonEnabled(true)
-    // setIsButtonLoading(false)
-
-    // Hashimoto>>>
-    const address = account
-    if (address) {
-      const user = await signIn({ address: address })
-      setUser(user)
+  useEffect(() => {
+    if (user) {
+      //user is already signed in
+      //do nothing
     } else {
-      setUser(null)
+      const address = account
+      if (address) {
+        //connected, sign in
+        asyncTask(async () => {
+          const authenticatedUser = await signIn({ address: address })
+          setUser(authenticatedUser)
+        })
+      } else {
+        //not connected, user needs to connect and sign in manually
+        setUser(null)
+      }
     }
-    // <<<Hashimoto
-  }
+  }, [])
 
   return (
     <React.Fragment>
@@ -83,19 +48,15 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
         </div>
       ) : (
         <React.Fragment>
-          {message && <p>{message}</p>}
           {user ? (
-            children
+            hasNoUserName ? (
+              <UserNameDialog />
+            ) :
+              children
           ) : (
             <div>
-              {/* <Button
-                onClick={onClickConnect}
-                isEnabled={isButtonEnabled}
-                isLoading={isButtonLoading}
-              >
-                Connect MetaMask
-              </Button> */}
               <ConnectButton onClick={onClickConnect} />
+              Landing page
             </div>
           )}
         </React.Fragment>

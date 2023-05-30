@@ -1,16 +1,17 @@
 import { asyncTask } from "@/utils/asyncTask"
-import { DependencyList, useEffect, useRef } from "react"
+import { useEffect, useRef, DependencyList } from "react"
 
-export const useFetchEffect = (action: () => void, deps: DependencyList) => {
+export const useFetchEffect = (action: () => void, deps: DependencyList, { skipFetch }: { skipFetch: boolean[] }) => {
 
   const hasFetched = useRef<boolean>(false)
 
   useEffect(() => {
     if (hasFetched.current) { return }
-    hasFetched.current = true
+    if (skipFetch.some($0 => $0)) { return }
 
     asyncTask(async () => {
       action()
+      hasFetched.current = true
     })
   }, [deps])
 }

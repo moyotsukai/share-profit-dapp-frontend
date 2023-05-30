@@ -1,8 +1,9 @@
 import React, { useRef } from "react"
 import { useDrag, useDrop } from "react-dnd"
-import * as s from "./style"
 import { DropResult } from "../DroppableTaskColumn/DroppableTaskColumn"
 import { useSetProjectState } from "@/states/projectState"
+import TaskCard from "../TaskCard"
+import { Task } from "@/types/Task"
 
 type DraggableTask = {
   id: string,
@@ -10,20 +11,21 @@ type DraggableTask = {
 }
 
 type Props = {
-  id: string,
-  title: string,
+  task: Task,
   index: number
 }
 
-const DraggableTask: React.FC<Props> = ({ id, title, index }) => {
+const DraggableTask: React.FC<Props> = ({ task, index }) => {
 
   const ref = useRef<HTMLLIElement>(null)
   const setProject = useSetProjectState()
+  const isDraggable = false
 
   const [, drag] = useDrag<DraggableTask>({
     type: "item",
-    item: { id, index },
+    item: { id: task.id, index },
     end: (_, monitor) => {
+      if (!isDraggable) { return }
       //drag and drop between columns
       const dropResult = monitor.getDropResult() as DropResult
 
@@ -31,14 +33,14 @@ const DraggableTask: React.FC<Props> = ({ id, title, index }) => {
         setProject((currentProject) => {
           if (!currentProject) { return currentProject }
           const currentTasks = currentProject.tasks
-          const newTasks = currentTasks.map((task) => {
-            if (task.id === id) {
+          const newTasks = currentTasks.map((currentTask) => {
+            if (currentTask.id === task.id) {
               return {
-                ...task,
+                ...currentTask,
                 stage: dropResult.taskStage
               }
             } else {
-              return task
+              return currentTask
             }
           })
           return { ...currentProject, tasks: newTasks }
@@ -50,6 +52,7 @@ const DraggableTask: React.FC<Props> = ({ id, title, index }) => {
   const [, drop] = useDrop<DraggableTask>({
     accept: ["item"],
     drop: (item) => {
+      if (!isDraggable) { return }
       //sorting within the same column
       const fromIndex = item.index
       const newIndex = index
@@ -89,11 +92,10 @@ const DraggableTask: React.FC<Props> = ({ id, title, index }) => {
   return (
     <li
       ref={ref}
-      css={s.taskStyle}
     >
-      <p>
-        {title}
-      </p>
+      <TaskCard
+        task={task}
+      />
     </li>
   )
 }

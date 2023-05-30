@@ -8,7 +8,6 @@ import { getProjectsWhere } from "@/models/firestore/getProjectsWhere";
 import { KEYS } from "@/models/firestore/keys";
 import { useUserValue } from "@/states/userState";
 import { useAttendingProjectState } from "@/states/attendingProjects";
-import { ConnectButton } from "web3uikit";
 
 const SideBar: React.FC = () => {
   const user = useUserValue();
@@ -16,21 +15,21 @@ const SideBar: React.FC = () => {
 
   //get attending projects
   useFetchEffect(async () => {
-    if (!user) {
-      return;
-    }
+    if (!user) { return }
 
     const { data } = await getProjectsWhere({
       key: KEYS.PROJECT.MEMBER_IDS,
       operation: "array-contains",
       value: user.uid,
-    });
+    })
 
     if (!data) {
       return;
     }
     setProjects(data);
-  }, []);
+  }, [user], {
+    skipFetch: [!user]
+  })
 
   return (
     <div css={s.sideProjectBarStyle}>
