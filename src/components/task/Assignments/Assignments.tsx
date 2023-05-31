@@ -1,10 +1,11 @@
-import React from "react"
+import React, { Dispatch, SetStateAction } from "react"
 import * as s from "./style"
 import Title from "@/components/ui/Title"
 import Spacer from "@/components/ui/Spacer"
 import { Submission } from "@/types/submission"
 import { AssignmentApplication } from "@/types/assignmentApplication"
 import { Task } from "@/types/Task"
+import AssignmentApprovalDialog from "../AssignmentApprovalDialog"
 
 type Props = {
   assignmentApplications: AssignmentApplication[],
@@ -14,42 +15,46 @@ type Props = {
 
 const Assignments: React.FC<Props> = ({ assignmentApplications, submissions, tasks }) => {
 
-  //TODO
-  //リストアイテムをAssignmentApplicationApprovalDialog, submissionApprovalDialogに切り出す
   return (
-    <div>
-      <Title style="subtitle">
-        Task Assignment Applicatoins
-      </Title>
-      <ul>
-        {assignmentApplications.map((assignmentApplication, index) => (
-          <li key={index}>
-            <p>
-              {tasks.find(($0) => $0.id === assignmentApplication.taskId)?.title ?? ""}
-            </p>
-            <p>
-              {assignmentApplication.user.name}
-            </p>
-          </li>
-        ))}
-      </ul>
+    <div css={s.assignmentsStyle}>
+      <div css={s.assignmentsContainerStyle}>
+        <Title style="subtitle">
+          Task Assignment Applicatoins
+        </Title>
+        <Spacer size={10} />
+        <ul css={s.tableStyle}>
+          {assignmentApplications.map((assignmentApplication, index) =>
+            assignmentApplication.stage === "inReview" && (
+              <AssignmentApprovalDialog
+                type="assignmentApplication"
+                tasks={tasks}
+                assignment={assignmentApplication}
+                key={index}
+              />
+            )
+          )}
+        </ul>
+      </div>
       <Spacer size={30} />
 
-      <Title style="subtitle">
-        Task Submissions
-      </Title>
-      <ul>
-        {submissions.map((submission, index) => (
-          <li key={index}>
-            <p>
-              {tasks.find(($0) => $0.id === submission.userId)?.title ?? ""}
-            </p>
-            <p>
-              {submission.user.name}
-            </p>
-          </li>
-        ))}
-      </ul>
+      <div css={s.assignmentsContainerStyle}>
+        <Title style="subtitle">
+          Task Submissions
+        </Title>
+        <Spacer size={10} />
+        <ul css={s.tableStyle}>
+          {submissions.map((submission, index) =>
+            submission.stage === "inReview" && (
+              <AssignmentApprovalDialog
+                type="submission"
+                tasks={tasks}
+                assignment={submission}
+                key={index}
+              />
+            )
+          )}
+        </ul>
+      </div>
     </div>
   )
 }

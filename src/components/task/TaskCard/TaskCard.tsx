@@ -62,7 +62,9 @@ const TaskCard: React.FC<Props> = ({ task }) => {
             <p>
               {`${task.bountySbt} tokens`}
             </p>
-            {!task.asigneeIds.length && !task.assignmentApplicationIds.length &&
+            {!task.asigneeIds.length
+              && !task.assignmentApplicationIds.length
+              &&
               <>
                 <Spacer size={30} />
                 <AssignmentForm task={task} />

@@ -4,15 +4,15 @@ import { useUserValue } from "@/states/userState";
 import { getAssignmentApplicationFromId } from "../firestore/getAssignmentApplicationFromId";
 import { getSubmissionFromId } from "../firestore/getSubmissionFromId";
 import { Project } from "@/types/Project";
-import { Submission } from "@/types/submission";
-import { AssignmentApplication } from "@/types/assignmentApplication";
+import { useAssignmentApplilcationsState } from "@/states/assignmentApplicatinsState";
+import { useSubmissionsState } from "@/states/submissionsState";
 
 export const useGetAssignment = (project: Project | null | undefined) => {
 
   const user = useUserValue()
   const [isProjectOwner, setIsProjectOwner] = useState<boolean>(false)
-  const [assignmentApplications, setAssignmentApplications] = useState<AssignmentApplication[]>([])
-  const [submissions, setSubmissions] = useState<Submission[]>([])
+  const [assignmentApplications, setAssignmentApplications] = useAssignmentApplilcationsState()
+  const [submissions, setSubmissions] = useSubmissionsState()
 
   //get project
   useFetchEffect(async () => {
@@ -32,36 +32,6 @@ export const useGetAssignment = (project: Project | null | undefined) => {
           ...currentValue,
           assignmentApplication
         ])
-
-        // //get users for assignment applications
-        // const alreadyFetchedMembers = members.find(($0) => $0.uid === assignmentApplication.userId)
-        // if (alreadyFetchedMembers) {
-        //   //skip if already fetched user
-        //   setAssignmentApplications((currentValue) => [
-        //     ...currentValue,
-        //     {
-        //       ...assignmentApplication,
-        //       user: alreadyFetchedMembers
-        //     }
-        //   ])
-        // } else {
-        //   //get user
-        //   const { data: userData } = await getUser(assignmentApplication.userId)
-        //   if (!userData) { continue }
-        //   setAssignmentApplications((currentValue) => [
-        //     ...currentValue,
-        //     {
-        //       ...assignmentApplication,
-        //       user: userData
-        //     }
-        //   ])
-        //   setMembers((currentValue) => {
-        //     return [
-        //       ...currentValue,
-        //       userData
-        //     ]
-        //   })
-        // }
       }
 
       //get submissions
@@ -76,36 +46,6 @@ export const useGetAssignment = (project: Project | null | undefined) => {
           ...currentValue,
           submission
         ])
-
-        // //get users for assignment applications
-        // const alreadyFetchedMembers = members.find(($0) => $0.uid === submission.userId)
-        // if (alreadyFetchedMembers) {
-        //   //skip if already fetched user
-        //   setSubmissions((currentValue) => [
-        //     ...currentValue,
-        //     {
-        //       ...submission,
-        //       user: alreadyFetchedMembers
-        //     }
-        //   ])
-        // } else {
-        //   //get user
-        //   const { data: userData } = await getUser(submission.userId)
-        //   if (!userData) { continue }
-        //   setSubmissions((currentValue) => [
-        //     ...currentValue,
-        //     {
-        //       ...submission,
-        //       user: userData
-        //     }
-        //   ])
-        //   setMembers((currentValue) => {
-        //     return [
-        //       ...currentValue,
-        //       userData
-        //     ]
-        //   })
-        // }
       }
 
     } else {
@@ -118,6 +58,6 @@ export const useGetAssignment = (project: Project | null | undefined) => {
   return {
     isProjectOwner,
     assignmentApplications,
-    submissions
+    submissions,
   }
 }

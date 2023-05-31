@@ -16,7 +16,6 @@ import { useGetAssignment } from "@/models/project/useGetAssignment";
 
 export default function ProjectPage() {
 
-  const sbtAddr = "0xa271BdAd273e282B909419d29074Ec2B56100368"
   const router = useRouter()
   const { projectId, taskId } = router.query
   const user = useUserValue()

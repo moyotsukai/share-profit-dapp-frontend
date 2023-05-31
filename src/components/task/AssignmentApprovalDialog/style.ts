@@ -1,19 +1,16 @@
 import { colors } from "@/styles/colors";
 import { css } from "@emotion/react";
 
-export const taskCardStyle = css`
+export const addNewTaskButtonStyle = css`
   border: solid 1px ${colors.divider};
-  text-align: left;
-  width: 100%;
-  height: 90px;
-  background-color: #fff;
-  margin: 10px 0;
-  overflow: hidden;
   border-radius: 6px;
-  padding: 6px;
-  &:hover {
-    cursor: pointer;
-  }
+  background-color: #fff;
+  width: 100%;
+  height: 60px;
+  margin: 5px 0;
+  text-align: left;
+  padding: 5px;
+  cursor: pointer;
 `
 
 export const dialogOverlayStyle = css`
@@ -33,9 +30,9 @@ export const dialogContentStyle = css`
   transform: translate(-50%, -50%);
   width: 55vw;
   height: 85vh;
+  overflow-y: scroll;
   padding: 25px;
   animation: contentShow 150ms cubic-bezier(0.16, 1, 0.3, 1);
-  overflow-y: scroll;
 `
 
 export const titleContainerStyle = css`
@@ -55,4 +52,8 @@ export const closeButtonStyle = css`
   &:hover {
     cursor: pointer;
   }
+`
+
+export const buttonGroupStyle = css`
+  display: flex;
 `
