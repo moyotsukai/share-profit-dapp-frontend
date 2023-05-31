@@ -17,6 +17,8 @@ import networkConfig from "../../../constants/networkMapping.json"
 import { useMoralis, useWeb3Contract } from "react-moralis"
 import { useNotification } from "web3uikit"
 import { ethers } from "ethers"
+import { contractAddressesInterface } from "../../types/networkAddress"
+import { useEffect } from "react"
 
 const formInputSchema = z.object({
   enteredText: z.string().nonempty(),
@@ -24,26 +26,20 @@ const formInputSchema = z.object({
 
 type SearchProject = z.infer<typeof formInputSchema>
 
-interface contractAddressesInterface {
-  [key: string]: contractAddressesItemInterface
-}
-
-interface contractAddressesItemInterface {
-  [key: string]: string[]
-}
-
 export default function IndexPage() {
-  const { chainId, account } = useMoralis()
+  const { chainId, account, isWeb3Enabled } = useMoralis()
   const addresses: contractAddressesInterface = networkConfig
   const chainString = chainId ? parseInt(chainId).toString() : "31337"
-  const accountAddr = "0x068419813Bd03FaeeAD20370B0FB106f3A9217E4"
-  const tokenAddr = chainId ? addresses[chainString].Usdc[0] : null
+  // TODO: projectごとに取得
+  const accountAddr = "0x93473182AbBB6E2DE06577D40ec4F42ca6F817E9"
+  const tokenAddr = chainId ? addresses[chainString].Usdc[0] : undefined
   const router = useRouter()
   const dispatch = useNotification()
   const { register, handleSubmit } = useForm<SearchProject>({
     resolver: zodResolver(formInputSchema),
   })
 
+  const [isWithdrawalButtonClickable, setWithdrawalButtonClickable] = useState<boolean>(false)
   const [unreceivedDistributionBalance, setUnreceivedDistributionBalance] = useState<
     string | null
   >(null)
@@ -68,26 +64,28 @@ export default function IndexPage() {
   })
 
   //get unreceived distribution balance
-  useFetchEffect(async () => {
-    //TODO
-    //<<<Hashimoto
-    //表示
-    const releasableBalance = await getReleasableBalance()
-    account
-      ? releasableBalance
-        ? setUnreceivedDistributionBalance(
-            parseInt(
-              ethers.utils.formatUnits(ethers.BigNumber.from(releasableBalance), 6)
-            ).toString()
-          )
-        : setUnreceivedDistributionBalance("0")
-      : setUnreceivedDistributionBalance(null)
+  useFetchEffect(
+    async () => {
+      //TODO
+      //<<<Hashimoto
+      //表示
+      const releasableBalance = await getReleasableBalance()
+      account
+        ? releasableBalance
+          ? setUnreceivedDistributionBalance(
+              ethers.utils.formatUnits(ethers.BigNumber.from(releasableBalance), 6).toString()
+            )
+          : setUnreceivedDistributionBalance("0")
+        : setUnreceivedDistributionBalance(null)
 
-    console.log(await getReleasableBalance())
-    //Hashimoto>>>
-  }, [], {
-    skipFetch: []
-  })
+      console.log(await getReleasableBalance())
+      //Hashimoto>>>
+    },
+    [],
+    {
+      skipFetch: [],
+    }
+  )
 
   const handleWithdrawSuccess = () => {
     dispatch({
@@ -146,6 +144,20 @@ export default function IndexPage() {
     //Hashimoto>>>
   }
 
+  useEffect(() => {
+    if (
+      !isWeb3Enabled ||
+      unreceivedDistributionBalance === null ||
+      unreceivedDistributionBalance === undefined ||
+      unreceivedDistributionBalance === "0"
+    ) {
+      setWithdrawalButtonClickable(true)
+    } else {
+      setWithdrawalButtonClickable(false)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isWeb3Enabled, account])
+
   return (
     <div>
       <TabBar.Root defaultValue="projects">
@@ -176,7 +188,11 @@ export default function IndexPage() {
           )}
           <Spacer size={60} />
           <p>Receive distribution</p>
-          <Button onClick={onClickReceiveDistribution} isEnabled={true} isLoading={false}>
+          <Button
+            onClick={onClickReceiveDistribution}
+            isEnabled={isWithdrawalButtonClickable}
+            isLoading={false}
+          >
             Receive distribution
           </Button>
         </TabBar.Content>

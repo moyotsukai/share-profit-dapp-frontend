@@ -2,5 +2,9 @@
   "5": {
     "Factory": ["0xBE1e444E5CE220628b3ee2Da7d2442385325Ac80"],
     "Usdc": ["0x07865c6e87b9f70255377e024ace6630c1eaa37f"]
+  },
+  "80001": {
+    "Factory": ["0xFd79D402b71Cb93Ab12928522abd2d6e430bB52A"],
+    "Usdc": ["0x0fa8781a83e46826621b3bc094ea2a0212e71b23"]
   }
 }

@@ -4,7 +4,7 @@ import React, { useEffect } from "react"
 import { useUserState } from "@/states/userState"
 import LoadingCircle from "../ui/LoadingCircle"
 import { useMoralis } from "react-moralis"
-import UserNameDialog from "../user/UserNameDialog";
+import UserNameDialog from "../user/UserNameDialog"
 import Header from "../common/Header"
 
 type Props = {
@@ -12,8 +12,7 @@ type Props = {
 }
 
 const AuthProvider: React.FC<Props> = ({ children }) => {
-
-  const { account } = useMoralis()
+  const { account, isWeb3Enabled } = useMoralis()
   const [user, setUser] = useUserState()
   const hasNoUserName = !user?.name
 
@@ -35,7 +34,8 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
         setUser(null)
       }
     }
-  }, [account])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isWeb3Enabled, account])
 
   return (
     <>
@@ -48,16 +48,7 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
         <React.Fragment>
           <Header />
 
-          {user ? (
-            hasNoUserName ? (
-              <UserNameDialog />
-            ) :
-              children
-          ) : (
-            <>
-              Landing page
-            </>
-          )}
+          {user ? hasNoUserName ? <UserNameDialog /> : children : <>Landing page</>}
         </React.Fragment>
       )}
     </>

@@ -8,11 +8,16 @@ import { useRouter } from "next/router"
 import { useState } from "react"
 import { PATHS } from "../paths"
 import factoryAbi from "../../../../constants/Factory.json"
-import { useWeb3Contract } from "react-moralis"
+import { useMoralis, useWeb3Contract } from "react-moralis"
 import { useNotification } from "web3uikit"
+import { contractAddressesInterface } from "../../../types/networkAddress"
+import networkConfig from "../../../../constants/networkMapping.json"
 
 export default function NewProjectAboutVaultPage() {
-  const factoryAddr = "0x338a49b537541d2DE3d20B987A3A48449288778A"
+  const { chainId } = useMoralis()
+  const addresses: contractAddressesInterface = networkConfig
+  const chainString = chainId ? parseInt(chainId).toString() : "31337"
+  const factoryAddr = chainId ? addresses[chainString].Factory[0] : undefined
   const adminAddr = "0x8eBD4fAa4fcEEF064dCaEa48A3f75d0D0A3ba3f2"
   // TODO: uriを生成する処理を実装
   const uri = "ipfs://QmUnzswTarW8fVUH6aztH8h4sqoxuBCDyTnBrwvU4Z4T4d"
