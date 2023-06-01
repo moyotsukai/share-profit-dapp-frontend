@@ -12,6 +12,11 @@ import { usePageLeaveConfirmation } from "@/models/project/usePageLeaveConfirmat
 import { useEditingProjectState } from "@/states/editingProjectState"
 import { uploadSbtImage } from "@/models/storage/uploadSbtImage"
 import { updateProject } from "@/models/firestore/updateProject"
+import { useNotification } from "web3uikit"
+import { useWeb3Contract, useMoralis } from "react-moralis"
+import { contractAddressesInterface } from "../../../types/networkAddress"
+import securitiesFactoryAbi from "../../../../constants/SecuritiesFactory.json"
+import networkConfig from "../../../../constants/networkMapping.json"
 
 const formInputSchema = z.object({
   sbtTokenName: z.string().nonempty({ message: "Required" }),
@@ -23,16 +28,45 @@ type NewProjectAboutSbt = z.infer<typeof formInputSchema>
 
 export default function NewProjectAboutSbtPage() {
   const router = useRouter()
+
+  // TODO: uriを生成する処理を実装
+  const uri = "ipfs://QmUnzswTarW8fVUH6aztH8h4sqoxuBCDyTnBrwvU4Z4T4d"
+  const { chainId } = useMoralis()
+  const addresses: contractAddressesInterface = networkConfig
+  const chainString = chainId ? parseInt(chainId).toString() : "31337"
+  const securitiesFactoryAddr = chainId ? addresses[chainString].SecuritiesFactory[0] : undefined
+
   const [editingProject, setEditingProject] = useEditingProjectState()
   const [isButtonEnabled, setIsButtonEnabled] = useState<boolean>(true)
   const [isButtonLoading, setIsButtonLoading] = useState<boolean>(false)
   const [isPageLeaveAllowed, setIsPageLeaveAllowed] = useState<boolean>(false)
+  const [sbtAddr, setSbtAddr] = useState<string>("")
   usePageLeaveConfirmation(isPageLeaveAllowed)
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<NewProjectAboutSbt>({ resolver: zodResolver(formInputSchema) })
+  const dispatch = useNotification()
+
+  const { runContractFunction: deploy } = useWeb3Contract({
+    abi: securitiesFactoryAbi,
+    contractAddress: securitiesFactoryAddr,
+    functionName: "deploy",
+    params: {
+      _uri: uri,
+    },
+  })
+  const handleDeployContractsSuccess = async (tx: any) => {
+    const txReceipt = await tx.wait()
+    setSbtAddr(txReceipt.events[0].address)
+    dispatch({
+      type: "success",
+      message: "contract deployed",
+      title: "deploy contract!",
+      position: "topR",
+    })
+  }
 
   const addSbtImageFromFormData = async ({
     data,
@@ -94,15 +128,14 @@ export default function NewProjectAboutSbtPage() {
       })
     }
 
-    //TODO
-    //<<<Hashimoto
-    //deploy SBT contract
-    // コントラクトの処理の都合上、SBTのコントラクトは金庫コントラクトと同時にデプロイしたいです
-
-    //get address and transaction
-
-    const address = ""
-    //Hashimoto>>>
+    // TODO
+    // <<<Hashimoto
+    // deploy SBT contract
+    await deploy({
+      onSuccess: handleDeployContractsSuccess,
+      onError: (error) => console.log(error),
+    })
+    // Hashimoto>>>
 
     router.push(PATHS.NEW_PROJECT.ABOUT_VAULT)
   }

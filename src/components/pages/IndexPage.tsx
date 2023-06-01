@@ -151,9 +151,9 @@ export default function IndexPage() {
       unreceivedDistributionBalance === undefined ||
       unreceivedDistributionBalance === "0"
     ) {
-      setWithdrawalButtonClickable(true)
-    } else {
       setWithdrawalButtonClickable(false)
+    } else {
+      setWithdrawalButtonClickable(true)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isWeb3Enabled, account])

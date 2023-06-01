@@ -7,7 +7,7 @@ import { useEditingProjectValue } from "@/states/editingProjectState"
 import { useRouter } from "next/router"
 import { useState } from "react"
 import { PATHS } from "../paths"
-import factoryAbi from "../../../../constants/Factory.json"
+import accountFactoryAbi from "../../../../constants/AccountFactory.json"
 import { useMoralis, useWeb3Contract } from "react-moralis"
 import { useNotification } from "web3uikit"
 import { contractAddressesInterface } from "../../../types/networkAddress"
@@ -17,10 +17,8 @@ export default function NewProjectAboutVaultPage() {
   const { chainId } = useMoralis()
   const addresses: contractAddressesInterface = networkConfig
   const chainString = chainId ? parseInt(chainId).toString() : "31337"
-  const factoryAddr = chainId ? addresses[chainString].Factory[0] : undefined
+  const accounFactoryAddr = chainId ? addresses[chainString].AccountFactory[0] : undefined
   const adminAddr = "0x8eBD4fAa4fcEEF064dCaEa48A3f75d0D0A3ba3f2"
-  // TODO: uriを生成する処理を実装
-  const uri = "ipfs://QmUnzswTarW8fVUH6aztH8h4sqoxuBCDyTnBrwvU4Z4T4d"
   // TODO: フォームから取得
   const founderShare = 1
   const dispatch = useNotification()
@@ -29,25 +27,24 @@ export default function NewProjectAboutVaultPage() {
   const editingProject = useEditingProjectValue()
   const [isButtonEnabled, setIsButtonEnabled] = useState<boolean>(true)
   const [isButtonLoading, setIsButtonLoading] = useState<boolean>(false)
-  const [sbtAddr, setSbtAddr] = useState<string>("")
   const [isPageLeaveAllowed, setIsPageLeaveAllowed] = useState<boolean>(false)
   const [vaultAddr, setVaultAddr] = useState<string>("")
   usePageLeaveConfirmation(isPageLeaveAllowed)
 
   const { runContractFunction: deploy } = useWeb3Contract({
-    abi: factoryAbi,
-    contractAddress: factoryAddr,
+    abi: accountFactoryAbi,
+    contractAddress: accounFactoryAddr,
     functionName: "deploy",
     params: {
       _adminAddr: adminAddr,
-      _uri: uri,
+      // TODO: projectごとに取得
+      _securitiesAddr: "0x35Db31E08349f225bF11642694Fea5725D0792c5",
       _share: founderShare,
     },
   })
   const handleDeployContractsSuccess = async (tx: any) => {
     const txReceipt = await tx.wait()
-    setSbtAddr(txReceipt.events[0].address)
-    setVaultAddr(txReceipt.events[1].address)
+    setVaultAddr(txReceipt.events[0].address)
     dispatch({
       type: "success",
       message: "contract deployed",
@@ -61,15 +58,15 @@ export default function NewProjectAboutVaultPage() {
     setIsButtonLoading(true)
     setIsPageLeaveAllowed(true)
 
-    //TODO
-    //<<<Hashimoto
-    //金庫コントラクト、Sbtコントラクト作成
-    const addrs = await deploy({
+    // TODO
+    // <<<Hashimoto
+    // deploy 金庫コントラクト
+    await deploy({
       onSuccess: handleDeployContractsSuccess,
       onError: (error) => console.log(error),
     })
 
-    //Hashimoto>>>
+    // Hashimoto>>>
 
     if (!editingProject || !editingProject.id) {
       return
