@@ -2,14 +2,13 @@ import { ConnectButton } from "web3uikit"
 import * as s from "./style"
 import { useMoralis } from "react-moralis"
 import { signIn } from "@/models/auth/signIn"
-import { useUserState } from "@/states/userState"
+import { useSetUserState } from "@/states/userState"
 
 const Header: React.FC = () => {
-  const [user, setUser] = useUserState()
+  const setUser = useSetUserState()
   const { account } = useMoralis()
 
   const onClickConnect = async () => {
-    // Hashimoto>>>
     const address = account
     if (address) {
       const user = await signIn({ address: address })
@@ -17,7 +16,6 @@ const Header: React.FC = () => {
     } else {
       setUser(null)
     }
-    // <<<Hashimoto
   }
 
   return (

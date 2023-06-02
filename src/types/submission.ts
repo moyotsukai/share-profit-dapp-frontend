@@ -6,8 +6,8 @@ export type EditingSubmission = {
   projectId: string,
   taskId: string,
   userId: string,
-  link?: string,
   fileUrl?: string,
+  link?: string,
   message?: string,
   stage: SubmissionStage
 }

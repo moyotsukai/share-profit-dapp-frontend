@@ -1,12 +1,12 @@
-import { colors } from "@/styles/colors";
-import { css } from "@emotion/react";
+import { colors } from "@/styles/colors"
+import { css } from "@emotion/react"
 
-export const taskCardStyle = css`
+export const taskCardStyle = (isMarked: boolean) => css`
   border: solid 1px ${colors.divider};
   text-align: left;
   width: 100%;
   height: 90px;
-  background-color: #fff;
+  background-color: ${isMarked ? colors.markedCard : "#fff"};
   margin: 10px 0;
   overflow: hidden;
   border-radius: 6px;

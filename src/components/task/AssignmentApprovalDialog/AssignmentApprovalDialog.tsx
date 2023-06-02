@@ -39,7 +39,13 @@ const AssignmentApprovalDialog: React.FC<Props> = ({ type, assignment, tasks }: 
       await updateTask({
         projectId: assignment.projectId,
         taskId: task.id,
-        task: { stage: "inProgress" }
+        task: {
+          stage: "inProgress",
+          asigneeIds: [
+            ...task.asigneeIds,
+            assignment.userId
+          ]
+        }
       })
 
       await updateAssignmentApplication({

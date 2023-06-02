@@ -6,6 +6,8 @@ import { useRouter } from "next/router"
 import { useFetchEffect } from "@/models/project/useFetchEffect"
 import AssignmentForm from "../AssignmentForm"
 import Spacer from "@/components/ui/Spacer"
+import { useUserValue } from "@/states/userState"
+import SubmissionForm from "../SubmissionForm/SubmissionForm"
 
 type Props = {
   task: Task
@@ -13,9 +15,13 @@ type Props = {
 
 const TaskCard: React.FC<Props> = ({ task }) => {
 
+  const user = useUserValue()
   const router = useRouter()
   const { taskId } = router.query
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false)
+  const isAssignmentFormAvailable = !task.asigneeIds.length
+    && !task.assignmentApplicationIds.length
+  const isUsersCard = (user && task.asigneeIds.includes(user.uid)) ?? false
 
   useFetchEffect(() => {
     if (taskId === task.id) {
@@ -28,7 +34,7 @@ const TaskCard: React.FC<Props> = ({ task }) => {
   return (
     <Dialog.Root open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <Dialog.Trigger asChild>
-        <button css={s.taskCardStyle}>
+        <button css={() => s.taskCardStyle(isUsersCard)}>
           {task.title}
         </button>
       </Dialog.Trigger>
@@ -62,12 +68,16 @@ const TaskCard: React.FC<Props> = ({ task }) => {
             <p>
               {`${task.bountySbt} tokens`}
             </p>
-            {!task.asigneeIds.length
-              && !task.assignmentApplicationIds.length
-              &&
+            {isAssignmentFormAvailable &&
               <>
                 <Spacer size={30} />
                 <AssignmentForm task={task} />
+              </>
+            }
+            {isUsersCard &&
+              <>
+                <Spacer size={30} />
+                <SubmissionForm task={task} />
               </>
             }
 
