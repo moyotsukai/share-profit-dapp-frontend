@@ -20,10 +20,6 @@ type Props = {
 
 const DroppableTaskColumn: React.FC<Props> = ({ columnStage, title }) => {
 
-  const user = useUserValue()
-  const project = useProjectValue()
-  const isProjectOwner = project && user && project.ownerIds.includes(user.uid)
-
   const [_, drop] = useDrop<DraggableTask>({
     accept: ["item"],
     drop: () => {
@@ -58,7 +54,7 @@ const DroppableTaskColumn: React.FC<Props> = ({ columnStage, title }) => {
             key={task.id}
           />
         ))}
-        {isProjectOwner && columnStage === "todo" &&
+        {columnStage === "todo" &&
           <AddNewTaskDialog />
         }
       </ul>

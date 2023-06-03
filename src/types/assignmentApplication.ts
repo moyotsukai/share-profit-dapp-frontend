@@ -7,7 +7,8 @@ export type EditingAssignmentApplication = {
   taskId: string,
   userId: string,
   message?: string,
-  stage: AssignmentApplicationStage
+  stage: AssignmentApplicationStage,
+  commentsFromProjectOwner?: string
 }
 
 export type AssignmentApplication = EditingAssignmentApplication & {

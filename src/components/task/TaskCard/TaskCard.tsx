@@ -7,12 +7,13 @@ import { useFetchEffect } from "@/models/project/useFetchEffect"
 import AssignmentForm from "../AssignmentForm"
 import Spacer from "@/components/ui/Spacer"
 import { useUserValue } from "@/states/userState"
-import SubmissionForm from "../SubmissionForm/SubmissionForm"
+import SubmissionForm from "../SubmissionForm"
 import { useSubmissionsValue } from "@/states/submissionsState"
 import { useAssignmentApplicationsValue } from "@/states/assignmentApplicatinsState"
 import Title from "@/components/ui/Title/Title"
 import { assignmentApplicationStageDisplayText } from "@/types/assignmentApplication"
-import { submissionStageDisplayText } from "@/types/submission"
+import { Submission, submissionStageDisplayText } from "@/types/submission"
+import ReSubmissionForm from "../ReSubmissionForm"
 
 type Props = {
   task: Task
@@ -34,6 +35,7 @@ const TaskCard: React.FC<Props> = ({ task }) => {
   const isAssignmentFormAvailable = noOneHasAppliedForTask && !assignmentApplicationsForThisTask.find(($0) => $0.userId === user?.uid)
   const submissionsForThisTask = submissions.filter(($0) => $0.taskId === task.id)
   const isSubmissionFormAvailable = isUsersCard && !submissionsForThisTask.find(($0) => $0.userId === user?.uid)
+  const usersRejectedSubmission: Submission = submissionsForThisTask.filter(($0) => $0.userId === user?.uid).filter(($0) => $0.stage === "rejected")[0] ?? null
 
   useFetchEffect(() => {
     if (taskId === task.id) {
@@ -116,9 +118,22 @@ const TaskCard: React.FC<Props> = ({ task }) => {
                   Submissions
                 </Title>
                 {submissionsForThisTask.map((submission, index) => (
-                  <p key={index}>
-                    {`@${submission.user.name} (${submissionStageDisplayText(submission.stage)})`}
-                  </p>
+                  <div key={index}>
+                    {index !== 0 && <Spacer size={10} />}
+                    <p>
+                      {`@${submission.user.name} (${submissionStageDisplayText(submission.stage)})`}
+                    </p>
+                    {submission.commentsFromProjectOwner &&
+                      <div css={s.commentsContainerStyle}>
+                        <p>
+                          Comments from Project Owner
+                        </p>
+                        <p>
+                          {submission.commentsFromProjectOwner}
+                        </p>
+                      </div>
+                    }
+                  </div>
                 ))}
               </>
             }
@@ -127,6 +142,16 @@ const TaskCard: React.FC<Props> = ({ task }) => {
               <>
                 <Spacer size={30} />
                 <SubmissionForm task={task} />
+              </>
+            }
+
+            {usersRejectedSubmission &&
+              <>
+                <Spacer size={30} />
+                <ReSubmissionForm
+                  task={task}
+                  submission={usersRejectedSubmission}
+                />
               </>
             }
 

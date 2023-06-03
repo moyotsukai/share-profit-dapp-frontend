@@ -5,7 +5,6 @@ import TabBar from "../radix/TabBar"
 import { useUserValue } from "@/states/userState"
 import { updateProjectArray } from "@/models/firestore/updateProject"
 import LoadingCircle from "../ui/LoadingCircle/LoadingCircle"
-import { Avatar } from "../radix/Avatar/Avatar"
 import TaskBoard from "../task/TaskBoard"
 import Assignments from "../task/Assignments";
 import ProjectOverview from "../project/ProjectOverview/ProjectOverview";
@@ -14,6 +13,7 @@ import { useGetSbtOwners } from "@/models/project/useGetSbtOwners";
 import { useGetProject } from "@/models/project/useGetProject";
 import { useGetAssignment } from "@/models/project/useGetAssignment";
 import { useIsProjectOwner } from "@/models/project/useIsProjectOwner"
+import ProjectHeader from "../project/ProjectHeader"
 
 export default function ProjectPage() {
 
@@ -69,24 +69,7 @@ export default function ProjectPage() {
       {project ? (
         isVerified ? (
           <TabBar.Root defaultValue={taskId ? "tasks" : "overview"}>
-            <div>
-              {project.downloadImageUrl ? (
-                <div>
-                  <Avatar
-                    src={project.downloadImageUrl}
-                    alt="project icon"
-                    fallback={project.title.substring(0, 1)}
-                  />
-                </div>
-              ) : (
-                <div>
-                  <Avatar fallback={project.title.substring(0, 1)} />
-                </div>
-              )}
-              <p>
-                {project.title}
-              </p>
-            </div>
+            <ProjectHeader project={project} />
 
             <TabBar.List>
               <TabBar.Trigger value="overview">Overview</TabBar.Trigger>

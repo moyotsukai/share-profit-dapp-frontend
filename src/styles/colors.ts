@@ -10,5 +10,6 @@ export const colors = {
   sideBar: "#344199",
   card: "#f0f5fc",
   markedCard: "#fff2d9",
-  divider: "#b8c4cc"
+  divider: "#b8c4cc",
+  warning: "#fff2d9"
 }

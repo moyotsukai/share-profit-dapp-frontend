@@ -15,5 +15,7 @@ export const assignmentsContainerStyle = css`
 
 export const tableStyle = css`
   background-color: ${colors.card};
+  border-radius: 6px;
   padding: 5px;
+  min-height: 160px;
 `

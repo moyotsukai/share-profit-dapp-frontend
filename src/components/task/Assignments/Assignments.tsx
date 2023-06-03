@@ -21,7 +21,11 @@ const Assignments: React.FC<Props> = ({ assignmentApplications, submissions, tas
         <Title style="subtitle">
           Task Assignment Applicatoins
         </Title>
+
         <Spacer size={10} />
+        <p>
+          Need to Approve/Reject
+        </p>
         <ul css={s.tableStyle}>
           {assignmentApplications.map((assignmentApplication, index) =>
             assignmentApplication.stage === "inReview" && (
@@ -34,6 +38,42 @@ const Assignments: React.FC<Props> = ({ assignmentApplications, submissions, tas
             )
           )}
         </ul>
+
+        <Spacer size={20} />
+        <p>
+          Approved Assignments
+        </p>
+        <ul css={s.tableStyle}>
+          {assignmentApplications.map((assignmentApplication, index) =>
+            assignmentApplication.stage === "accepted" && (
+              <AssignmentApprovalDialog
+                type="assignmentApplication"
+                tasks={tasks}
+                assignment={assignmentApplication}
+                isEditable={false}
+                key={index}
+              />
+            )
+          )}
+        </ul>
+
+        <Spacer size={20} />
+        <p>
+          Rejected Assignment Applicatins
+        </p>
+        <ul css={s.tableStyle}>
+          {assignmentApplications.map((assignmentApplication, index) =>
+            assignmentApplication.stage === "rejected" && (
+              <AssignmentApprovalDialog
+                type="assignmentApplication"
+                tasks={tasks}
+                assignment={assignmentApplication}
+                isEditable={false}
+                key={index}
+              />
+            )
+          )}
+        </ul>
       </div>
       <Spacer size={30} />
 
@@ -41,7 +81,11 @@ const Assignments: React.FC<Props> = ({ assignmentApplications, submissions, tas
         <Title style="subtitle">
           Task Submissions
         </Title>
+
         <Spacer size={10} />
+        <p>
+          Need to Approve/Reject
+        </p>
         <ul css={s.tableStyle}>
           {submissions.map((submission, index) =>
             submission.stage === "inReview" && (
@@ -49,6 +93,42 @@ const Assignments: React.FC<Props> = ({ assignmentApplications, submissions, tas
                 type="submission"
                 tasks={tasks}
                 assignment={submission}
+                key={index}
+              />
+            )
+          )}
+        </ul>
+
+        <Spacer size={20} />
+        <p>
+          Approved Submissions
+        </p>
+        <ul css={s.tableStyle}>
+          {submissions.map((submission, index) =>
+            submission.stage === "accepted" && (
+              <AssignmentApprovalDialog
+                type="submission"
+                tasks={tasks}
+                assignment={submission}
+                isEditable={false}
+                key={index}
+              />
+            )
+          )}
+        </ul>
+
+        <Spacer size={20} />
+        <p>
+          Rejected Submissions
+        </p>
+        <ul css={s.tableStyle}>
+          {submissions.map((submission, index) =>
+            submission.stage === "rejected" && (
+              <AssignmentApprovalDialog
+                type="submission"
+                tasks={tasks}
+                assignment={submission}
+                isEditable={false}
                 key={index}
               />
             )

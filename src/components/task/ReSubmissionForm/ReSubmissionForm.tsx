@@ -11,11 +11,12 @@ import { useProjectState } from "@/states/projectState"
 import { updateTask, updateTaskArray } from "@/models/firestore/updateTask"
 import { useUserValue } from "@/states/userState"
 import { Project } from "@/types/Project"
-import { EditingSubmission } from "@/types/submission"
+import { EditingSubmission, Submission } from "@/types/submission"
 import { uploadSubmissionFile } from "@/models/storage/uploadSubmissionFile"
 import { createSubmission } from "@/models/firestore/createSubmission"
 import { updateSubmission } from "@/models/firestore/updateSubmission"
 import { useSetSubmissionsState } from "@/states/submissionsState"
+import { extractFileNameFromUrl } from "@/utils/extractFileNameFromUrl"
 
 const formInputSchema = z
   .object({
@@ -28,18 +29,19 @@ const formInputSchema = z
       .string()
   })
 
-type Submission = z.infer<typeof formInputSchema>
+type ReSubmission = z.infer<typeof formInputSchema>
 
 type Props = {
-  task: Task
+  task: Task,
+  submission: Submission
 }
 
-const SubmissionForm: React.FC<Props> = ({ task }) => {
+const ReSubmissionForm: React.FC<Props> = ({ task, submission }) => {
 
   const user = useUserValue()
   const [project, setProject] = useProjectState()
   const [isEditing, setIsEditing] = useState<boolean>(false)
-  const { register, handleSubmit, reset } = useForm<Submission>({ resolver: zodResolver(formInputSchema) })
+  const { register, handleSubmit, reset } = useForm<ReSubmission>({ resolver: zodResolver(formInputSchema) })
   const [isButtonEnabled, setIsButtonEnabled] = useState<boolean>(true)
   const [isButtonLoading, setIsButtonLoading] = useState<boolean>(false)
   const setSubmissions = useSetSubmissionsState()
@@ -53,13 +55,13 @@ const SubmissionForm: React.FC<Props> = ({ task }) => {
     reset()
   }
 
-  const onSubmit: SubmitHandler<Submission> = async (data) => {
+  const onSubmit: SubmitHandler<ReSubmission> = async (data) => {
     if (!user || !project) { return }
     setIsButtonEnabled(false)
     setIsButtonLoading(true)
 
-    //create submission
-    const submission: EditingSubmission = {
+    //update submission
+    const newSubmission: EditingSubmission = {
       projectId: project.id,
       taskId: task.id,
       userId: user.uid,
@@ -67,23 +69,22 @@ const SubmissionForm: React.FC<Props> = ({ task }) => {
       message: data.message,
       stage: "inReview"
     }
-    const { data: createdSubmission } = await createSubmission({
-      submission: submission,
-      user: user
+    await updateSubmission({
+      submissionId: submission.id,
+      submission: newSubmission
     })
-    if (!createdSubmission) { return }
 
     if (data.file) {
       //upload file
       const { data: fileUrl } = await uploadSubmissionFile({
-        submissionId: createdSubmission.id,
+        submissionId: submission.id,
         file: data.file
       })
       if (!fileUrl) { return }
 
       //update submission
       await updateSubmission({
-        submissionId: createdSubmission.id,
+        submissionId: submission.id,
         submission: {
           fileUrl: fileUrl
         }
@@ -95,7 +96,7 @@ const SubmissionForm: React.FC<Props> = ({ task }) => {
       projectId: project.id,
       taskId: task.id,
       key: "submissionIds",
-      value: createdSubmission.id,
+      value: submission.id,
       method: "union"
     })
     await updateTask({
@@ -113,10 +114,9 @@ const SubmissionForm: React.FC<Props> = ({ task }) => {
         if ($0.id === task.id) {
           return {
             ...$0,
-            stage: "inReview",
             submissionIds: [
               ...$0.submissionIds,
-              createdSubmission.id
+              submission.id
             ]
           }
         } else {
@@ -128,10 +128,18 @@ const SubmissionForm: React.FC<Props> = ({ task }) => {
 
     //set submissionsState
     setSubmissions((currentValue) => {
-      return [
-        ...currentValue,
-        createdSubmission
-      ]
+      return currentValue.map(($0) => {
+        if ($0.id === submission.id) {
+          const newCreatedSubmission: Submission = {
+            ...newSubmission,
+            id: submission.id,
+            user: user
+          }
+          return newCreatedSubmission
+        } else {
+          return $0
+        }
+      })
     })
 
     setIsEditing(false)
@@ -145,13 +153,13 @@ const SubmissionForm: React.FC<Props> = ({ task }) => {
             onClick={onEditSubmission}
             style="outlined"
           >
-            Submit Task
+            Re-submit Task
           </Button>
         )
         : (
           <div>
             <Title style="subtitle">
-              Submit Task
+              Re-submit Task
             </Title>
             <Spacer size={20} />
 
@@ -162,7 +170,10 @@ const SubmissionForm: React.FC<Props> = ({ task }) => {
                     File
                   </p>
                 </label>
-                <input type="file" {...register("file")} />
+                <input
+                  type="file"
+                  {...register("file")}
+                />
               </div>
               <Spacer size={20} />
 
@@ -172,7 +183,11 @@ const SubmissionForm: React.FC<Props> = ({ task }) => {
                     Link
                   </p>
                 </label>
-                <input type="text" {...register("link")} />
+                <input
+                  type="text"
+                  defaultValue={submission.link ?? ""}
+                  {...register("link")}
+                />
               </div>
               <Spacer size={20} />
 
@@ -184,6 +199,7 @@ const SubmissionForm: React.FC<Props> = ({ task }) => {
                 </label>
                 <textarea
                   placeholder="Message about the task..."
+                  defaultValue={submission.message}
                   {...register("message")}
                 />
               </div>
@@ -214,4 +230,4 @@ const SubmissionForm: React.FC<Props> = ({ task }) => {
   )
 }
 
-export default SubmissionForm
+export default ReSubmissionForm

@@ -60,6 +60,7 @@ export const assignmentApplicationFromFirebase = (data: any): AssignmentApplicat
     userId: data?.userId ?? "",
     message: data?.message,
     stage: data?.stage ?? "inReview",
+    commentsFromProjectOwner: data?.commentsFromProjectOwner,
     user: userFromFirebase(data?.user)
   }
 }
@@ -74,6 +75,7 @@ export const submissionFromFirebase = (data: any): Submission => {
     fileUrl: data?.fileUrl,
     message: data?.message,
     stage: data?.stage ?? "inReview",
+    commentsFromProjectOwner: data?.commentsFromProjectOwner,
     user: userFromFirebase(data?.user)
   }
 }

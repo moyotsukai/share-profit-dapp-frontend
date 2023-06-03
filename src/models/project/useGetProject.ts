@@ -1,8 +1,8 @@
 import { useFetchEffect } from "./useFetchEffect";
 import { getProjectFromId } from "../firestore/getProjectFromId";
 import { getTasksFromId } from "../firestore/getTasksFromId";
-import { downloadImageFromUrl } from "../storage/downloadProjectImage";
 import { useProjectState } from "@/states/projectState";
+import { downloadFileFromUrl } from "../storage/downloadFile";
 
 export const useGetProject = (projectId: string | string[] | undefined) => {
 
@@ -22,7 +22,7 @@ export const useGetProject = (projectId: string | string[] | undefined) => {
 
     //set project state
     if (projectData.imageUrl) {
-      const { data: downloadImageUrl } = await downloadImageFromUrl(projectData.imageUrl)
+      const { data: downloadImageUrl } = await downloadFileFromUrl(projectData.imageUrl)
       setProject({
         ...projectData,
         tasks: tasksData ?? [],

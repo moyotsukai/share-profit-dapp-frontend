@@ -56,3 +56,7 @@ export const closeButtonStyle = css`
     cursor: pointer;
   }
 `
+
+export const commentsContainerStyle = css`
+  background-color: ${colors.warning};
+`

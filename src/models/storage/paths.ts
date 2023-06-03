@@ -8,8 +8,7 @@ export const PATHS = {
     const fileExtension = fileName.substring(fileName.lastIndexOf("."))
     return `/projects/${projectId}/sbtImage/sbt${fileExtension}`
   },
-  submissionFile: ({ submissionId, fileName }: { submissionId: string, fileName: string }) => {
-    const fileExtension = fileName.substring(fileName.lastIndexOf("."))
-    return `/submissions/${submissionId}/submissionFile/submission${fileExtension}`
+  submissionFile: ({ submissionId, fileName, avoidConflict }: { submissionId: string, fileName: string, avoidConflict: string }) => {
+    return `/submissions/${submissionId}/submissionFile${avoidConflict}/${fileName}`
   }
 }

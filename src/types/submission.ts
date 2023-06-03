@@ -9,7 +9,8 @@ export type EditingSubmission = {
   fileUrl?: string,
   link?: string,
   message?: string,
-  stage: SubmissionStage
+  stage: SubmissionStage,
+  commentsFromProjectOwner?: string
 }
 
 export type Submission = EditingSubmission & {

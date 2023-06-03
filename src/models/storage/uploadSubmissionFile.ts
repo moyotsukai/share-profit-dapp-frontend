@@ -2,6 +2,7 @@ import { Res } from "@/types/Res"
 import { ref, uploadBytes } from "firebase/storage"
 import { storage } from "../firebase/client"
 import { PATHS } from "./paths"
+import { randomCharactors } from "@/utils/randomCharactors"
 
 type Props = {
   submissionId: string,
@@ -10,7 +11,11 @@ type Props = {
 
 export const uploadSubmissionFile = async ({ submissionId, file }: Props): Promise<Res<string | null>> => {
 
-  const filePath = PATHS.submissionFile({ submissionId: submissionId, fileName: file.name })
+  const filePath = PATHS.submissionFile({
+    submissionId: submissionId,
+    fileName: file.name,
+    avoidConflict: randomCharactors(4)
+  })
   const storageRef = ref(storage, filePath)
 
   try {

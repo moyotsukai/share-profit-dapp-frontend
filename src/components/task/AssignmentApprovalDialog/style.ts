@@ -54,6 +54,12 @@ export const closeButtonStyle = css`
   }
 `
 
+export const fileDownloadLinkStyle = css`
+  color: ${colors.primary};
+  cursor: pointer;
+  text-decoration: underline;
+`
+
 export const buttonGroupStyle = css`
   display: flex;
 `
