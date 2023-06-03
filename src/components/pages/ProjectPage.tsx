@@ -83,7 +83,9 @@ export default function ProjectPage() {
                   <Avatar fallback={project.title.substring(0, 1)} />
                 </div>
               )}
-              <p>{project.title}</p>
+              <p>
+                {project.title}
+              </p>
             </div>
 
             <TabBar.List>

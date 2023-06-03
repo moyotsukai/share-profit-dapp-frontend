@@ -48,7 +48,7 @@ const ProjectOverview: React.FC<Props> = ({ project, isProjectOwner }) => {
       )}
       <div>
         <p>
-          Project vault address
+          Project treasury address
         </p>
         <p>
           {project.vaultAddress}
