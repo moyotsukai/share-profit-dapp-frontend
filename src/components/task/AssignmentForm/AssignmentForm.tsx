@@ -13,6 +13,7 @@ import { useUserValue } from "@/states/userState"
 import { EditingAssignmentApplication } from "@/types/assignmentApplication"
 import { createAssignmentApplication } from "@/models/firestore/createAssignmentApplication"
 import { Project } from "@/types/Project"
+import { useSetAssignmentApplicationsState } from "@/states/assignmentApplicatinsState"
 
 const formInputSchema = z
   .object({
@@ -33,6 +34,7 @@ const AssignmentForm: React.FC<Props> = ({ task }) => {
   const { register, handleSubmit, reset } = useForm<AssignmentApplication>({ resolver: zodResolver(formInputSchema) })
   const [isButtonEnabled, setIsButtonEnabled] = useState<boolean>(true)
   const [isButtonLoading, setIsButtonLoading] = useState<boolean>(false)
+  const setAssignmentApplication = useSetAssignmentApplicationsState()
 
   const onApplyForAssignment = () => {
     setIsEditing(true)
@@ -89,6 +91,14 @@ const AssignmentForm: React.FC<Props> = ({ task }) => {
       })
     }
     setProject(newProject)
+
+    //set assignmentApplicationsState
+    setAssignmentApplication((curretValue) => {
+      return [
+        ...curretValue,
+        createdAssignmentApplication
+      ]
+    })
 
     setIsEditing(false)
   }

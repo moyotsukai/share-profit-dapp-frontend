@@ -215,7 +215,7 @@ const AssignmentApprovalDialog: React.FC<Props> = ({ type, assignment, tasks }: 
                 {task.title}
               </p>
               <p>
-                {assignment.user.name}
+                @{assignment.user.name}
               </p>
             </button>
           </Dialog.Trigger>

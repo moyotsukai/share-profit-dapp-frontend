@@ -15,6 +15,7 @@ import { EditingSubmission } from "@/types/submission"
 import { uploadSubmissionFile } from "@/models/storage/uploadSubmissionFile"
 import { createSubmission } from "@/models/firestore/createSubmission"
 import { updateSubmission } from "@/models/firestore/updateSubmission"
+import { useSetSubmissionsState } from "@/states/submissionsState"
 
 const formInputSchema = z
   .object({
@@ -41,6 +42,7 @@ const SubmissionForm: React.FC<Props> = ({ task }) => {
   const { register, handleSubmit, reset } = useForm<Submission>({ resolver: zodResolver(formInputSchema) })
   const [isButtonEnabled, setIsButtonEnabled] = useState<boolean>(true)
   const [isButtonLoading, setIsButtonLoading] = useState<boolean>(false)
+  const setSubmissions = useSetSubmissionsState()
 
   const onEditSubmission = () => {
     setIsEditing(true)
@@ -115,6 +117,14 @@ const SubmissionForm: React.FC<Props> = ({ task }) => {
       })
     }
     setProject(newProject)
+
+    //set submissionsState
+    setSubmissions((currentValue) => {
+      return [
+        ...currentValue,
+        createdSubmission
+      ]
+    })
 
     setIsEditing(false)
   }

@@ -16,3 +16,10 @@ export type Submission = EditingSubmission & {
   id: string,
   user: User
 }
+
+export const submissionStageDisplayText = (stage: SubmissionStage): string => {
+  if (stage === "inReview") { return "In Review" }
+  if (stage === "accepted") { return "Accepted" }
+  if (stage === "rejected") { return "Rejected" }
+  return ""
+}

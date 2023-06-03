@@ -6,8 +6,8 @@ const assignmentAppicationsState = atom<AssignmentApplication[]>({
   default: []
 })
 
-export const useAssignmentApplicationsState = () => useRecoilValue(assignmentAppicationsState)
+export const useAssignmentApplicationsValue = () => useRecoilValue(assignmentAppicationsState)
 
 export const useSetAssignmentApplicationsState = () => useSetRecoilState(assignmentAppicationsState)
 
-export const useAssignmentApplilcationsState = () => useRecoilState(assignmentAppicationsState)
+export const useAssignmentApplicationsState = () => useRecoilState(assignmentAppicationsState)

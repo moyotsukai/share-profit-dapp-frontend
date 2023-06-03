@@ -13,6 +13,7 @@ import SbtOwners from "../project/SbtOwners";
 import { useGetSbtOwners } from "@/models/project/useGetSbtOwners";
 import { useGetProject } from "@/models/project/useGetProject";
 import { useGetAssignment } from "@/models/project/useGetAssignment";
+import { useIsProjectOwner } from "@/models/project/useIsProjectOwner"
 
 export default function ProjectPage() {
 
@@ -21,7 +22,8 @@ export default function ProjectPage() {
   const user = useUserValue()
   const [isVerified, setIsVerified] = useState<boolean>(false)
   const { project } = useGetProject(projectId)
-  const { isProjectOwner, assignmentApplications, submissions } = useGetAssignment(project)
+  const { assignmentApplications, submissions } = useGetAssignment(project)
+  const isProjectOwner = useIsProjectOwner(project)
   const sbtOwners = useGetSbtOwners()
   const [_, setProjectIdQueryString] = useState<string>("")
 

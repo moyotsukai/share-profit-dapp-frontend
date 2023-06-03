@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction } from "react"
+import React from "react"
 import * as s from "./style"
 import Title from "@/components/ui/Title"
 import Spacer from "@/components/ui/Spacer"

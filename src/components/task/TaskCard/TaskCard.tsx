@@ -8,6 +8,11 @@ import AssignmentForm from "../AssignmentForm"
 import Spacer from "@/components/ui/Spacer"
 import { useUserValue } from "@/states/userState"
 import SubmissionForm from "../SubmissionForm/SubmissionForm"
+import { useSubmissionsValue } from "@/states/submissionsState"
+import { useAssignmentApplicationsValue } from "@/states/assignmentApplicatinsState"
+import Title from "@/components/ui/Title/Title"
+import { assignmentApplicationStageDisplayText } from "@/types/assignmentApplication"
+import { submissionStageDisplayText } from "@/types/submission"
 
 type Props = {
   task: Task
@@ -19,9 +24,16 @@ const TaskCard: React.FC<Props> = ({ task }) => {
   const router = useRouter()
   const { taskId } = router.query
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false)
-  const isAssignmentFormAvailable = !task.asigneeIds.length
-    && !task.assignmentApplicationIds.length
   const isUsersCard = (user && task.asigneeIds.includes(user.uid)) ?? false
+  const assignmentApplications = useAssignmentApplicationsValue()
+  const submissions = useSubmissionsValue()
+  const assignmentApplicationsForThisTask = assignmentApplications.filter(($0) => $0.taskId === task.id)
+  //only one person can apply for assignment
+  const noOneHasAppliedForTask = !task.asigneeIds.length
+    && !task.assignmentApplicationIds.length
+  const isAssignmentFormAvailable = noOneHasAppliedForTask && !assignmentApplicationsForThisTask.find(($0) => $0.userId === user?.uid)
+  const submissionsForThisTask = submissions.filter(($0) => $0.taskId === task.id)
+  const isSubmissionFormAvailable = isUsersCard && !submissionsForThisTask.find(($0) => $0.userId === user?.uid)
 
   useFetchEffect(() => {
     if (taskId === task.id) {
@@ -35,7 +47,14 @@ const TaskCard: React.FC<Props> = ({ task }) => {
     <Dialog.Root open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <Dialog.Trigger asChild>
         <button css={() => s.taskCardStyle(isUsersCard)}>
-          {task.title}
+          <p>
+            {task.title}
+          </p>
+          {assignmentApplicationsForThisTask.map((assignmentApplication, index) => (
+            <p>
+              @{assignmentApplication.user.name}
+            </p>
+          ))}
         </button>
       </Dialog.Trigger>
       <Dialog.Portal>
@@ -68,13 +87,43 @@ const TaskCard: React.FC<Props> = ({ task }) => {
             <p>
               {`${task.bountySbt} tokens`}
             </p>
+
+            {assignmentApplicationsForThisTask.length !== 0 &&
+              <>
+                <Spacer size={30} />
+                <Title style="subtitle">
+                  Assignments
+                </Title>
+                {assignmentApplicationsForThisTask.map((assignmentApplication, index) => (
+                  <p key={index}>
+                    {`@${assignmentApplication.user.name} (${assignmentApplicationStageDisplayText(assignmentApplication.stage)})`}
+                  </p>
+                ))}
+              </>
+            }
+
             {isAssignmentFormAvailable &&
               <>
                 <Spacer size={30} />
                 <AssignmentForm task={task} />
               </>
             }
-            {isUsersCard &&
+
+            {submissionsForThisTask.length !== 0 &&
+              <>
+                <Spacer size={30} />
+                <Title style="subtitle">
+                  Submissions
+                </Title>
+                {submissionsForThisTask.map((submission, index) => (
+                  <p key={index}>
+                    {`@${submission.user.name} (${submissionStageDisplayText(submission.stage)})`}
+                  </p>
+                ))}
+              </>
+            }
+
+            {isSubmissionFormAvailable &&
               <>
                 <Spacer size={30} />
                 <SubmissionForm task={task} />
