@@ -51,7 +51,7 @@ const TaskCard: React.FC<Props> = ({ task }) => {
             {task.title}
           </p>
           {assignmentApplicationsForThisTask.map((assignmentApplication, index) => (
-            <p>
+            <p key={index}>
               @{assignmentApplication.user.name}
             </p>
           ))}
