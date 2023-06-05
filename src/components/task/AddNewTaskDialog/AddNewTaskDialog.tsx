@@ -13,6 +13,8 @@ import { useProjectState } from "@/states/projectState"
 import { Project } from "@/types/Project"
 import { updateProject } from "@/models/firestore/updateProject"
 import { createTask } from "@/models/firestore/createTask"
+import Input from "@/components/ui/Input"
+import Textarea from "@/components/ui/Textarea"
 
 const formInputSchema = z
   .object({
@@ -114,12 +116,17 @@ const AddNewTaskDialog: React.FC = () => {
           </div>
 
           <form>
+            <Spacer size={20} />
+
             <div>
               <label>
                 <p>
-                  Task name
+                  Task Name
                 </p>
-                <input type="text" {...register("title")} />
+                <Input
+                  placeholder="Task name..."
+                  {...register("title")}
+                />
                 {errors.title && (
                   <ErrorMessage>
                     {errors.title?.message}
@@ -127,14 +134,17 @@ const AddNewTaskDialog: React.FC = () => {
                 )}
               </label>
             </div>
-            <Spacer size={20} />
 
+            <Spacer size={20} />
             <div>
               <label>
                 <p>
                   Outline
                 </p>
-                <input type="text" {...register("outline")} />
+                <Input
+                  placeholder="Outline..."
+                  {...register("outline")}
+                />
                 {errors.outline && (
                   <ErrorMessage>
                     {errors.outline?.message}
@@ -142,14 +152,17 @@ const AddNewTaskDialog: React.FC = () => {
                 )}
               </label>
             </div>
-            <Spacer size={20} />
 
+            <Spacer size={20} />
             <div>
               <label>
                 <p>
                   Details
                 </p>
-                <textarea {...register("details")} />
+                <Textarea
+                  placeholder="Details..."
+                  {...register("details")}
+                />
                 {errors.details && (
                   <ErrorMessage>
                     {errors.details?.message}
@@ -157,14 +170,18 @@ const AddNewTaskDialog: React.FC = () => {
                 )}
               </label>
             </div>
-            <Spacer size={20} />
 
+            <Spacer size={20} />
             <div>
               <label>
                 <p>
-                  Amount of bounty SBT
+                  Amount of Bounty SBT
                 </p>
-                <input type="number" {...register("bountySbt", { valueAsNumber: true })} />
+                <Input
+                  type="number"
+                  placeholder="Amount of bounty SBT..."
+                  {...register("bountySbt", { valueAsNumber: true })}
+                />
                 {errors.bountySbt && (
                   <ErrorMessage>
                     {errors.bountySbt?.message}

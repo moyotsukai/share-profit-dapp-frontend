@@ -1,9 +1,8 @@
 import { Project } from "@/types/Project";
 import * as s from "./style";
 import React from "react"
-import Link from "next/link";
 import Spacer from "@/components/ui/Spacer"
-import { Avatar } from "@/components/radix/Avatar/Avatar";
+import Avatar from "@/components/radix/Avatar"
 
 type Props = {
   project: Project

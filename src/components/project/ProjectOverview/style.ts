@@ -17,3 +17,7 @@ export const linkStyle = css`
   cursor: pointer;
   text-decoration: underline;
 `
+
+export const textWithBreakStyle = css`
+  white-space: pre-wrap;
+`

@@ -2,26 +2,13 @@ import { useState } from "react"
 import TabBar from "../radix/TabBar"
 import Button from "../ui/Button"
 import Spacer from "../ui/Spacer/Spacer"
-import { z } from "zod"
-import { SubmitHandler, useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { updateProjectArray } from "@/models/firestore/updateProject"
-import { useRouter } from "next/router"
-import { PATHS } from "./paths"
 import { useFetchEffect } from "@/models/project/useFetchEffect"
-import { getProjectsWhere } from "@/models/firestore/getProjectsWhere"
-import { KEYS } from "@/models/firestore/keys"
 import accountAbi from "../../../constants/Account.json"
 import networkConfig from "../../../constants/networkMapping.json"
 import { useMoralis, useWeb3Contract } from "react-moralis"
 import { useNotification } from "web3uikit"
 import { ethers } from "ethers"
-
-const formInputSchema = z.object({
-  enteredText: z.string().nonempty(),
-})
-
-type SearchProject = z.infer<typeof formInputSchema>
+import ProjectSearch from "../project/ProjectSearch"
 
 type contractAddressesInterface = {
   [key: string]: contractAddressesItemInterface
@@ -37,11 +24,7 @@ export default function IndexPage() {
   const chainString = chainId ? parseInt(chainId).toString() : "31337"
   const accountAddr = "0x068419813Bd03FaeeAD20370B0FB106f3A9217E4"
   const tokenAddr = (chainId && addresses[chainString] && addresses[chainString].Usdc[0]) ?? ""
-  const router = useRouter()
   const dispatch = useNotification()
-  const { register, handleSubmit } = useForm<SearchProject>({
-    resolver: zodResolver(formInputSchema),
-  })
 
   const [unreceivedDistributionBalance, setUnreceivedDistributionBalance] = useState<
     string | null
@@ -93,40 +76,6 @@ export default function IndexPage() {
     })
   }
 
-  const onClickSearch: SubmitHandler<SearchProject> = async (data) => {
-    //get projects where invitatoin code matches
-    const { data: projects } = await getProjectsWhere({
-      key: KEYS.PROJECT.INVITATION_CODE,
-      operation: "==",
-      value: data.enteredText,
-    })
-    if (!projects || !projects.length) {
-      return
-    }
-    const project = projects[0]
-
-    //add user.uid to member ids
-    if (!account) {
-      return
-    }
-    await updateProjectArray({
-      projectId: project.id,
-      key: "memberIds",
-      value: account,
-      method: "union",
-    })
-
-    //go to project page
-    router.push(PATHS.PROJECT(project.id))
-  }
-
-  const onEnterDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key !== "Enter") {
-      return
-    }
-    handleSubmit(onClickSearch)
-  }
-
   const onClickReceiveDistribution = async () => {
     //分配金の残高を受け取る
     withdrawToken({
@@ -147,18 +96,7 @@ export default function IndexPage() {
         </TabBar.List>
 
         <TabBar.Content value="projects">
-          <form>
-            <label>
-              <p>Search projects</p>
-              <input
-                type="text"
-                placeholder="Search projects..."
-                onKeyDown={onEnterDown}
-                {...register("enteredText")}
-              />
-            </label>
-            <button onClick={handleSubmit(onClickSearch)}>Search</button>
-          </form>
+          <ProjectSearch />
         </TabBar.Content>
 
         <TabBar.Content value="revenue">

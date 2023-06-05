@@ -1,4 +1,5 @@
 import { colors } from "@/styles/colors";
+import { dialogWidth } from "@/styles/constants";
 import { css } from "@emotion/react";
 
 export const addNewTaskButtonStyle = css`
@@ -28,7 +29,7 @@ export const dialogContentStyle = css`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 55vw;
+  width: ${dialogWidth};
   height: 85vh;
   overflow-y: scroll;
   padding: 25px;

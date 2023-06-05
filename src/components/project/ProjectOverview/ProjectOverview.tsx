@@ -61,7 +61,7 @@ const ProjectOverview: React.FC<Props> = ({ project, isProjectOwner }) => {
           <p>
             Details
           </p>
-          <p>
+          <p css={s.textWithBreakStyle}>
             {project.details}
           </p>
         </div>

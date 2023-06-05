@@ -11,5 +11,9 @@ export const colors = {
   card: "#f0f5fc",
   markedCard: "#fff2d9",
   divider: "#b8c4cc",
-  warning: "#fff2d9"
+  input: "#f5f9fc",
+  inputBorder: "#959fa6",
+  warning: "#fff2d9",
+  stageBadge: "#ffcc73",
+  bountyBadge: "#ff73c5"
 }

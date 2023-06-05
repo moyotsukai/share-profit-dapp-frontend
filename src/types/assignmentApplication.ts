@@ -16,9 +16,11 @@ export type AssignmentApplication = EditingAssignmentApplication & {
   user: User
 }
 
-export const assignmentApplicationStageDisplayText = (stage: AssignmentApplicationStage): string => {
+export type AssignmentApplicationStageDisplayText = "In Review" | "Accepted" | "Rejected"
+
+export const assignmentApplicationStageDisplayText = (stage: AssignmentApplicationStage): AssignmentApplicationStageDisplayText => {
   if (stage === "inReview") { return "In Review" }
   if (stage === "accepted") { return "Accepted" }
   if (stage === "rejected") { return "Rejected" }
-  return ""
+  return "In Review"
 }

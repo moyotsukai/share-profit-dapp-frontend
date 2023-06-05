@@ -14,6 +14,7 @@ import Title from "@/components/ui/Title/Title"
 import { assignmentApplicationStageDisplayText } from "@/types/assignmentApplication"
 import { Submission, submissionStageDisplayText } from "@/types/submission"
 import ReSubmissionForm from "../ReSubmissionForm"
+import { useProjectValue } from "@/states/projectState"
 
 type Props = {
   task: Task
@@ -25,6 +26,7 @@ const TaskCard: React.FC<Props> = ({ task }) => {
   const router = useRouter()
   const { taskId } = router.query
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false)
+  const project = useProjectValue()
   const isUsersCard = (user && task.asigneeIds.includes(user.uid)) ?? false
   const assignmentApplications = useAssignmentApplicationsValue()
   const submissions = useSubmissionsValue()
@@ -75,20 +77,37 @@ const TaskCard: React.FC<Props> = ({ task }) => {
           </div>
 
           <div>
-            <p>
-              {taskStageDisplayText(task.stage)}
-            </p>
+            <div>
+              <Spacer size={30} />
+              <span css={s.taskStageBadgeStyle}>
+                {taskStageDisplayText(task.stage)}
+              </span>
+              <span css={s.bountySbtBadgeStyle}>
+                {`${task.bountySbt} ${project?.sbtTokenSymbol ?? ""}`}
+              </span>
+            </div>
+
             {task.outline && (
-              <p>
-                {task.outline}
-              </p>
+              <div>
+                <Spacer size={30} />
+                <Title style="subtitle">
+                  Outline
+                </Title>
+                <p>
+                  {task.outline}
+                </p>
+              </div>
             )}
-            <p>
-              {task.details}
-            </p>
-            <p>
-              {`${task.bountySbt} tokens`}
-            </p>
+
+            <div>
+              <Spacer size={30} />
+              <Title style="subtitle">
+                Details
+              </Title>
+              <p css={s.textWithBreakStyle}>
+                {task.details}
+              </p>
+            </div>
 
             {assignmentApplicationsForThisTask.length !== 0 &&
               <>
@@ -128,6 +147,7 @@ const TaskCard: React.FC<Props> = ({ task }) => {
                         <p>
                           Comments from Project Owner
                         </p>
+                        <Spacer size={6} />
                         <p>
                           {submission.commentsFromProjectOwner}
                         </p>

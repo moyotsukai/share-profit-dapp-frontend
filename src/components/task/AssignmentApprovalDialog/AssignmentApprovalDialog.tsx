@@ -186,7 +186,6 @@ const AssignmentApprovalDialog: React.FC<Props> = ({ type, assignment, tasks, is
           commentsFromProjectOwner: data.commentFromPrjectOwner
         }
       })
-
       await updateTaskArray({
         projectId: assignment.projectId,
         taskId: task.id,

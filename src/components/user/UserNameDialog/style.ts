@@ -1,3 +1,4 @@
+import { dialogWidth } from "@/styles/constants";
 import { css } from "@emotion/react";
 
 export const dialogOverlayStyle = css`
@@ -16,7 +17,7 @@ export const dialogContentStyle = css`
   left: 50%;
   transform: translate(-50%, -50%);
   min-width: 35vw;
-  max-width: 55vw;
+  max-width: ${dialogWidth};
   max-height: 85vh;
   overflow-y: scroll;
   padding: 25px;

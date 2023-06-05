@@ -1,2 +1,2 @@
-import * as TabBar from "./Avatar"
-export default TabBar
+import * as Avatar from "./Avatar"
+export default Avatar.Avatar
