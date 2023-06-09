@@ -35,7 +35,7 @@ const formInputSchema = z
       .string()
       .url({ message: "Invalid URL" })
       .or(z.literal(""))
-      })
+  })
 
 type NewProjectAboutProject = z.infer<typeof formInputSchema>
 
@@ -64,7 +64,7 @@ export default function NewProjectAboutProjectPage() {
       state: "uncompleted",
       createdBy: user.uid,
       ownerIds: [user.uid],
-      memberIds: [],
+      memberIds: [user.uid],
       tasks: [],
       taskIndexes: [],
       lastModifiedAt: new Date()
@@ -201,7 +201,7 @@ export default function NewProjectAboutProjectPage() {
         </div>
         <Spacer size={20} />
 
-        
+
 
         <Button
           onClick={handleSubmit(onSubmit)}

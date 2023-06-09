@@ -21,8 +21,8 @@ const formInputSchema = z.object({
 type SearchProject = z.infer<typeof formInputSchema>
 
 const ProjectSearch: React.FC = () => {
-  const router = useRouter()
   const account = useAddress()
+  const router = useRouter()
   const { register, handleSubmit } = useForm<SearchProject>({
     resolver: zodResolver(formInputSchema),
   })
