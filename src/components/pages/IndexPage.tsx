@@ -1,91 +1,105 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import TabBar from "../radix/TabBar"
 import Button from "../ui/Button"
 import Spacer from "../ui/Spacer/Spacer"
-import { useFetchEffect } from "@/models/project/useFetchEffect"
+import { z } from "zod"
+import { SubmitHandler, useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { updateProjectArray } from "@/models/firestore/updateProject"
+import { useRouter } from "next/router"
+import { PATHS } from "./paths"
+import { getProjectsWhere } from "@/models/firestore/getProjectsWhere"
+import { KEYS } from "@/models/firestore/keys"
 import accountAbi from "../../../constants/Account.json"
 import networkConfig from "../../../constants/networkMapping.json"
-import { useMoralis, useWeb3Contract } from "react-moralis"
-import { useNotification } from "web3uikit"
 import { ethers } from "ethers"
-import ProjectSearch from "../project/ProjectSearch"
+import { Web3Button, useAddress, useContract, useContractRead } from "@thirdweb-dev/react"
+import { getProjectFromId } from "@/models/firestore/getProjectFromId"
+import { useUserValue } from "@/states/userState"
+import { useFetchEffect } from "@/models/project/useFetchEffect"
 
-type contractAddressesInterface = {
-  [key: string]: contractAddressesItemInterface
-}
+const formInputSchema = z.object({
+  enteredText: z.string().nonempty(),
+})
 
-type contractAddressesItemInterface = {
-  [key: string]: string[]
-}
+type SearchProject = z.infer<typeof formInputSchema>
 
 export default function IndexPage() {
-  const { chainId, account } = useMoralis()
-  const addresses: contractAddressesInterface = networkConfig
-  const chainString = chainId ? parseInt(chainId).toString() : "31337"
-  const accountAddr = "0x068419813Bd03FaeeAD20370B0FB106f3A9217E4"
-  const tokenAddr = (chainId && addresses[chainString] && addresses[chainString].Usdc[0]) ?? ""
-  const dispatch = useNotification()
+  const user = useUserValue()
+  // TODO: projectごとに取得
+  // const { data: project } = await getProjectFromId("")
+  // const treasuryAddress = project.vaultAddress
+  const accountAddr = "0x327A554A478B091A0AED63E2F63b700f0A3181fe"
+  const tokenAddr = networkConfig["80001"].Usdc[0]
+  const account = useAddress()
 
-  const [unreceivedDistributionBalance, setUnreceivedDistributionBalance] = useState<
-    string | null
-  >(null)
-
-  const { runContractFunction: getReleasableBalance } = useWeb3Contract({
-    abi: accountAbi,
-    contractAddress: accountAddr,
-    functionName: "releasableToken",
-    params: {
-      _token: tokenAddr,
-      _addr: account,
-    },
+  const router = useRouter()
+  const { register, handleSubmit } = useForm<SearchProject>({
+    resolver: zodResolver(formInputSchema),
   })
+  const [isWithdrawalButtonClickable, setWithdrawalButtonClickable] = useState<boolean>(false)
 
-  const { runContractFunction: withdrawToken } = useWeb3Contract({
-    abi: accountAbi,
-    contractAddress: accountAddr,
-    functionName: "withdrawToken",
-    params: {
-      _tokenAddr: tokenAddr,
-    },
-  })
+  // get the amount of unreceived token
+  const { contract: accountContaract } = useContract(accountAddr, accountAbi)
+  const { data: releasableToken } = useContractRead(accountContaract, "releasableToken", [
+    tokenAddr,
+    account,
+  ])
 
-  //get unreceived distribution balance
-  useFetchEffect(async () => {
-    const releasableBalance = await getReleasableBalance()
-    account
-      ? releasableBalance
-        ? setUnreceivedDistributionBalance(
-          parseInt(
-            ethers.utils.formatUnits(ethers.BigNumber.from(releasableBalance), 6)
-          ).toString()
-        )
-        : setUnreceivedDistributionBalance("0")
-      : setUnreceivedDistributionBalance(null)
-
-    console.log(await getReleasableBalance())
-  }, [], {
-    skipFetch: []
-  })
-
-  const handleWithdrawSuccess = () => {
-    dispatch({
-      type: "success",
-      message: "withdrawing proceeds",
-      title: "Withdrawing!",
-      position: "topR",
+  const onClickSearch: SubmitHandler<SearchProject> = async (data) => {
+    //get projects where invitatoin code matches
+    const { data: projects } = await getProjectsWhere({
+      key: KEYS.PROJECT.INVITATION_CODE,
+      operation: "==",
+      value: data.enteredText,
     })
-  }
+    if (!projects || !projects.length) {
+      return
+    }
+    const project = projects[0]
 
-  const onClickReceiveDistribution = async () => {
-    //分配金の残高を受け取る
-    withdrawToken({
-      onError: (error) => console.log(error),
-      onSuccess: () => handleWithdrawSuccess(),
+    //add user.uid to member ids
+    if (!account) {
+      return
+    }
+    await updateProjectArray({
+      projectId: project.id,
+      key: "memberIds",
+      value: account,
+      method: "union",
     })
 
-    //表示を更新
-    setUnreceivedDistributionBalance("0")
+    //go to project page
+    router.push(PATHS.PROJECT(project.id))
   }
+
+  const onEnterDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key !== "Enter") {
+      return
+    }
+    handleSubmit(onClickSearch)
+  }
+
+  useFetchEffect(
+    async () => {
+      if (!user) {
+        return
+      }
+      const { data: usersProjects } = await getProjectsWhere({
+        key: KEYS.PROJECT.MEMBER_IDS,
+        operation: "array-contains",
+        value: user.uid,
+      })
+      if (!usersProjects) {
+        return
+      }
+      // tokenを合算
+    },
+    [user],
+    {
+      skipFetch: [!user],
+    }
+  )
 
   return (
     <div>
@@ -101,14 +115,31 @@ export default function IndexPage() {
 
         <TabBar.Content value="revenue">
           <p>Unreceived distribution balance</p>
-          {unreceivedDistributionBalance !== null && (
-            <p>{`${unreceivedDistributionBalance} USDC`}</p>
+          {releasableToken ? (
+            <div>{ethers.utils.formatEther(parseInt(releasableToken as string))} USDC</div>
+          ) : (
+            <div>0.0 USDC</div>
           )}
           <Spacer size={60} />
           <p>Receive distribution</p>
-          <Button onClick={onClickReceiveDistribution} isEnabled={true} isLoading={false}>
+          {/* <Button
+            onClick={onClickReceiveDistribution}
+            isEnabled={isWithdrawalButtonClickable}
+            isLoading={false}
+          >
             Receive distribution
-          </Button>
+          </Button> */}
+          <Web3Button
+            contractAddress={accountAddr}
+            contractAbi={accountAbi}
+            action={(contract) => {
+              contract.call("withdrawToken", [tokenAddr])
+            }}
+            onError={(error) => console.log(error)}
+            isDisabled={!isWithdrawalButtonClickable}
+          >
+            Withdraw USDC
+          </Web3Button>
         </TabBar.Content>
       </TabBar.Root>
     </div>

@@ -10,40 +10,44 @@ import { useUserState, useUserValue } from "@/states/userState"
 import * as AlertDialog from "@radix-ui/react-alert-dialog"
 import { updateUser } from "@/models/firestore/updateUser"
 
-const formInputSchema = z
-  .object({
-    name: z
-      .string()
-      .nonempty({ message: "Required" })
-  })
+const formInputSchema = z.object({
+  name: z.string().nonempty({ message: "Required" }),
+})
 
 type UserName = z.infer<typeof formInputSchema>
 
 const UserNameDialog: React.FC = () => {
-
   const [user, setUser] = useUserState()
   const [isOpen, setIsOpen] = useState<boolean>(true)
-  const { register, handleSubmit, formState: { errors } } = useForm<UserName>({ resolver: zodResolver(formInputSchema) })
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<UserName>({ resolver: zodResolver(formInputSchema) })
   const [isButtonEnabled, setIsButtonEnabled] = useState<boolean>(true)
   const [isButtonLoading, setIsButtonLoading] = useState<boolean>(false)
 
   const onSaveUserName: SubmitHandler<UserName> = async (data) => {
-    if (!user) { return }
+    if (!user) {
+      return
+    }
     setIsButtonEnabled(false)
     setIsButtonLoading(true)
 
     //save user name
     await updateUser({
       userId: user.uid,
-      user: { name: data.name }
+      user: { name: data.name },
     })
 
     //set user state
     setUser((currentValue) => {
-      if (!currentValue) { return currentValue }
+      if (!currentValue) {
+        return currentValue
+      }
       return {
         ...currentValue,
-        name: data.name
+        name: data.name,
       }
     })
 
@@ -53,25 +57,17 @@ const UserNameDialog: React.FC = () => {
   }
 
   return (
-    <AlertDialog.Root open={isOpen} onOpenChange={setIsOpen} >
+    <AlertDialog.Root open={isOpen} onOpenChange={setIsOpen}>
       <AlertDialog.Portal>
         <AlertDialog.Overlay css={s.dialogOverlayStyle} />
         <AlertDialog.Content css={s.dialogContentStyle}>
-          <AlertDialog.Title>
-            User Name
-          </AlertDialog.Title>
+          <AlertDialog.Title>User Name</AlertDialog.Title>
           <form>
             <div>
               <label>
-                <p>
-                  User Name
-                </p>
+                <p>User Name</p>
                 <input type="text" {...register("name")} />
-                {errors.name && (
-                  <ErrorMessage>
-                    {errors.name?.message}
-                  </ErrorMessage>
-                )}
+                {errors.name && <ErrorMessage>{errors.name?.message}</ErrorMessage>}
               </label>
             </div>
             <Spacer size={20} />
@@ -89,7 +85,6 @@ const UserNameDialog: React.FC = () => {
         </AlertDialog.Content>
       </AlertDialog.Portal>
     </AlertDialog.Root>
-
   )
 }
 

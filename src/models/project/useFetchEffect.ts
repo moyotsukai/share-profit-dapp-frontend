@@ -13,5 +13,6 @@ export const useFetchEffect = (action: () => void, deps: DependencyList, { skipF
       action()
       hasFetched.current = true
     })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deps])
 }

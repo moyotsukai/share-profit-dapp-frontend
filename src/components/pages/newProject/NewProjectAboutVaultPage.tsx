@@ -7,64 +7,43 @@ import { useEditingProjectValue } from "@/states/editingProjectState"
 import { useRouter } from "next/router"
 import { useState } from "react"
 import { PATHS } from "../paths"
-import factoryAbi from "../../../../constants/Factory.json"
-import { useWeb3Contract } from "react-moralis"
-import { useNotification } from "web3uikit"
+import accountFactoryAbi from "../../../../constants/AccountFactory.json"
+import networkConfig from "../../../../constants/networkMapping.json"
+import { Web3Button } from "@thirdweb-dev/react"
+import { z } from "zod"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import ErrorMessage from "@/components/ui/ErrorMessage"
+
+const formInputSchema = z.object({
+  ownerProfitShare: z
+    .number()
+    .int({ message: "Value must be an integer" })
+    .min(0, { message: "Value must be between 0 and 100" })
+    .max(100, { message: "Value must be between 0 and 100" }),
+})
+
+type NewProjectAboutVault = z.infer<typeof formInputSchema>
 
 export default function NewProjectAboutVaultPage() {
-  const factoryAddr = "0x338a49b537541d2DE3d20B987A3A48449288778A"
+  const accountFactoryAddr = networkConfig["80001"].SecuritiesFactory[0]
+
   const adminAddr = "0x8eBD4fAa4fcEEF064dCaEa48A3f75d0D0A3ba3f2"
-  // TODO: uriを生成する処理を実装
-  const uri = "ipfs://QmUnzswTarW8fVUH6aztH8h4sqoxuBCDyTnBrwvU4Z4T4d"
-  // TODO: フォームから取得
-  const founderShare = 1
-  const dispatch = useNotification()
 
   const router = useRouter()
   const editingProject = useEditingProjectValue()
+  const {
+    register,
+    getValues,
+    formState: { errors },
+  } = useForm<NewProjectAboutVault>({ resolver: zodResolver(formInputSchema) })
   const [isButtonEnabled, setIsButtonEnabled] = useState<boolean>(true)
-  const [isButtonLoading, setIsButtonLoading] = useState<boolean>(false)
-  const [sbtAddr, setSbtAddr] = useState<string>("")
   const [isPageLeaveAllowed, setIsPageLeaveAllowed] = useState<boolean>(false)
-  const [vaultAddr, setVaultAddr] = useState<string>("")
   usePageLeaveConfirmation(isPageLeaveAllowed)
 
-  const { runContractFunction: deploy } = useWeb3Contract({
-    abi: factoryAbi,
-    contractAddress: factoryAddr,
-    functionName: "deploy",
-    params: {
-      _adminAddr: adminAddr,
-      _uri: uri,
-      _share: founderShare,
-    },
-  })
-  const handleDeployContractsSuccess = async (tx: any) => {
-    const txReceipt = await tx.wait()
-    setSbtAddr(txReceipt.events[0].address)
-    setVaultAddr(txReceipt.events[1].address)
-    dispatch({
-      type: "success",
-      message: "contract deployed",
-      title: "deploy contract!",
-      position: "topR",
-    })
-  }
-
-  const onClickComplete = async () => {
+  const onSuccess = async (result: any) => {
     setIsButtonEnabled(false)
-    setIsButtonLoading(true)
     setIsPageLeaveAllowed(true)
-
-    //TODO
-    //<<<Hashimoto
-    //金庫コントラクト、Sbtコントラクト作成
-    const addrs = await deploy({
-      onSuccess: handleDeployContractsSuccess,
-      onError: (error) => console.log(error),
-    })
-
-    //Hashimoto>>>
 
     if (!editingProject || !editingProject.id) {
       return
@@ -73,7 +52,8 @@ export default function NewProjectAboutVaultPage() {
       projectId: editingProject.id,
       project: {
         ...editingProject,
-        vaultAddress: "",
+        vaultAddress: result.receipt.events[0].address,
+        ownerProfitShare: getValues("ownerProfitShare"),
         state: "ongoing",
         lastModifiedAt: new Date(),
       },
@@ -98,14 +78,41 @@ export default function NewProjectAboutVaultPage() {
       <p>[SBT address here]</p>
       <Spacer size={20} />
 
-      <Button
+      <div>
+        <label>
+          <p>Founder&apos;s share of the profit</p>
+          <input type="number" {...register("ownerProfitShare", { valueAsNumber: true })} />
+          {errors.ownerProfitShare && (
+            <ErrorMessage>{errors.ownerProfitShare?.message}</ErrorMessage>
+          )}
+        </label>
+      </div>
+      <Spacer size={20} />
+
+      {/* <Button
         onClick={onClickComplete}
         isEnabled={isButtonEnabled}
         isLoading={isButtonLoading}
         style="contained"
       >
         Deploy and complete project
-      </Button>
+      </Button> */}
+      <Web3Button
+        contractAddress={accountFactoryAddr}
+        contractAbi={accountFactoryAbi}
+        action={(contract) =>
+          contract.call("deploy", [
+            adminAddr,
+            editingProject?.sbtAddress,
+            getValues("ownerProfitShare"),
+          ])
+        }
+        onSuccess={onSuccess}
+        onError={(error) => console.log(error)}
+        isDisabled={!isButtonEnabled}
+      >
+        Deploy Vault
+      </Web3Button>
     </div>
   )
 }

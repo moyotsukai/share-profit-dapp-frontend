@@ -1,27 +1,32 @@
-import { ConnectButton } from "web3uikit"
-import * as s from "./style"
-import { useMoralis } from "react-moralis"
 import { signIn } from "@/models/auth/signIn"
+import * as s from "./style"
+import { ConnectWallet, useAddress } from "@thirdweb-dev/react"
 import { useSetUserState } from "@/states/userState"
-
+import { useEffect } from "react"
+import { asyncTask } from "@/utils/asyncTask"
+import { useSetUserState } from "@/states/userState"
+        
 const Header: React.FC = () => {
   const setUser = useSetUserState()
-  const { account } = useMoralis()
+  const account = useAddress()
 
-  const onClickConnect = async () => {
+  useEffect(() => {
     const address = account
-    if (address) {
-      const user = await signIn({ address: address })
-      setUser(user)
-    } else {
-      setUser(null)
-    }
-  }
+    asyncTask(async () => {
+      if (address) {
+        const user = await signIn({ address: address })
+        setUser(user)
+      } else {
+        setUser(null)
+      }
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [account])
 
   return (
     <header css={s.headerStyle}>
       <div css={s.spacerStyle} />
-      <ConnectButton moralisAuth={false} onClick={onClickConnect} />
+      <ConnectWallet />
     </header>
   )
 }

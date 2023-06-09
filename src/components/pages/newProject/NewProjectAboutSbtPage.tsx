@@ -5,17 +5,19 @@ import ErrorMessage from "@/components/ui/ErrorMessage"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { SubmitHandler, useForm } from "react-hook-form"
 import { z } from "zod"
-import { useState } from "react"
+import { ChangeEvent, useState } from "react"
 import { useRouter } from "next/router"
 import { PATHS } from "../paths"
 import { usePageLeaveConfirmation } from "@/models/project/usePageLeaveConfirmation"
 import { useEditingProjectState } from "@/states/editingProjectState"
-import { uploadSbtImage } from "@/models/storage/uploadSbtImage"
+import securitiesFactoryAbi from "../../../../constants/SecuritiesFactory.json"
+import networkConfig from "../../../../constants/networkMapping.json"
+import { SmartContract, Web3Button, useStorageUpload } from "@thirdweb-dev/react"
+import { ethers } from "ethers"
 import { updateProject } from "@/models/firestore/updateProject"
 
 const formInputSchema = z.object({
   sbtTokenName: z.string().nonempty({ message: "Required" }),
-  sbtTokenSymbol: z.string().nonempty({ message: "Required" }),
   sbtImage: z.custom<FileList>().transform((data) => data[0]),
 })
 
@@ -23,88 +25,106 @@ type NewProjectAboutSbt = z.infer<typeof formInputSchema>
 
 export default function NewProjectAboutSbtPage() {
   const router = useRouter()
+  const metadataTemplate = {
+    name: "",
+    description: "",
+    image: "",
+  }
+
+  // sbt factory address
+  const sbtFactoryAddr = networkConfig["80001"].SecuritiesFactory[0]
+  const { mutateAsync: upload } = useStorageUpload()
+
   const [editingProject, setEditingProject] = useEditingProjectState()
   const [isButtonEnabled, setIsButtonEnabled] = useState<boolean>(true)
-  const [isButtonLoading, setIsButtonLoading] = useState<boolean>(false)
   const [isPageLeaveAllowed, setIsPageLeaveAllowed] = useState<boolean>(false)
   usePageLeaveConfirmation(isPageLeaveAllowed)
   const {
     register,
     handleSubmit,
+    getValues,
     formState: { errors },
   } = useForm<NewProjectAboutSbt>({ resolver: zodResolver(formInputSchema) })
 
-  const addSbtImageFromFormData = async ({
-    data,
-    projectId,
-  }: {
-    data: NewProjectAboutSbt
-    projectId?: string
-  }) => {
-    if (!data.sbtImage) {
-      return null
-    }
-    if (!projectId) {
-      return null
-    }
+  const onDeploySbt = async (contract: SmartContract<ethers.BaseContract>) => {
+    const sbtTokenName = getValues("sbtTokenName")
+    const sbtImage = getValues("sbtImage")
+    const uri = await uploadToIpfs({ tokenName: sbtTokenName, tokenImage: sbtImage })
+    const tx = await contract.call("deploy", [uri])
+    const sbtAddress = tx.receipt.events[0].address as string
 
-    const { data: sbtImageUrl } = await uploadSbtImage({
-      projectId: projectId,
-      file: data.sbtImage,
-    })
-    if (!sbtImageUrl) {
-      return null
-    }
+    await handleSubmit(onSubmit)
 
-    await updateProject({
-      projectId: projectId,
-      project: { sbtImageUrl: sbtImageUrl },
-    })
+    await updateProjectData({ sbtTokenName: sbtTokenName, sbtAddress: sbtAddress })
 
-    return sbtImageUrl
+    router.push(PATHS.NEW_PROJECT.ABOUT_VAULT)
   }
 
   const onSubmit: SubmitHandler<NewProjectAboutSbt> = async (data) => {
     setIsButtonEnabled(false)
-    setIsButtonLoading(true)
     setIsPageLeaveAllowed(true)
 
     //upload image, get url
     if (!editingProject || !editingProject?.id) {
       return
     }
-    const sbtImageUrl = await addSbtImageFromFormData({
-      data: data,
-      projectId: editingProject.id,
-    })
 
     //set editing project globally
-    if (sbtImageUrl) {
-      setEditingProject({
-        ...editingProject,
-        sbtImageUrl: sbtImageUrl,
-        sbtTokenName: data.sbtTokenName,
-        sbtTokenSymbol: data.sbtTokenSymbol,
+    setEditingProject({
+      ...editingProject,
+      sbtTokenName: data.sbtTokenName,
+    })
+  }
+
+  // SBTのmetadataの作成
+  const uploadToIpfs = async ({
+    tokenName,
+    tokenImage,
+  }: {
+    tokenName: string
+    tokenImage: File
+  }) => {
+    var uri: string | null = null
+    if (tokenImage) {
+      const uploadUri = await upload({
+        data: [tokenImage],
+        options: { uploadWithoutDirectory: true },
       })
+      uri = uploadUri[0]
     } else {
-      setEditingProject({
-        ...editingProject,
-        sbtTokenName: data.sbtTokenName,
-        sbtTokenSymbol: data.sbtTokenSymbol,
-      })
+      uri = "ipfs://QmTsfF3METLsEikk6DsJuRtdcaEoRXvzG94d7vE9bWQ4ib"
     }
 
-    //TODO
-    //<<<Hashimoto
-    //deploy SBT contract
-    // コントラクトの処理の都合上、SBTのコントラクトは金庫コントラクトと同時にデプロイしたいです
+    let tokenUriMetadata = { ...metadataTemplate }
+    tokenUriMetadata.name = tokenName
+    tokenUriMetadata.description = "test uploading to ipfs"
+    tokenUriMetadata.image = uri
+    const tokenUri = await upload({
+      data: [tokenUriMetadata],
+      options: { uploadWithoutDirectory: true },
+    })
+    console.log(tokenUri[0])
+    return tokenUri[0]
+  }
 
-    //get address and transaction
-
-    const address = ""
-    //Hashimoto>>>
-
-    router.push(PATHS.NEW_PROJECT.ABOUT_VAULT)
+  const updateProjectData = async ({
+    sbtTokenName,
+    sbtAddress,
+  }: {
+    sbtTokenName: string
+    sbtAddress: string
+  }) => {
+    if (!editingProject || !editingProject?.id) {
+      return
+    }
+    // update project
+    await updateProject({
+      projectId: editingProject.id,
+      project: {
+        sbtTokenName: sbtTokenName,
+        sbtAddress: sbtAddress,
+      },
+    })
   }
 
   return (
@@ -127,17 +147,6 @@ export default function NewProjectAboutSbtPage() {
 
         <div>
           <label>
-            <p>Token symbol</p>
-            <input type="text" {...register("sbtTokenSymbol")} />
-            {errors.sbtTokenSymbol && (
-              <ErrorMessage>{errors.sbtTokenSymbol?.message}</ErrorMessage>
-            )}
-          </label>
-        </div>
-        <Spacer size={20} />
-
-        <div>
-          <label>
             <p>Token image</p>
           </label>
           <input type="file" accept=".jpg, .jpeg, .png" {...register("sbtImage")} />
@@ -145,14 +154,23 @@ export default function NewProjectAboutSbtPage() {
         </div>
         <Spacer size={20} />
 
-        <Button
+        {/* <Button
           onClick={handleSubmit(onSubmit)}
           isEnabled={isButtonEnabled}
           isLoading={isButtonLoading}
           style="outlined"
         >
           Set up SBT and go next
-        </Button>
+        </Button> */}
+        <Web3Button
+          contractAddress={sbtFactoryAddr}
+          contractAbi={securitiesFactoryAbi}
+          action={onDeploySbt}
+          onError={(error) => console.log(error)}
+          isDisabled={!isButtonEnabled}
+        >
+          Deploy SBT
+        </Web3Button>
       </form>
     </div>
   )

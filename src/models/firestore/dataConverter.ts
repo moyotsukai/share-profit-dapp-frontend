@@ -9,7 +9,7 @@ export const userFromFirebase = (data: any): User => {
   return {
     uid: data?.uid ?? "",
     nonce: data?.nonce ?? "",
-    name: data?.name ?? ""
+    name: data?.name ?? "",
   }
 }
 
@@ -30,10 +30,11 @@ export const projectFromFirebase = (data: any): Project => {
     lastModifiedAt: data?.lastModifiedAt ?? new Date(),
     sbtImageUrl: data?.sbtImageUrl,
     sbtTokenName: data?.sbtTokenName,
-    sbtTokenSymbol: data?.sbtTokenSymbol,
+    sbtAddress: data?.sbtAddress,
+    // sbtTokenSymbol: data?.sbtTokenSymbol,
     vaultAddress: data?.vaultAddress,
     tasks: [],
-    taskIndexes: data?.taskIndexes ?? []
+    taskIndexes: data?.taskIndexes ?? [],
   }
 }
 
@@ -48,7 +49,7 @@ export const taskFromFirebase = (data: any): Task => {
     ownerId: data?.ownerId ?? "",
     asigneeIds: data?.asigneeIds ?? [],
     assignmentApplicationIds: data?.assignmentApplicationIds ?? [],
-    submissionIds: data?.submissionIds ?? []
+    submissionIds: data?.submissionIds ?? [],
   }
 }
 
@@ -80,14 +81,13 @@ export const submissionFromFirebase = (data: any): Submission => {
   }
 }
 
-export const holdersFromMoralis = (data: any): Holder[] => {
+export const holdersFromChain = (data: any): Holder[] => {
   if (Array.isArray(data)) {
     return data.map(($0) => {
       return {
-        address: $0.address ?? ""
+        address: $0.address ?? "",
       }
     })
-
   } else {
     return []
   }
