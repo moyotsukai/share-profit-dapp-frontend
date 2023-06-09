@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import TabBar from "../radix/TabBar"
 import Button from "../ui/Button"
 import Spacer from "../ui/Spacer/Spacer"
@@ -14,6 +14,9 @@ import accountAbi from "../../../constants/Account.json"
 import networkConfig from "../../../constants/networkMapping.json"
 import { ethers } from "ethers"
 import { Web3Button, useAddress, useContract, useContractRead } from "@thirdweb-dev/react"
+import { getProjectFromId } from "@/models/firestore/getProjectFromId"
+import { useUserValue } from "@/states/userState"
+import { useFetchEffect } from "@/models/project/useFetchEffect"
 
 const formInputSchema = z.object({
   enteredText: z.string().nonempty(),
@@ -22,7 +25,10 @@ const formInputSchema = z.object({
 type SearchProject = z.infer<typeof formInputSchema>
 
 export default function IndexPage() {
+  const user = useUserValue()
   // TODO: projectごとに取得
+  // const { data: project } = await getProjectFromId("")
+  // const treasuryAddress = project.vaultAddress
   const accountAddr = "0x327A554A478B091A0AED63E2F63b700f0A3181fe"
   const tokenAddr = networkConfig["80001"].Usdc[0]
   const account = useAddress()
@@ -75,6 +81,27 @@ export default function IndexPage() {
     handleSubmit(onClickSearch)
   }
 
+  useFetchEffect(
+    async () => {
+      if (!user) {
+        return
+      }
+      const { data: usersProjects } = await getProjectsWhere({
+        key: KEYS.PROJECT.MEMBER_IDS,
+        operation: "array-contains",
+        value: user.uid,
+      })
+      if (!usersProjects) {
+        return
+      }
+      // tokenを合算
+    },
+    [user],
+    {
+      skipFetch: [!user],
+    }
+  )
+
   return (
     <div>
       <TabBar.Root defaultValue="projects">
@@ -123,7 +150,7 @@ export default function IndexPage() {
             onError={(error) => console.log(error)}
             isDisabled={!isWithdrawalButtonClickable}
           >
-            Withdraw ETH
+            Withdraw USDC
           </Web3Button>
         </TabBar.Content>
       </TabBar.Root>

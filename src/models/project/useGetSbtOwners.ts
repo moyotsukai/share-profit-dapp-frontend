@@ -5,23 +5,20 @@ import securitiesAbi from "../../../constants/Securities.json"
 import { holdersFromChain } from "../firestore/dataConverter"
 import { getUser } from "../firestore/getUser"
 import { useContract, useContractRead } from "@thirdweb-dev/react"
+import { getProjectFromId } from "../firestore/getProjectFromId"
 
-// TODO: projectごとに取得
-const sbtAddr = "0x35Db31E08349f225bF11642694Fea5725D0792c5"
-
-export const useGetSbtOwners = () => {
+export const useGetSbtHolders = (sbtAddress: string) => {
   const [sbtOwners, setSbtOwners] = useState<SbtOwner[]>([])
-
-  const { contract: sbtContract } = useContract(sbtAddr, securitiesAbi)
+  const { contract: sbtContract } = useContract(sbtAddress, securitiesAbi)
   const { data: sbtHolders, error: getHoldersError } = useContractRead(sbtContract, "getHolders")
   if (getHoldersError) {
     console.error(getHoldersError)
   }
 
-  //get SBT owners
+  //get SBT holders
   useFetchEffect(
     async () => {
-      //get sbt owners
+      //get sbt holders
       let holders: Holder[] = []
       try {
         const receivedHolders = sbtHolders

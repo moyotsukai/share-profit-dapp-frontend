@@ -10,7 +10,7 @@ import TaskBoard from "../task/TaskBoard"
 import Assignments from "../task/Assignments"
 import ProjectOverview from "../project/ProjectOverview/ProjectOverview"
 import SbtOwners from "../project/SbtOwners"
-import { useGetSbtOwners } from "@/models/project/useGetSbtOwners"
+import { useGetSbtHolders } from "@/models/project/useGetSbtOwners"
 import { useGetProject } from "@/models/project/useGetProject"
 import { useGetAssignment } from "@/models/project/useGetAssignment"
 
@@ -21,7 +21,7 @@ export default function ProjectPage() {
   const [isVerified, setIsVerified] = useState<boolean>(false)
   const { project } = useGetProject(projectId)
   const { isProjectOwner, assignmentApplications, submissions } = useGetAssignment(project)
-  const sbtOwners = useGetSbtOwners()
+  const sbtHolders = useGetSbtHolders(project?.sbtAddress ?? "")
   const [_, setProjectIdQueryString] = useState<string>("")
 
   useEffect(() => {
@@ -110,7 +110,7 @@ export default function ProjectPage() {
             </TabBar.Content>
 
             <TabBar.Content value="sbt-owners">
-              <SbtOwners sbtOwners={sbtOwners} />
+              <SbtOwners sbtOwners={sbtHolders} />
             </TabBar.Content>
 
             {isProjectOwner && (
