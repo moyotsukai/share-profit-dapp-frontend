@@ -51,7 +51,6 @@ export default function NewProjectAboutSbtPage() {
     const sbtImage = getValues("sbtImage")
     const uri = await uploadToIpfs({ tokenName: sbtTokenName, tokenImage: sbtImage })
     const tx = await contract.call("deploy", [uri])
-    // TODO: このアドレスをプロジェクトごとに保存するようにしたいです
     const sbtAddress = tx.receipt.events[0].address as string
 
     await handleSubmit(onSubmit)
@@ -75,11 +74,6 @@ export default function NewProjectAboutSbtPage() {
       ...editingProject,
       sbtTokenName: data.sbtTokenName,
     })
-
-    // TODO
-    // <<<Hashimoto
-    // deploy SBT contract
-    // Hashimoto>>>
   }
 
   // SBTのmetadataの作成

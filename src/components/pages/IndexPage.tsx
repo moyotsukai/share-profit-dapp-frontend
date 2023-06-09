@@ -2,22 +2,18 @@ import { useState } from "react"
 import TabBar from "../radix/TabBar"
 import Button from "../ui/Button"
 import Spacer from "../ui/Spacer/Spacer"
-import { useUserValue } from "@/states/userState"
 import { z } from "zod"
 import { SubmitHandler, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { updateProjectArray } from "@/models/firestore/updateProject"
 import { useRouter } from "next/router"
 import { PATHS } from "./paths"
-import { useFetchEffect } from "@/models/project/useFetchEffect"
 import { getProjectsWhere } from "@/models/firestore/getProjectsWhere"
 import { KEYS } from "@/models/firestore/keys"
 import accountAbi from "../../../constants/Account.json"
 import networkConfig from "../../../constants/networkMapping.json"
-import { useMoralis, useWeb3Contract } from "react-moralis"
-import { useNotification } from "web3uikit"
 import { ethers } from "ethers"
-import { useEffect } from "react"
+import { Web3Button, useAddress, useContract, useContractRead } from "@thirdweb-dev/react"
 
 const formInputSchema = z.object({
   enteredText: z.string().nonempty(),
@@ -26,74 +22,24 @@ const formInputSchema = z.object({
 type SearchProject = z.infer<typeof formInputSchema>
 
 export default function IndexPage() {
-  const { chainId, account, isWeb3Enabled } = useMoralis()
-  const addresses: contractAddressesInterface = networkConfig
-  const chainString = chainId ? parseInt(chainId).toString() : "31337"
   // TODO: projectごとに取得
   const accountAddr = "0x327A554A478B091A0AED63E2F63b700f0A3181fe"
-  const tokenAddr = chainId ? addresses[chainString].Usdc[0] : undefined
+  const tokenAddr = networkConfig["80001"].Usdc[0]
+  const account = useAddress()
+
   const router = useRouter()
-  const dispatch = useNotification()
   const { register, handleSubmit } = useForm<SearchProject>({
     resolver: zodResolver(formInputSchema),
   })
 
   const [isWithdrawalButtonClickable, setWithdrawalButtonClickable] = useState<boolean>(false)
-  const [unreceivedDistributionBalance, setUnreceivedDistributionBalance] = useState<
-    string | null
-  >(null)
 
-  const { runContractFunction: getReleasableBalance } = useWeb3Contract({
-    abi: accountAbi,
-    contractAddress: accountAddr,
-    functionName: "releasableToken",
-    params: {
-      _token: tokenAddr,
-      _addr: account,
-    },
-  })
-
-  const { runContractFunction: withdrawToken } = useWeb3Contract({
-    abi: accountAbi,
-    contractAddress: accountAddr,
-    functionName: "withdrawToken",
-    params: {
-      _tokenAddr: tokenAddr,
-    },
-  })
-
-  //get unreceived distribution balance
-  useFetchEffect(
-    async () => {
-      //TODO
-      //<<<Hashimoto
-      //表示
-      const releasableBalance = await getReleasableBalance()
-      account
-        ? releasableBalance
-          ? setUnreceivedDistributionBalance(
-              ethers.utils.formatUnits(ethers.BigNumber.from(releasableBalance), 6).toString()
-            )
-          : setUnreceivedDistributionBalance("0")
-        : setUnreceivedDistributionBalance(null)
-
-      console.log(await getReleasableBalance())
-      //Hashimoto>>>
-    },
-    [],
-    {
-      skipFetch: [],
-    }
-  )
-
-  const handleWithdrawSuccess = () => {
-    dispatch({
-      type: "success",
-      message: "withdrawing proceeds",
-      title: "Withdrawing!",
-      position: "topR",
-    })
-  }
+  // get the amount of unreceived token
+  const { contract: accountContaract } = useContract(accountAddr, accountAbi)
+  const { data: releasableToken } = useContractRead(accountContaract, "releasableToken", [
+    tokenAddr,
+    account,
+  ])
 
   const onClickSearch: SubmitHandler<SearchProject> = async (data) => {
     //get projects where invitatoin code matches
@@ -129,34 +75,6 @@ export default function IndexPage() {
     handleSubmit(onClickSearch)
   }
 
-  const onClickReceiveDistribution = async () => {
-    //TODO
-    //<<<Hashimoto
-    //分配金の残高を受け取る
-    withdrawToken({
-      onError: (error) => console.log(error),
-      onSuccess: () => handleWithdrawSuccess(),
-    })
-
-    //表示を更新
-    setUnreceivedDistributionBalance("0")
-    //Hashimoto>>>
-  }
-
-  useEffect(() => {
-    if (
-      !isWeb3Enabled ||
-      unreceivedDistributionBalance === null ||
-      unreceivedDistributionBalance === undefined ||
-      unreceivedDistributionBalance === "0.0"
-    ) {
-      setWithdrawalButtonClickable(false)
-    } else {
-      setWithdrawalButtonClickable(true)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isWeb3Enabled, account])
-
   return (
     <div>
       <TabBar.Root defaultValue="projects">
@@ -182,18 +100,31 @@ export default function IndexPage() {
 
         <TabBar.Content value="revenue">
           <p>Unreceived distribution balance</p>
-          {unreceivedDistributionBalance !== null && (
-            <p>{`${unreceivedDistributionBalance} USDC`}</p>
+          {releasableToken ? (
+            <div>{ethers.utils.formatEther(parseInt(releasableToken as string))} USDC</div>
+          ) : (
+            <div>0.0 USDC</div>
           )}
           <Spacer size={60} />
           <p>Receive distribution</p>
-          <Button
+          {/* <Button
             onClick={onClickReceiveDistribution}
             isEnabled={isWithdrawalButtonClickable}
             isLoading={false}
           >
             Receive distribution
-          </Button>
+          </Button> */}
+          <Web3Button
+            contractAddress={accountAddr}
+            contractAbi={accountAbi}
+            action={(contract) => {
+              contract.call("withdrawToken", [tokenAddr])
+            }}
+            onError={(error) => console.log(error)}
+            isDisabled={!isWithdrawalButtonClickable}
+          >
+            Withdraw ETH
+          </Web3Button>
         </TabBar.Content>
       </TabBar.Root>
     </div>
