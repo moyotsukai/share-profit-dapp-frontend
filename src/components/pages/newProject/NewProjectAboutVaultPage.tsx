@@ -26,7 +26,7 @@ const formInputSchema = z.object({
 type NewProjectAboutVault = z.infer<typeof formInputSchema>
 
 export default function NewProjectAboutVaultPage() {
-  const accountFactoryAddr = networkConfig["80001"].SecuritiesFactory[0]
+  const accountFactoryAddr = networkConfig["80001"].AccountFactory[0]
 
   const adminAddr = "0x8eBD4fAa4fcEEF064dCaEa48A3f75d0D0A3ba3f2"
 

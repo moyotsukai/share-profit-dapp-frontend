@@ -58,29 +58,24 @@ export default function NewProjectAboutSbtPage() {
     const sbtAddress = tx.receipt.events[0].address as string
     console.log("sbtAddress", sbtAddress)
 
-    await handleSubmit(onSubmit)
-
-    console.log("BBB")
-    await updateProjectData({ sbtTokenName: sbtTokenName, sbtAddress: sbtAddress })
-    console.log("CCC")
-
-    router.push(PATHS.NEW_PROJECT.ABOUT_VAULT)
-  }
-
-  const onSubmit: SubmitHandler<NewProjectAboutSbt> = async (data) => {
     setIsButtonEnabled(false)
     setIsPageLeaveAllowed(true)
 
-    //upload image, get url
+    console.log("BBB")
+    await updateProjectData({ sbtTokenName: sbtTokenName, sbtAddress: sbtAddress })
+
     if (!editingProject || !editingProject?.id) {
       return
     }
-
     //set editing project globally
     setEditingProject({
       ...editingProject,
-      sbtTokenName: data.sbtTokenName,
+      sbtTokenName: sbtTokenName,
+      sbtAddress: sbtAddress,
     })
+    console.log("CCC")
+
+    router.push(PATHS.NEW_PROJECT.ABOUT_VAULT)
   }
 
   // SBTのmetadataの作成
