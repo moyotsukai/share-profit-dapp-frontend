@@ -2,27 +2,24 @@ import AuthProvider from "@/components/auth/AuthProvider"
 import Layout from "@/components/common/Layout"
 import "@/styles/globals.css"
 import type { AppProps } from "next/app"
-import { MoralisProvider } from "react-moralis"
 import { RecoilRoot } from "recoil"
-import { NotificationProvider } from "web3uikit"
-import { DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
+import { DndProvider } from "react-dnd"
+import { HTML5Backend } from "react-dnd-html5-backend"
+import { Mumbai } from "@thirdweb-dev/chains"
+import { ThirdwebProvider } from "@thirdweb-dev/react"
 
 export default function App({ Component, pageProps }: AppProps) {
-  
   return (
-    <MoralisProvider initializeOnMount={false}>
-      <NotificationProvider>
-        <RecoilRoot>
-          <DndProvider backend={HTML5Backend}>
-            <AuthProvider>
-              <Layout>
-                <Component {...pageProps} />
-              </Layout>
-            </AuthProvider>
-          </DndProvider>
-        </RecoilRoot>
-      </NotificationProvider>
-    </MoralisProvider>
+    <ThirdwebProvider activeChain={Mumbai}>
+      <RecoilRoot>
+        <DndProvider backend={HTML5Backend}>
+          <AuthProvider>
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+          </AuthProvider>
+        </DndProvider>
+      </RecoilRoot>
+    </ThirdwebProvider>
   )
 }

@@ -34,13 +34,8 @@ const formInputSchema = z
     discordUrl: z
       .string()
       .url({ message: "Invalid URL" })
-      .or(z.literal("")),
-    ownerProfitShare: z
-      .number()
-      .int({ message: "Value must be an integer" })
-      .min(0, { message: "Value must be between 0 and 100" })
-      .max(100, { message: "Value must be between 0 and 100" }),
-  })
+      .or(z.literal(""))
+      })
 
 type NewProjectAboutProject = z.infer<typeof formInputSchema>
 
@@ -65,7 +60,6 @@ export default function NewProjectAboutProjectPage() {
       details: data.details,
       twitterUrl: data.twitterUrl,
       discordUrl: data.discordUrl,
-      ownerProfitShare: data.ownerProfitShare,
       invitationCode: invitationCode,
       state: "uncompleted",
       createdBy: user.uid,
@@ -207,20 +201,7 @@ export default function NewProjectAboutProjectPage() {
         </div>
         <Spacer size={20} />
 
-        <div>
-          <label>
-            <p>
-              Founder&apos;s share of the profit
-            </p>
-            <input type="number" {...register("ownerProfitShare", { valueAsNumber: true })} />
-            {errors.ownerProfitShare &&
-              <ErrorMessage>
-                {errors.ownerProfitShare?.message}
-              </ErrorMessage>
-            }
-          </label>
-        </div>
-        <Spacer size={20} />
+        
 
         <Button
           onClick={handleSubmit(onSubmit)}

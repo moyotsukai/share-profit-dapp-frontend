@@ -17,7 +17,6 @@ import networkConfig from "../../../constants/networkMapping.json"
 import { useMoralis, useWeb3Contract } from "react-moralis"
 import { useNotification } from "web3uikit"
 import { ethers } from "ethers"
-import { contractAddressesInterface } from "../../types/networkAddress"
 import { useEffect } from "react"
 
 const formInputSchema = z.object({
@@ -31,7 +30,7 @@ export default function IndexPage() {
   const addresses: contractAddressesInterface = networkConfig
   const chainString = chainId ? parseInt(chainId).toString() : "31337"
   // TODO: projectごとに取得
-  const accountAddr = "0x93473182AbBB6E2DE06577D40ec4F42ca6F817E9"
+  const accountAddr = "0x327A554A478B091A0AED63E2F63b700f0A3181fe"
   const tokenAddr = chainId ? addresses[chainString].Usdc[0] : undefined
   const router = useRouter()
   const dispatch = useNotification()
@@ -149,7 +148,7 @@ export default function IndexPage() {
       !isWeb3Enabled ||
       unreceivedDistributionBalance === null ||
       unreceivedDistributionBalance === undefined ||
-      unreceivedDistributionBalance === "0"
+      unreceivedDistributionBalance === "0.0"
     ) {
       setWithdrawalButtonClickable(false)
     } else {

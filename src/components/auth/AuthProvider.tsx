@@ -3,16 +3,16 @@ import { asyncTask } from "@/utils/asyncTask"
 import React, { useEffect } from "react"
 import { useUserState } from "@/states/userState"
 import LoadingCircle from "../ui/LoadingCircle"
-import { useMoralis } from "react-moralis"
 import UserNameDialog from "../user/UserNameDialog"
 import Header from "../common/Header"
+import { useAddress } from "@thirdweb-dev/react"
 
 type Props = {
   children: React.ReactNode
 }
 
 const AuthProvider: React.FC<Props> = ({ children }) => {
-  const { account, isWeb3Enabled } = useMoralis()
+  const account = useAddress()
   const [user, setUser] = useUserState()
   const hasNoUserName = !user?.name
 
@@ -35,7 +35,7 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isWeb3Enabled, account])
+  }, [account])
 
   return (
     <>
