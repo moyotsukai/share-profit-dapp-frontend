@@ -83,7 +83,7 @@ const TaskCard: React.FC<Props> = ({ task }) => {
                 {taskStageDisplayText(task.stage)}
               </span>
               <span css={s.bountySbtBadgeStyle}>
-                {`${task.bountySbt} ${project?.sbtTokenSymbol ?? ""}`}
+                {`${task.bountySbt} USDC`}
               </span>
             </div>
 
