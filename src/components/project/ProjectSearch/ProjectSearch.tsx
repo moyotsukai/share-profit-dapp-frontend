@@ -5,7 +5,6 @@ import { SubmitHandler, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { getProjectsWhere } from "@/models/firestore/getProjectsWhere"
 import { KEYS } from "@/models/firestore/keys"
-import { useMoralis } from "react-moralis"
 import { z } from "zod"
 import { updateProjectArray } from "@/models/firestore/updateProject"
 import { PATHS } from "@/components/pages/paths"
@@ -13,6 +12,7 @@ import { useRouter } from "next/router"
 import Button from "@/components/ui/Button"
 import Title from "@/components/ui/Title"
 import Spacer from "@/components/ui/Spacer"
+import { useAddress } from "@thirdweb-dev/react"
 
 
 const formInputSchema = z.object({
@@ -23,8 +23,8 @@ type SearchProject = z.infer<typeof formInputSchema>
 
 const ProjectSearch: React.FC = () => {
 
+  const account = useAddress()
   const router = useRouter()
-  const { account } = useMoralis()
   const { register, handleSubmit } = useForm<SearchProject>({
     resolver: zodResolver(formInputSchema),
   })
