@@ -2,13 +2,13 @@ import { Res } from "@/types/Res"
 import { getDownloadURL, ref } from "firebase/storage"
 import { storage } from "../firebase/client"
 
-export const downloadImageFromUrl = async (imageUrl: string): Promise<Res<string | null>> => {
-  const storageRef = ref(storage, imageUrl)
+export const downloadFileFromUrl = async (fileUrl: string): Promise<Res<string | null>> => {
+  const storageRef = ref(storage, fileUrl)
 
   try {
-    const downloadImageUrl = await getDownloadURL(storageRef)
+    const downloadFileUrl = await getDownloadURL(storageRef)
     return {
-      data: downloadImageUrl,
+      data: downloadFileUrl,
       error: null
     }
 

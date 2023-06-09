@@ -5,16 +5,13 @@ import { css } from "@emotion/react";
 export const addNewTaskButtonStyle = css`
   border: solid 1px ${colors.divider};
   border-radius: 6px;
-  background-color: transparent;
+  background-color: #fff;
   width: 100%;
-  height: 40px;
+  height: 60px;
   margin: 5px 0;
   text-align: left;
   padding: 5px;
   cursor: pointer;
-  &:hover {
-    background-color: ${colors.primarySelected};
-  }
 `
 
 export const dialogOverlayStyle = css`
@@ -35,7 +32,7 @@ export const dialogContentStyle = css`
   width: ${dialogWidth};
   height: 85vh;
   overflow-y: scroll;
-  padding: 40px;
+  padding: 25px;
   animation: contentShow 150ms cubic-bezier(0.16, 1, 0.3, 1);
 `
 
@@ -56,4 +53,14 @@ export const closeButtonStyle = css`
   &:hover {
     cursor: pointer;
   }
+`
+
+export const fileDownloadLinkStyle = css`
+  color: ${colors.primary};
+  cursor: pointer;
+  text-decoration: underline;
+`
+
+export const buttonGroupStyle = css`
+  display: flex;
 `

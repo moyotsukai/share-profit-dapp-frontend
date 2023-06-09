@@ -9,5 +9,11 @@ export const colors = {
   error: "#cc0025",
   sideBar: "#344199",
   card: "#f0f5fc",
-  divider: "#b8c4cc"
+  markedCard: "#fff2d9",
+  divider: "#b8c4cc",
+  input: "#f5f9fc",
+  inputBorder: "#959fa6",
+  warning: "#fff2d9",
+  stageBadge: "#ffcc73",
+  bountyBadge: "#ff73c5"
 }

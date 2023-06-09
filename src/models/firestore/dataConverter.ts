@@ -18,7 +18,7 @@ export const projectFromFirebase = (data: any): Project => {
     id: data?.id ?? "",
     title: data?.title ?? "",
     imageUrl: data?.imageUrl,
-    details: data?.details,
+    details: (data?.details ?? "").replace(/\\n/g, "\n"),
     twitterUrl: data?.twitterUrl,
     discordUrl: data?.discordUrl,
     ownerProfitShare: data?.ownerProfitShare ?? 0,
@@ -44,7 +44,7 @@ export const taskFromFirebase = (data: any): Task => {
     title: data?.title ?? "",
     stage: data?.stage ?? "todo",
     outline: data?.outline,
-    details: data?.details ?? "",
+    details: (data?.details ?? "").replace(/\\n/g, "\n"),
     bountySbt: data?.bountySbt ?? 0,
     ownerId: data?.ownerId ?? "",
     asigneeIds: data?.asigneeIds ?? [],
@@ -59,9 +59,10 @@ export const assignmentApplicationFromFirebase = (data: any): AssignmentApplicat
     projectId: data?.projectId ?? "",
     taskId: data?.taskId ?? "",
     userId: data?.userId ?? "",
-    message: data?.message,
+    message: (data?.message ?? "").replace(/\\n/g, "\n"),
     stage: data?.stage ?? "inReview",
-    user: userFromFirebase(data?.user),
+    commentsFromProjectOwner: data?.commentsFromProjectOwner,
+    user: userFromFirebase(data?.user)
   }
 }
 
@@ -73,9 +74,10 @@ export const submissionFromFirebase = (data: any): Submission => {
     userId: data?.userId ?? "",
     link: data?.link,
     fileUrl: data?.fileUrl,
-    message: data?.message,
+    message: (data?.message ?? "").replace(/\\n/g, "\n"),
     stage: data?.stage ?? "inReview",
-    user: userFromFirebase(data?.user),
+    commentsFromProjectOwner: data?.commentsFromProjectOwner,
+    user: userFromFirebase(data?.user)
   }
 }
 

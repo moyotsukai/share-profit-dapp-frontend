@@ -37,7 +37,6 @@ export default function IndexPage() {
   const { register, handleSubmit } = useForm<SearchProject>({
     resolver: zodResolver(formInputSchema),
   })
-
   const [isWithdrawalButtonClickable, setWithdrawalButtonClickable] = useState<boolean>(false)
 
   // get the amount of unreceived token
@@ -111,18 +110,7 @@ export default function IndexPage() {
         </TabBar.List>
 
         <TabBar.Content value="projects">
-          <form>
-            <label>
-              <p>Search projects</p>
-              <input
-                type="text"
-                placeholder="Search projects..."
-                onKeyDown={onEnterDown}
-                {...register("enteredText")}
-              />
-            </label>
-            <button onClick={handleSubmit(onClickSearch)}>Search</button>
-          </form>
+          <ProjectSearch />
         </TabBar.Content>
 
         <TabBar.Content value="revenue">

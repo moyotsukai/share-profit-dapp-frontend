@@ -4,7 +4,8 @@ import { ConnectWallet, useAddress } from "@thirdweb-dev/react"
 import { useSetUserState } from "@/states/userState"
 import { useEffect } from "react"
 import { asyncTask } from "@/utils/asyncTask"
-
+import { useSetUserState } from "@/states/userState"
+        
 const Header: React.FC = () => {
   const setUser = useSetUserState()
   const account = useAddress()

@@ -22,7 +22,6 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
       //do nothing
     } else {
       const address = account
-
       if (address) {
         //connected, sign in
         asyncTask(async () => {

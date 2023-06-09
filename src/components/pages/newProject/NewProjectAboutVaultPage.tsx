@@ -68,10 +68,10 @@ export default function NewProjectAboutVaultPage() {
 
   return (
     <div>
-      <Title>Creating vault contract for the project</Title>
+      <Title>Creating treasury contract for the project</Title>
       <Spacer size={30} />
 
-      <p>[About vault here]</p>
+      <p>[About treasury here]</p>
       <Spacer size={20} />
 
       <p>SBT address</p>
