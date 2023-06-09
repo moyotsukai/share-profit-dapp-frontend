@@ -14,9 +14,11 @@ type Props = {
 const AuthProvider: React.FC<Props> = ({ children }) => {
   const account = useAddress()
   const [user, setUser] = useUserState()
-  const hasNoUserName = !user?.name
+  const hasNoUserName = user && !user.name
+  console.log("user name: ", user?.name)
 
   useEffect(() => {
+    console.log("🔺", user)
     if (user) {
       //user is already signed in
       //do nothing
@@ -46,8 +48,14 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
       ) : (
         <React.Fragment>
           <Header />
-
-          {user ? hasNoUserName ? <UserNameDialog /> : children : <>Landing page</>}
+          {user ? (
+            hasNoUserName ? (
+              <UserNameDialog />
+            ) :
+              children
+          ) : (
+            <>Landing page</>
+          )}
         </React.Fragment>
       )}
     </>

@@ -14,9 +14,9 @@ import accountAbi from "../../../constants/Account.json"
 import networkConfig from "../../../constants/networkMapping.json"
 import { ethers } from "ethers"
 import { Web3Button, useAddress, useContract, useContractRead } from "@thirdweb-dev/react"
-import { getProjectFromId } from "@/models/firestore/getProjectFromId"
 import { useUserValue } from "@/states/userState"
 import { useFetchEffect } from "@/models/project/useFetchEffect"
+import ProjectSearch from "../project/ProjectSearch"
 
 const formInputSchema = z.object({
   enteredText: z.string().nonempty(),

@@ -47,15 +47,22 @@ export default function NewProjectAboutSbtPage() {
   } = useForm<NewProjectAboutSbt>({ resolver: zodResolver(formInputSchema) })
 
   const onDeploySbt = async (contract: SmartContract<ethers.BaseContract>) => {
+    setIsPageLeaveAllowed(true)
     const sbtTokenName = getValues("sbtTokenName")
     const sbtImage = getValues("sbtImage")
+    console.log("AAA")
     const uri = await uploadToIpfs({ tokenName: sbtTokenName, tokenImage: sbtImage })
+    console.log("uri", uri)
     const tx = await contract.call("deploy", [uri])
+    console.log("tx", tx)
     const sbtAddress = tx.receipt.events[0].address as string
+    console.log("sbtAddress", sbtAddress)
 
     await handleSubmit(onSubmit)
 
+    console.log("BBB")
     await updateProjectData({ sbtTokenName: sbtTokenName, sbtAddress: sbtAddress })
+    console.log("CCC")
 
     router.push(PATHS.NEW_PROJECT.ABOUT_VAULT)
   }

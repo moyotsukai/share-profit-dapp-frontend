@@ -37,8 +37,9 @@ const UserNameDialog: React.FC = () => {
     //save user name
     await updateUser({
       userId: user.uid,
-      user: { name: data.name },
+      user: { name: data.name }
     })
+    console.log("saved user name", data.name)
 
     //set user state
     setUser((currentValue) => {

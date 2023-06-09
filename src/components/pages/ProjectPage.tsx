@@ -9,9 +9,12 @@ import TaskBoard from "../task/TaskBoard"
 import Assignments from "../task/Assignments"
 import ProjectOverview from "../project/ProjectOverview/ProjectOverview"
 import SbtOwners from "../project/SbtOwners"
-import { useGetSbtHolders } from "@/models/project/useGetSbtOwners"
+import { useGetSbtHolders } from "@/models/project/useGetSbtHolders"
 import { useGetProject } from "@/models/project/useGetProject"
 import { useGetAssignment } from "@/models/project/useGetAssignment"
+import { useIsProjectOwner } from "@/models/project/useIsProjectOwner"
+import ProjectHeader from "../project/ProjectHeader"
+import ReceiveProceeds from "../project/ReceiveProceeds"
 
 export default function ProjectPage() {
 
@@ -23,8 +26,9 @@ export default function ProjectPage() {
   const sbtHolders = useGetSbtHolders(project?.sbtAddress ?? "")
   const { assignmentApplications, submissions } = useGetAssignment(project)
   const isProjectOwner = useIsProjectOwner(project)
-  const sbtOwners = useGetSbtOwners()
+  const sbtOwners = useGetSbtHolders(project?.sbtAddress ?? "")
   const [_, setProjectIdQueryString] = useState<string>("")
+  const projectTreasuryAddress = project?.vaultAddress ?? ""
 
   useEffect(() => {
     setProjectIdQueryString((currentValue) => {
@@ -85,6 +89,7 @@ export default function ProjectPage() {
               <TabBar.Trigger value="overview">Overview</TabBar.Trigger>
               <TabBar.Trigger value="tasks">Tasks</TabBar.Trigger>
               <TabBar.Trigger value="sbt-owners">SBT owners</TabBar.Trigger>
+              <TabBar.Trigger value="receive-proceeds">Receive Proceeds</TabBar.Trigger>
               {isProjectOwner && <TabBar.Trigger value="assignments">Assignments</TabBar.Trigger>}
             </TabBar.List>
 
@@ -98,6 +103,10 @@ export default function ProjectPage() {
 
             <TabBar.Content value="sbt-owners">
               <SbtOwners sbtOwners={sbtHolders} />
+            </TabBar.Content>
+
+            <TabBar.Content value="receive-proceeds">
+              <ReceiveProceeds projectTreasuryAddress={projectTreasuryAddress} />
             </TabBar.Content>
 
             {isProjectOwner && (

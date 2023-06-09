@@ -4,8 +4,9 @@ import { ConnectWallet, useAddress } from "@thirdweb-dev/react"
 import { useSetUserState } from "@/states/userState"
 import { useEffect } from "react"
 import { asyncTask } from "@/utils/asyncTask"
-import { useSetUserState } from "@/states/userState"
-        
+import { getUser } from "@/models/firestore/getUser"
+import { createUser } from "@/models/firestore/createUser"
+
 const Header: React.FC = () => {
   const setUser = useSetUserState()
   const account = useAddress()
@@ -14,8 +15,19 @@ const Header: React.FC = () => {
     const address = account
     asyncTask(async () => {
       if (address) {
-        const user = await signIn({ address: address })
-        setUser(user)
+        const authenticatedUser = await signIn({ address: address })
+        if (!authenticatedUser) { return }
+        const { data: existingUserData } = await getUser(authenticatedUser.uid)
+        if (!existingUserData) {
+          const { data: createdUser } = await createUser({
+            uid: authenticatedUser.uid,
+            name: ""
+          })
+          if (!createdUser) { return }
+          setUser(createdUser)
+        } else {
+          setUser(authenticatedUser)
+        }
       } else {
         setUser(null)
       }

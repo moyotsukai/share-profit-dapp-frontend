@@ -1,5 +1,5 @@
 export type User = {
   uid: string,
-  nonce: string,
+  nonce?: string,
   name: string
 }
