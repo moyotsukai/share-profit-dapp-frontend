@@ -1,4 +1,3 @@
-import Button from "@/components/ui/Button"
 import Spacer from "@/components/ui/Spacer"
 import Title from "@/components/ui/Title"
 import { updateProject } from "@/models/firestore/updateProject"
@@ -14,6 +13,8 @@ import { z } from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import ErrorMessage from "@/components/ui/ErrorMessage"
+import { Mumbai } from "@thirdweb-dev/chains"
+import { contractAddressesInterface } from "../../../types/networkAddress"
 
 const formInputSchema = z.object({
   ownerProfitShare: z
@@ -26,7 +27,9 @@ const formInputSchema = z.object({
 type NewProjectAboutVault = z.infer<typeof formInputSchema>
 
 export default function NewProjectAboutVaultPage() {
-  const accountFactoryAddr = networkConfig["80001"].AccountFactory[0]
+  const addresses: contractAddressesInterface = networkConfig
+  const chainString = Mumbai.chainId.toString()
+  const accountFactoryAddr = addresses[chainString].AccountFactory[0]
 
   const adminAddr = "0x8eBD4fAa4fcEEF064dCaEa48A3f75d0D0A3ba3f2"
 

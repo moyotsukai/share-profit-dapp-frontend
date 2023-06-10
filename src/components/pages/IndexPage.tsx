@@ -1,10 +1,8 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import TabBar from "../radix/TabBar"
-import Button from "../ui/Button"
 import Spacer from "../ui/Spacer/Spacer"
 import { z } from "zod"
 import { SubmitHandler, useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
 import { updateProjectArray } from "@/models/firestore/updateProject"
 import { useRouter } from "next/router"
 import { PATHS } from "./paths"
@@ -17,6 +15,9 @@ import { Web3Button, useAddress, useContract, useContractRead } from "@thirdweb-
 import { useUserValue } from "@/states/userState"
 import { useFetchEffect } from "@/models/project/useFetchEffect"
 import ProjectSearch from "../project/ProjectSearch"
+import { contractAddressesInterface } from "@/types/networkAddress"
+import { Mumbai } from "@thirdweb-dev/chains"
+import { useGetProject } from "@/models/project/useGetProject"
 
 const formInputSchema = z.object({
   enteredText: z.string().nonempty(),
@@ -26,17 +27,14 @@ type SearchProject = z.infer<typeof formInputSchema>
 
 export default function IndexPage() {
   const user = useUserValue()
-  // TODO: projectごとに取得
-  // const { data: project } = await getProjectFromId("")
-  // const treasuryAddress = project.vaultAddress
-  const accountAddr = "0x327A554A478B091A0AED63E2F63b700f0A3181fe"
-  const tokenAddr = networkConfig["80001"].Usdc[0]
+  const router = useRouter()
+
+  const addresses: contractAddressesInterface = networkConfig
+  const chainString = Mumbai.chainId.toString()
+  const accountAddr = ""
+  const tokenAddr = addresses[chainString].Usdc[0]
   const account = useAddress()
 
-  const router = useRouter()
-  const { register, handleSubmit } = useForm<SearchProject>({
-    resolver: zodResolver(formInputSchema),
-  })
   const [isWithdrawalButtonClickable, setWithdrawalButtonClickable] = useState<boolean>(false)
 
   // get the amount of unreceived token
@@ -71,13 +69,6 @@ export default function IndexPage() {
 
     //go to project page
     router.push(PATHS.PROJECT(project.id))
-  }
-
-  const onEnterDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key !== "Enter") {
-      return
-    }
-    handleSubmit(onClickSearch)
   }
 
   useFetchEffect(
@@ -115,12 +106,12 @@ export default function IndexPage() {
 
         <TabBar.Content value="revenue">
           <p>Unreceived distribution balance</p>
-          {releasableToken ? (
-            <div>{ethers.utils.formatEther(parseInt(releasableToken as string))} USDC</div>
+          {/* {releasableToken ? (
+            <div>{ethers.utils.formatUnits(parseInt(releasableToken as string), 6)} USDC</div>
           ) : (
             <div>0.0 USDC</div>
           )}
-          <Spacer size={60} />
+          <Spacer size={60} /> */}
           <p>Receive distribution</p>
           {/* <Button
             onClick={onClickReceiveDistribution}
@@ -129,7 +120,7 @@ export default function IndexPage() {
           >
             Receive distribution
           </Button> */}
-          <Web3Button
+          {/* <Web3Button
             contractAddress={accountAddr}
             contractAbi={accountAbi}
             action={(contract) => {
@@ -139,7 +130,7 @@ export default function IndexPage() {
             isDisabled={!isWithdrawalButtonClickable}
           >
             Withdraw USDC
-          </Web3Button>
+          </Web3Button> */}
         </TabBar.Content>
       </TabBar.Root>
     </div>

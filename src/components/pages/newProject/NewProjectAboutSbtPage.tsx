@@ -1,11 +1,10 @@
-import Button from "@/components/ui/Button"
 import Spacer from "@/components/ui/Spacer"
 import Title from "@/components/ui/Title"
 import ErrorMessage from "@/components/ui/ErrorMessage"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { SubmitHandler, useForm } from "react-hook-form"
+import { useForm } from "react-hook-form"
 import { z } from "zod"
-import { ChangeEvent, useState } from "react"
+import { useState } from "react"
 import { useRouter } from "next/router"
 import { PATHS } from "../paths"
 import { usePageLeaveConfirmation } from "@/models/project/usePageLeaveConfirmation"
@@ -15,6 +14,8 @@ import networkConfig from "../../../../constants/networkMapping.json"
 import { SmartContract, Web3Button, useStorageUpload } from "@thirdweb-dev/react"
 import { ethers } from "ethers"
 import { updateProject } from "@/models/firestore/updateProject"
+import { contractAddressesInterface } from "../../../types/networkAddress"
+import { Mumbai } from "@thirdweb-dev/chains"
 
 const formInputSchema = z.object({
   sbtTokenName: z.string().nonempty({ message: "Required" }),
@@ -31,8 +32,10 @@ export default function NewProjectAboutSbtPage() {
     image: "",
   }
 
+  const addresses: contractAddressesInterface = networkConfig
+  const chainString = Mumbai.chainId.toString()
   // sbt factory address
-  const sbtFactoryAddr = networkConfig["80001"].SecuritiesFactory[0]
+  const sbtFactoryAddr = addresses[chainString].SecuritiesFactory[0]
   const { mutateAsync: upload } = useStorageUpload()
 
   const [editingProject, setEditingProject] = useEditingProjectState()
@@ -99,7 +102,7 @@ export default function NewProjectAboutSbtPage() {
 
     let tokenUriMetadata = { ...metadataTemplate }
     tokenUriMetadata.name = tokenName
-    tokenUriMetadata.description = "test uploading to ipfs"
+    tokenUriMetadata.description = "SBT for Share Profit"
     tokenUriMetadata.image = uri
     const tokenUri = await upload({
       data: [tokenUriMetadata],

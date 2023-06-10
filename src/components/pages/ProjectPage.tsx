@@ -17,7 +17,6 @@ import ProjectHeader from "../project/ProjectHeader"
 import ReceiveProceeds from "../project/ReceiveProceeds"
 
 export default function ProjectPage() {
-
   const router = useRouter()
   const { projectId, taskId } = router.query
   const user = useUserValue()
@@ -26,7 +25,6 @@ export default function ProjectPage() {
   const sbtHolders = useGetSbtHolders(project?.sbtAddress ?? "")
   const { assignmentApplications, submissions } = useGetAssignment(project)
   const isProjectOwner = useIsProjectOwner(project)
-  const sbtOwners = useGetSbtHolders(project?.sbtAddress ?? "")
   const [_, setProjectIdQueryString] = useState<string>("")
   const projectTreasuryAddress = project?.vaultAddress ?? ""
 
