@@ -1,6 +1,5 @@
 import * as s from "./style"
-import React from "react"
-import Input from "@/components/ui/Input"
+import React, { useRef } from "react"
 import { SubmitHandler, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { getProjectsWhere } from "@/models/firestore/getProjectsWhere"
@@ -64,20 +63,27 @@ const ProjectSearch: React.FC = () => {
   return (
     <div css={s.projectSearchContainerStyle}>
       <form>
-        <Title>Search projects</Title>
+        <Title>Search Projects</Title>
 
         <Spacer size={30} />
+        <p>
+          Enter invitation code to join projects.
+        </p>
+
         <div css={s.searchBarContainerStyle}>
           <label css={s.inputContainerStyle}>
-            <Input
+            <input
               type="text"
               placeholder="Invitation code..."
               onKeyDown={onEnterDown}
               {...register("enteredText")}
+              css={s.inputStyle}
             />
           </label>
           <Spacer size={12} isVertical={false} />
-          <Button onClick={handleSubmit(onClickSearch)}>Search</Button>
+          <Button onClick={handleSubmit(onClickSearch)}>
+            Search
+          </Button>
         </div>
       </form>
     </div>

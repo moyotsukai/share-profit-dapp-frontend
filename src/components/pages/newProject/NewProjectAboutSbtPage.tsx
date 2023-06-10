@@ -16,6 +16,8 @@ import { ethers } from "ethers"
 import { updateProject } from "@/models/firestore/updateProject"
 import { contractAddressesInterface } from "../../../types/networkAddress"
 import { Mumbai } from "@thirdweb-dev/chains"
+import Input from "@/components/ui/Input"
+import PageContainer from "@/components/ui/PageContainer"
 
 const formInputSchema = z.object({
   sbtTokenName: z.string().nonempty({ message: "Required" }),
@@ -37,14 +39,12 @@ export default function NewProjectAboutSbtPage() {
   // sbt factory address
   const sbtFactoryAddr = addresses[chainString].SecuritiesFactory[0]
   const { mutateAsync: upload } = useStorageUpload()
-
   const [editingProject, setEditingProject] = useEditingProjectState()
   const [isButtonEnabled, setIsButtonEnabled] = useState<boolean>(true)
   const [isPageLeaveAllowed, setIsPageLeaveAllowed] = useState<boolean>(false)
   usePageLeaveConfirmation(isPageLeaveAllowed)
   const {
     register,
-    handleSubmit,
     getValues,
     formState: { errors },
   } = useForm<NewProjectAboutSbt>({ resolver: zodResolver(formInputSchema) })
@@ -53,18 +53,13 @@ export default function NewProjectAboutSbtPage() {
     setIsPageLeaveAllowed(true)
     const sbtTokenName = getValues("sbtTokenName")
     const sbtImage = getValues("sbtImage")
-    console.log("AAA")
     const uri = await uploadToIpfs({ tokenName: sbtTokenName, tokenImage: sbtImage })
-    console.log("uri", uri)
     const tx = await contract.call("deploy", [uri])
-    console.log("tx", tx)
     const sbtAddress = tx.receipt.events[0].address as string
-    console.log("sbtAddress", sbtAddress)
 
     setIsButtonEnabled(false)
     setIsPageLeaveAllowed(true)
 
-    console.log("BBB")
     await updateProjectData({ sbtTokenName: sbtTokenName, sbtAddress: sbtAddress })
 
     if (!editingProject || !editingProject?.id) {
@@ -76,7 +71,6 @@ export default function NewProjectAboutSbtPage() {
       sbtTokenName: sbtTokenName,
       sbtAddress: sbtAddress,
     })
-    console.log("CCC")
 
     router.push(PATHS.NEW_PROJECT.ABOUT_VAULT)
   }
@@ -108,7 +102,6 @@ export default function NewProjectAboutSbtPage() {
       data: [tokenUriMetadata],
       options: { uploadWithoutDirectory: true },
     })
-    console.log(tokenUri[0])
     return tokenUri[0]
   }
 
@@ -133,18 +126,26 @@ export default function NewProjectAboutSbtPage() {
   }
 
   return (
-    <div>
+    <PageContainer>
       <Title>Setting up SBT</Title>
       <Spacer size={30} />
 
-      <p>[About SBT here]</p>
+      <p>
+        A soulbound token (SBT) is a non-transferable fungible token (NFT).
+        <br />
+        In this app, SBTs are distributed to contributors to the project, and proceeds are distributed among SBT owners.
+      </p>
       <Spacer size={20} />
 
       <form>
         <div>
           <label>
-            <p>Token name</p>
-            <input type="text" {...register("sbtTokenName")} />
+            <p>Token Name</p>
+            <input
+              type="text"
+              placeholder="Token name..."
+              {...register("sbtTokenName")}
+            />
             {errors.sbtTokenName && <ErrorMessage>{errors.sbtTokenName?.message}</ErrorMessage>}
           </label>
         </div>
@@ -152,21 +153,17 @@ export default function NewProjectAboutSbtPage() {
 
         <div>
           <label>
-            <p>Token image</p>
+            <p>Token Image</p>
           </label>
-          <input type="file" accept=".jpg, .jpeg, .png" {...register("sbtImage")} />
+          <input
+            type="file"
+            accept=".jpg, .jpeg, .png"
+            {...register("sbtImage")}
+          />
           {errors.sbtImage && <ErrorMessage>{errors.sbtImage?.message}</ErrorMessage>}
         </div>
         <Spacer size={20} />
 
-        {/* <Button
-          onClick={handleSubmit(onSubmit)}
-          isEnabled={isButtonEnabled}
-          isLoading={isButtonLoading}
-          style="outlined"
-        >
-          Set up SBT and go next
-        </Button> */}
         <Web3Button
           contractAddress={sbtFactoryAddr}
           contractAbi={securitiesFactoryAbi}
@@ -177,6 +174,6 @@ export default function NewProjectAboutSbtPage() {
           Deploy SBT
         </Web3Button>
       </form>
-    </div>
+    </PageContainer>
   )
 }

@@ -14,6 +14,7 @@ import { EditingAssignmentApplication } from "@/types/assignmentApplication"
 import { createAssignmentApplication } from "@/models/firestore/createAssignmentApplication"
 import { Project } from "@/types/Project"
 import { useSetAssignmentApplicationsState } from "@/states/assignmentApplicatinsState"
+import Textarea from "@/components/ui/Textarea"
 
 const formInputSchema = z
   .object({

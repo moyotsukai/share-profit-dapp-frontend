@@ -1,6 +1,9 @@
+import React from 'react'
 import * as s from './style'
 
-type Props = React.ComponentProps<"input">
+type Props = React.ComponentProps<"input"> & {
+  name: string
+}
 
 const Input: React.FC<Props> = ({ type, placeholder }) => {
   return (

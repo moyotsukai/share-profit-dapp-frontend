@@ -15,6 +15,8 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import ErrorMessage from "@/components/ui/ErrorMessage"
 import { Mumbai } from "@thirdweb-dev/chains"
 import { contractAddressesInterface } from "../../../types/networkAddress"
+import Input from "@/components/ui/Input"
+import PageContainer from "@/components/ui/PageContainer"
 
 const formInputSchema = z.object({
   ownerProfitShare: z
@@ -27,10 +29,10 @@ const formInputSchema = z.object({
 type NewProjectAboutVault = z.infer<typeof formInputSchema>
 
 export default function NewProjectAboutVaultPage() {
+  
   const addresses: contractAddressesInterface = networkConfig
   const chainString = Mumbai.chainId.toString()
   const accountFactoryAddr = addresses[chainString].AccountFactory[0]
-
   const adminAddr = "0x8eBD4fAa4fcEEF064dCaEa48A3f75d0D0A3ba3f2"
 
   const router = useRouter()
@@ -70,21 +72,29 @@ export default function NewProjectAboutVaultPage() {
   }
 
   return (
-    <div>
-      <Title>Creating treasury contract for the project</Title>
+    <PageContainer>
+      <Title>Creating Treasury Contract for the Project</Title>
       <Spacer size={30} />
 
-      <p>[About treasury here]</p>
+      <p>
+        Project sales are accumulated in the treasury contract.
+        <br />
+        Sales stored in the treasury contract will be divided into bounties for project owners, contributors, and a service fee.
+      </p>
       <Spacer size={20} />
-
+        
       <p>SBT address</p>
       <p>{editingProject?.sbtAddress}</p>
       <Spacer size={20} />
-
+        
       <div>
         <label>
           <p>Founder&apos;s share of the profit(%)</p>
-          <input type="number" {...register("ownerProfitShare", { valueAsNumber: true })} />
+          <input
+            type="number"
+            placeholder="Proportion"
+            {...register("ownerProfitShare", { valueAsNumber: true })}
+          />
           {errors.ownerProfitShare && (
             <ErrorMessage>{errors.ownerProfitShare?.message}</ErrorMessage>
           )}
@@ -108,6 +118,6 @@ export default function NewProjectAboutVaultPage() {
       >
         Deploy Vault
       </Web3Button>
-    </div>
+    </PageContainer>
   )
 }

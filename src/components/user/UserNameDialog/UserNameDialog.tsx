@@ -9,6 +9,7 @@ import Button from "@/components/ui/Button"
 import { useUserState, useUserValue } from "@/states/userState"
 import * as AlertDialog from "@radix-ui/react-alert-dialog"
 import { updateUser } from "@/models/firestore/updateUser"
+import Input from "@/components/ui/Input/Input"
 
 const formInputSchema = z.object({
   name: z.string().nonempty({ message: "Required" }),
@@ -39,7 +40,6 @@ const UserNameDialog: React.FC = () => {
       userId: user.uid,
       user: { name: data.name }
     })
-    console.log("saved user name", data.name)
 
     //set user state
     setUser((currentValue) => {
@@ -67,7 +67,11 @@ const UserNameDialog: React.FC = () => {
             <div>
               <label>
                 <p>User Name</p>
-                <input type="text" {...register("name")} />
+                <input
+                  type="text"
+                  placeholder="User name..."
+                  {...register("name")}
+                />
                 {errors.name && <ErrorMessage>{errors.name?.message}</ErrorMessage>}
               </label>
             </div>

@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useRef, useState } from "react"
 import * as s from "./style"
 import * as Dialog from "@radix-ui/react-dialog"
 import { z } from "zod"
@@ -123,7 +123,7 @@ const AddNewTaskDialog: React.FC = () => {
                 <p>
                   Task Name
                 </p>
-                <Input
+                <input
                   placeholder="Task name..."
                   {...register("title")}
                 />
@@ -141,7 +141,7 @@ const AddNewTaskDialog: React.FC = () => {
                 <p>
                   Outline
                 </p>
-                <Input
+                <input
                   placeholder="Outline..."
                   {...register("outline")}
                 />
@@ -159,7 +159,7 @@ const AddNewTaskDialog: React.FC = () => {
                 <p>
                   Details
                 </p>
-                <Textarea
+                <textarea
                   placeholder="Details..."
                   {...register("details")}
                 />
@@ -177,7 +177,7 @@ const AddNewTaskDialog: React.FC = () => {
                 <p>
                   Amount of Bounty SBT
                 </p>
-                <Input
+                <input
                   type="number"
                   placeholder="Amount of bounty SBT..."
                   {...register("bountySbt", { valueAsNumber: true })}

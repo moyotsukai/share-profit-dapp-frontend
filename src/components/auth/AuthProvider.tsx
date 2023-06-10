@@ -15,10 +15,8 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
   const account = useAddress()
   const [user, setUser] = useUserState()
   const hasNoUserName = user && !user.name
-  console.log("user name: ", user?.name)
 
   useEffect(() => {
-    console.log("🔺", user)
     if (user) {
       //user is already signed in
       //do nothing
