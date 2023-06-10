@@ -125,7 +125,7 @@ const AddNewTaskDialog: React.FC = () => {
                 </p>
                 <input
                   placeholder="Task name..."
-                  name="title"
+                  {...register("title")}
                 />
                 {errors.title && (
                   <ErrorMessage>
