@@ -123,7 +123,7 @@ const AddNewTaskDialog: React.FC = () => {
                 <p>
                   Task Name
                 </p>
-                <Input
+                <input
                   placeholder="Task name..."
                   name="title"
                 />
@@ -141,7 +141,7 @@ const AddNewTaskDialog: React.FC = () => {
                 <p>
                   Outline
                 </p>
-                <Input
+                <input
                   placeholder="Outline..."
                   {...register("outline")}
                 />
@@ -177,7 +177,7 @@ const AddNewTaskDialog: React.FC = () => {
                 <p>
                   Amount of Bounty SBT
                 </p>
-                <Input
+                <input
                   type="number"
                   placeholder="Amount of bounty SBT..."
                   {...register("bountySbt", { valueAsNumber: true })}

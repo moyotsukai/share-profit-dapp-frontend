@@ -183,7 +183,7 @@ const ReSubmissionForm: React.FC<Props> = ({ task, submission }) => {
                     Link
                   </p>
                 </label>
-                <Input
+                <input
                   type="text"
                   defaultValue={submission.link ?? ""}
                   placeholder="Link..."

@@ -134,7 +134,7 @@ export default function NewProjectAboutProjectPage() {
             <p>
               Project Name
             </p>
-            <Input
+            <input
               type="text"
               placeholder="Project name..."
               {...register("title")}
@@ -190,7 +190,7 @@ export default function NewProjectAboutProjectPage() {
             <p>
               Twitter
             </p>
-            <Input
+            <input
               type="text"
               placeholder="Twitter URL..."
               {...register("twitterUrl")}
@@ -209,7 +209,7 @@ export default function NewProjectAboutProjectPage() {
             <p>
               Discord
             </p>
-            <Input
+            <input
               type="text"
               placeholder="Discord URL..."
               {...register("discordUrl")}

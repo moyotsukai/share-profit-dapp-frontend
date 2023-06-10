@@ -122,7 +122,7 @@ export default function ProjectPage() {
         ) : (
           <div>
             <p>Enter Invitation Code</p>
-            <Input
+            <input
               type="text"
               placeholder="Invitation code..."
               onChange={onChangeInvitationCode}

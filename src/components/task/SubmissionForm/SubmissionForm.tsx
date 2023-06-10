@@ -178,7 +178,7 @@ const SubmissionForm: React.FC<Props> = ({ task }) => {
                     Link
                   </p>
                 </label>
-                <Input
+                <input
                   type="text"
                   placeholder="Link..."
                   {...register("link")}

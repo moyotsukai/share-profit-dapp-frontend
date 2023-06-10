@@ -137,7 +137,7 @@ export default function NewProjectAboutSbtPage() {
         <div>
           <label>
             <p>Token Name</p>
-            <Input
+            <input
               type="text"
               placeholder="Token name..."
               {...register("sbtTokenName")}

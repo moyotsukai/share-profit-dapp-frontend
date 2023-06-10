@@ -81,7 +81,7 @@ export default function NewProjectAboutVaultPage() {
       <div>
         <label>
           <p>Founder&apos;s share of the profit</p>
-          <Input
+          <input
             type="number"
             placeholder="Proportion"
             {...register("ownerProfitShare", { valueAsNumber: true })}
