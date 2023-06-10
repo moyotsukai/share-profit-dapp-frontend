@@ -159,7 +159,7 @@ const AddNewTaskDialog: React.FC = () => {
                 <p>
                   Details
                 </p>
-                <Textarea
+                <textarea
                   placeholder="Details..."
                   {...register("details")}
                 />

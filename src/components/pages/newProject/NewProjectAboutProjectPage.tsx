@@ -172,7 +172,7 @@ export default function NewProjectAboutProjectPage() {
             <p>
               Details
             </p>
-            <Textarea
+            <textarea
               placeholder="Details..."
               {...register("details")}
             />

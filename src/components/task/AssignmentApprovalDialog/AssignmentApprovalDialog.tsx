@@ -373,7 +373,7 @@ const AssignmentApprovalDialog: React.FC<Props> = ({ type, assignment, tasks, is
                             Add Comments
                           </p>
                         </label>
-                        <Textarea
+                        <textarea
                           placeholder="Comments from project owner..."
                           {...register("commentFromPrjectOwner")}
                         />

@@ -192,7 +192,7 @@ const SubmissionForm: React.FC<Props> = ({ task }) => {
                     Message
                   </p>
                 </label>
-                <Textarea
+                <textarea
                   placeholder="Message about the task..."
                   {...register("message")}
                 />

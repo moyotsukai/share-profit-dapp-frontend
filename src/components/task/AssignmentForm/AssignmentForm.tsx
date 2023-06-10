@@ -129,7 +129,7 @@ const AssignmentForm: React.FC<Props> = ({ task }) => {
                     Message
                   </p>
                 </label>
-                <Textarea
+                <textarea
                   placeholder="When and how you want to work on the task..."
                   {...register("message")}
                 />

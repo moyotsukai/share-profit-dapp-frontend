@@ -198,7 +198,7 @@ const ReSubmissionForm: React.FC<Props> = ({ task, submission }) => {
                     Message
                   </p>
                 </label>
-                <Textarea
+                <textarea
                   placeholder="Message about the task..."
                   defaultValue={submission.message}
                   {...register("message")}
