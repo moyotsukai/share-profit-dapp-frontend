@@ -1,4 +1,3 @@
-import Button from "@/components/ui/Button"
 import Spacer from "@/components/ui/Spacer"
 import Title from "@/components/ui/Title"
 import { updateProject } from "@/models/firestore/updateProject"
@@ -14,6 +13,8 @@ import { z } from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import ErrorMessage from "@/components/ui/ErrorMessage"
+import Input from "@/components/ui/Input"
+import PageContainer from "@/components/ui/PageContainer"
 
 const formInputSchema = z.object({
   ownerProfitShare: z
@@ -27,7 +28,6 @@ type NewProjectAboutVault = z.infer<typeof formInputSchema>
 
 export default function NewProjectAboutVaultPage() {
   const accountFactoryAddr = networkConfig["80001"].AccountFactory[0]
-
   const adminAddr = "0x8eBD4fAa4fcEEF064dCaEa48A3f75d0D0A3ba3f2"
 
   const router = useRouter()
@@ -67,21 +67,25 @@ export default function NewProjectAboutVaultPage() {
   }
 
   return (
-    <div>
-      <Title>Creating treasury contract for the project</Title>
+    <PageContainer>
+      <Title>Creating Treasury Contract for the Project</Title>
       <Spacer size={30} />
 
-      <p>[About treasury here]</p>
-      <Spacer size={20} />
-
-      <p>SBT address</p>
-      <p>[SBT address here]</p>
+      <p>
+        Project sales are accumulated in the treasury contract.
+        <br />
+        Sales stored in the treasury contract will be divided into bounties for project owners, contributors, and a service fee.
+      </p>
       <Spacer size={20} />
 
       <div>
         <label>
           <p>Founder&apos;s share of the profit</p>
-          <input type="number" {...register("ownerProfitShare", { valueAsNumber: true })} />
+          <Input
+            type="number"
+            placeholder="Proportion"
+            {...register("ownerProfitShare", { valueAsNumber: true })}
+          />
           {errors.ownerProfitShare && (
             <ErrorMessage>{errors.ownerProfitShare?.message}</ErrorMessage>
           )}
@@ -89,14 +93,6 @@ export default function NewProjectAboutVaultPage() {
       </div>
       <Spacer size={20} />
 
-      {/* <Button
-        onClick={onClickComplete}
-        isEnabled={isButtonEnabled}
-        isLoading={isButtonLoading}
-        style="contained"
-      >
-        Deploy and complete project
-      </Button> */}
       <Web3Button
         contractAddress={accountFactoryAddr}
         contractAbi={accountFactoryAbi}
@@ -113,6 +109,6 @@ export default function NewProjectAboutVaultPage() {
       >
         Deploy Vault
       </Web3Button>
-    </div>
+    </PageContainer>
   )
 }

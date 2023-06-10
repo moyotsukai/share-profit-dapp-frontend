@@ -16,6 +16,9 @@ import Spacer from "@/components/ui/Spacer"
 import Title from "@/components/ui/Title"
 import { usePageLeaveConfirmation } from "@/models/project/usePageLeaveConfirmation"
 import { randomCharactors } from "@/utils/randomCharactors"
+import Input from "@/components/ui/Input"
+import Textarea from "@/components/ui/Textarea"
+import PageContainer from "@/components/ui/PageContainer"
 
 const formInputSchema = z
   .object({
@@ -119,9 +122,9 @@ export default function NewProjectAboutProjectPage() {
   }
 
   return (
-    <div>
+    <PageContainer>
       <Title>
-        New project
+        New Project
       </Title>
       <Spacer size={30} />
 
@@ -129,9 +132,13 @@ export default function NewProjectAboutProjectPage() {
         <div>
           <label>
             <p>
-              Project name
+              Project Name
             </p>
-            <input type="text" {...register("title")} />
+            <Input
+              type="text"
+              placeholder="Project name..."
+              {...register("title")}
+            />
             {errors.title && (
               <ErrorMessage>
                 {errors.title?.message}
@@ -144,10 +151,14 @@ export default function NewProjectAboutProjectPage() {
         <div>
           <label>
             <p>
-              Cover image
+              Cover Image
             </p>
           </label>
-          <input type="file" accept=".jpg, .jpeg, .png" {...register("image")} />
+          <input
+            type="file"
+            accept=".jpg, .jpeg, .png"
+            {...register("image")}
+          />
           {errors.image && (
             <ErrorMessage>
               {errors.image?.message}
@@ -161,7 +172,10 @@ export default function NewProjectAboutProjectPage() {
             <p>
               Details
             </p>
-            <textarea {...register("details")} />
+            <Textarea
+              placeholder="Details..."
+              {...register("details")}
+            />
             {errors.details && (
               <ErrorMessage>
                 {errors.details?.message}
@@ -176,7 +190,11 @@ export default function NewProjectAboutProjectPage() {
             <p>
               Twitter
             </p>
-            <input type="text" {...register("twitterUrl")} />
+            <Input
+              type="text"
+              placeholder="Twitter URL..."
+              {...register("twitterUrl")}
+            />
             {errors.twitterUrl && (
               <ErrorMessage>
                 {errors.twitterUrl?.message}
@@ -191,7 +209,11 @@ export default function NewProjectAboutProjectPage() {
             <p>
               Discord
             </p>
-            <input type="text" {...register("discordUrl")} />
+            <Input
+              type="text"
+              placeholder="Discord URL..."
+              {...register("discordUrl")}
+            />
             {errors.discordUrl && (
               <ErrorMessage>
                 {errors.discordUrl?.message}
@@ -209,9 +231,9 @@ export default function NewProjectAboutProjectPage() {
           isLoading={isButtonLoading}
           style="outlined"
         >
-          Create and go next
+          Create and Go Next
         </Button>
       </form>
-    </div>
+    </PageContainer>
   )
 }

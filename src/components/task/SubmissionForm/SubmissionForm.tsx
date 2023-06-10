@@ -16,6 +16,9 @@ import { uploadSubmissionFile } from "@/models/storage/uploadSubmissionFile"
 import { createSubmission } from "@/models/firestore/createSubmission"
 import { updateSubmission } from "@/models/firestore/updateSubmission"
 import { useSetSubmissionsState } from "@/states/submissionsState"
+import Input from "@/components/ui/Input"
+import InputFile from "@/components/ui/InputFile"
+import Textarea from "@/components/ui/Textarea"
 
 const formInputSchema = z
   .object({
@@ -162,7 +165,10 @@ const SubmissionForm: React.FC<Props> = ({ task }) => {
                     File
                   </p>
                 </label>
-                <input type="file" {...register("file")} />
+                <input
+                  type="file"
+                  {...register("file")}
+                />
               </div>
               <Spacer size={20} />
 
@@ -172,7 +178,11 @@ const SubmissionForm: React.FC<Props> = ({ task }) => {
                     Link
                   </p>
                 </label>
-                <input type="text" {...register("link")} />
+                <Input
+                  type="text"
+                  placeholder="Link..."
+                  {...register("link")}
+                />
               </div>
               <Spacer size={20} />
 
@@ -182,7 +192,7 @@ const SubmissionForm: React.FC<Props> = ({ task }) => {
                     Message
                   </p>
                 </label>
-                <textarea
+                <Textarea
                   placeholder="Message about the task..."
                   {...register("message")}
                 />

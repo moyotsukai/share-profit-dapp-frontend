@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useRef, useState } from "react"
 import * as s from "./style"
 import * as Dialog from "@radix-ui/react-dialog"
 import { z } from "zod"
@@ -125,7 +125,7 @@ const AddNewTaskDialog: React.FC = () => {
                 </p>
                 <Input
                   placeholder="Task name..."
-                  {...register("title")}
+                  name="title"
                 />
                 {errors.title && (
                   <ErrorMessage>

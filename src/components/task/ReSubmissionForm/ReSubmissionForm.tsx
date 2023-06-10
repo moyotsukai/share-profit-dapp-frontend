@@ -13,10 +13,10 @@ import { useUserValue } from "@/states/userState"
 import { Project } from "@/types/Project"
 import { EditingSubmission, Submission } from "@/types/submission"
 import { uploadSubmissionFile } from "@/models/storage/uploadSubmissionFile"
-import { createSubmission } from "@/models/firestore/createSubmission"
 import { updateSubmission } from "@/models/firestore/updateSubmission"
 import { useSetSubmissionsState } from "@/states/submissionsState"
-import { extractFileNameFromUrl } from "@/utils/extractFileNameFromUrl"
+import Input from "@/components/ui/Input"
+import Textarea from "@/components/ui/Textarea"
 
 const formInputSchema = z
   .object({
@@ -183,9 +183,10 @@ const ReSubmissionForm: React.FC<Props> = ({ task, submission }) => {
                     Link
                   </p>
                 </label>
-                <input
+                <Input
                   type="text"
                   defaultValue={submission.link ?? ""}
+                  placeholder="Link..."
                   {...register("link")}
                 />
               </div>
@@ -197,7 +198,7 @@ const ReSubmissionForm: React.FC<Props> = ({ task, submission }) => {
                     Message
                   </p>
                 </label>
-                <textarea
+                <Textarea
                   placeholder="Message about the task..."
                   defaultValue={submission.message}
                   {...register("message")}

@@ -15,6 +15,7 @@ import { useGetAssignment } from "@/models/project/useGetAssignment"
 import { useIsProjectOwner } from "@/models/project/useIsProjectOwner"
 import ProjectHeader from "../project/ProjectHeader"
 import ReceiveProceeds from "../project/ReceiveProceeds"
+import Input from "../ui/Input"
 
 export default function ProjectPage() {
 
@@ -43,7 +44,6 @@ export default function ProjectPage() {
       }
       return projectId
     })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectId])
 
   //set if user needs to enter invitation code
@@ -88,7 +88,7 @@ export default function ProjectPage() {
             <TabBar.List>
               <TabBar.Trigger value="overview">Overview</TabBar.Trigger>
               <TabBar.Trigger value="tasks">Tasks</TabBar.Trigger>
-              <TabBar.Trigger value="sbt-owners">SBT owners</TabBar.Trigger>
+              <TabBar.Trigger value="sbt-owners">SBT Owners</TabBar.Trigger>
               <TabBar.Trigger value="receive-proceeds">Receive Proceeds</TabBar.Trigger>
               {isProjectOwner && <TabBar.Trigger value="assignments">Assignments</TabBar.Trigger>}
             </TabBar.List>
@@ -121,8 +121,12 @@ export default function ProjectPage() {
           </TabBar.Root>
         ) : (
           <div>
-            <p>Enter invitation code</p>
-            <input type="text" onChange={onChangeInvitationCode} />
+            <p>Enter Invitation Code</p>
+            <Input
+              type="text"
+              placeholder="Invitation code..."
+              onChange={onChangeInvitationCode}
+            />
           </div>
         )
       ) : project === undefined ? (
@@ -132,7 +136,7 @@ export default function ProjectPage() {
         </div>
       ) : (
         <div>
-          <Title>Project not found</Title>
+          <Title>Project Not Found</Title>
         </div>
       )}
     </div>
