@@ -14,6 +14,8 @@ import networkConfig from "../../../../constants/networkMapping.json"
 import { SmartContract, Web3Button, useStorageUpload } from "@thirdweb-dev/react"
 import { ethers } from "ethers"
 import { updateProject } from "@/models/firestore/updateProject"
+import { contractAddressesInterface } from "../../../types/networkAddress"
+import { Mumbai } from "@thirdweb-dev/chains"
 import Input from "@/components/ui/Input"
 import PageContainer from "@/components/ui/PageContainer"
 
@@ -32,8 +34,10 @@ export default function NewProjectAboutSbtPage() {
     image: "",
   }
 
+  const addresses: contractAddressesInterface = networkConfig
+  const chainString = Mumbai.chainId.toString()
   // sbt factory address
-  const sbtFactoryAddr = networkConfig["80001"].SecuritiesFactory[0]
+  const sbtFactoryAddr = addresses[chainString].SecuritiesFactory[0]
   const { mutateAsync: upload } = useStorageUpload()
   const [editingProject, setEditingProject] = useEditingProjectState()
   const [isButtonEnabled, setIsButtonEnabled] = useState<boolean>(true)
@@ -92,7 +96,7 @@ export default function NewProjectAboutSbtPage() {
 
     let tokenUriMetadata = { ...metadataTemplate }
     tokenUriMetadata.name = tokenName
-    tokenUriMetadata.description = "test uploading to ipfs"
+    tokenUriMetadata.description = "SBT for Share Profit"
     tokenUriMetadata.image = uri
     const tokenUri = await upload({
       data: [tokenUriMetadata],

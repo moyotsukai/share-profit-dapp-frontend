@@ -16,14 +16,18 @@ const Header: React.FC = () => {
     asyncTask(async () => {
       if (address) {
         const authenticatedUser = await signIn({ address: address })
-        if (!authenticatedUser) { return }
+        if (!authenticatedUser) {
+          return
+        }
         const { data: existingUserData } = await getUser(authenticatedUser.uid)
         if (!existingUserData) {
           const { data: createdUser } = await createUser({
             uid: authenticatedUser.uid,
-            name: ""
+            name: "",
           })
-          if (!createdUser) { return }
+          if (!createdUser) {
+            return
+          }
           setUser(createdUser)
         } else {
           setUser(authenticatedUser)
@@ -38,7 +42,7 @@ const Header: React.FC = () => {
   return (
     <header css={s.headerStyle}>
       <div css={s.spacerStyle} />
-      <ConnectWallet />
+      <ConnectWallet theme="light" />
     </header>
   )
 }

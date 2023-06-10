@@ -5,7 +5,6 @@ import securitiesAbi from "../../../constants/Securities.json"
 import { holdersFromChain } from "../firestore/dataConverter"
 import { getUser } from "../firestore/getUser"
 import { useContract, useContractRead } from "@thirdweb-dev/react"
-import { getProjectFromId } from "../firestore/getProjectFromId"
 
 export const useGetSbtHolders = (sbtAddress: string) => {
   const [sbtOwners, setSbtOwners] = useState<SbtOwner[]>([])

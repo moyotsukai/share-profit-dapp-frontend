@@ -13,6 +13,8 @@ import { z } from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import ErrorMessage from "@/components/ui/ErrorMessage"
+import { Mumbai } from "@thirdweb-dev/chains"
+import { contractAddressesInterface } from "../../../types/networkAddress"
 import Input from "@/components/ui/Input"
 import PageContainer from "@/components/ui/PageContainer"
 
@@ -27,7 +29,10 @@ const formInputSchema = z.object({
 type NewProjectAboutVault = z.infer<typeof formInputSchema>
 
 export default function NewProjectAboutVaultPage() {
-  const accountFactoryAddr = networkConfig["80001"].AccountFactory[0]
+  
+  const addresses: contractAddressesInterface = networkConfig
+  const chainString = Mumbai.chainId.toString()
+  const accountFactoryAddr = addresses[chainString].AccountFactory[0]
   const adminAddr = "0x8eBD4fAa4fcEEF064dCaEa48A3f75d0D0A3ba3f2"
 
   const router = useRouter()
@@ -77,10 +82,14 @@ export default function NewProjectAboutVaultPage() {
         Sales stored in the treasury contract will be divided into bounties for project owners, contributors, and a service fee.
       </p>
       <Spacer size={20} />
-
+        
+      <p>SBT address</p>
+      <p>{editingProject?.sbtAddress}</p>
+      <Spacer size={20} />
+        
       <div>
         <label>
-          <p>Founder&apos;s share of the profit</p>
+          <p>Founder&apos;s share of the profit(%)</p>
           <input
             type="number"
             placeholder="Proportion"
