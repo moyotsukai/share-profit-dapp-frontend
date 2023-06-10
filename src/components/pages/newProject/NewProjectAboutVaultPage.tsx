@@ -78,12 +78,12 @@ export default function NewProjectAboutVaultPage() {
       <Spacer size={20} />
 
       <p>SBT address</p>
-      <p>[SBT address here]</p>
+      <p>{editingProject?.sbtAddress}</p>
       <Spacer size={20} />
 
       <div>
         <label>
-          <p>Founder&apos;s share of the profit</p>
+          <p>Founder&apos;s share of the profit(%)</p>
           <input type="number" {...register("ownerProfitShare", { valueAsNumber: true })} />
           {errors.ownerProfitShare && (
             <ErrorMessage>{errors.ownerProfitShare?.message}</ErrorMessage>
@@ -92,14 +92,6 @@ export default function NewProjectAboutVaultPage() {
       </div>
       <Spacer size={20} />
 
-      {/* <Button
-        onClick={onClickComplete}
-        isEnabled={isButtonEnabled}
-        isLoading={isButtonLoading}
-        style="contained"
-      >
-        Deploy and complete project
-      </Button> */}
       <Web3Button
         contractAddress={accountFactoryAddr}
         contractAbi={accountFactoryAbi}
