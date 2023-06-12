@@ -42,7 +42,6 @@ const Header: React.FC = () => {
   return (
     <header css={s.headerStyle}>
       <div css={s.spacerStyle} />
-      <ConnectWallet theme="light" />
     </header>
   )
 }

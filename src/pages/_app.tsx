@@ -7,6 +7,7 @@ import { DndProvider } from "react-dnd"
 import { HTML5Backend } from "react-dnd-html5-backend"
 import { Mumbai } from "@thirdweb-dev/chains"
 import { ThirdwebProvider } from "@thirdweb-dev/react"
+import "@biconomy/web3-auth/dist/src/style.css";
 
 export default function App({ Component, pageProps }: AppProps) {
   return (

@@ -1,11 +1,12 @@
 import { signIn } from "@/models/auth/signIn"
 import { asyncTask } from "@/utils/asyncTask"
-import React, { useEffect } from "react"
+import React, { Suspense, useEffect } from "react"
 import { useUserState } from "@/states/userState"
 import LoadingCircle from "../ui/LoadingCircle"
 import UserNameDialog from "../user/UserNameDialog"
 import Header from "../common/Header"
 import { useAddress } from "@thirdweb-dev/react"
+import dynamic from "next/dynamic"
 
 type Props = {
   children: React.ReactNode
@@ -15,6 +16,10 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
   const account = useAddress()
   const [user, setUser] = useUserState()
   const hasNoUserName = user && !user.name
+
+  const SocialLoginDynamic = dynamic(() => import("./Scw").then((res) => res.default), {
+    ssr: false,
+  })
 
   useEffect(() => {
     if (user) {
@@ -45,14 +50,20 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
         </div>
       ) : (
         <React.Fragment>
-          <Header />
+          {/* <Header /> */}
           {user ? (
             hasNoUserName ? (
               <UserNameDialog />
-            ) :
+            ) : (
               children
+            )
           ) : (
-            <>Landing page</>
+            <>
+              <p>Landing page</p>
+              <Suspense fallback={<div>Loading...</div>}>
+                <SocialLoginDynamic />
+              </Suspense>
+            </>
           )}
         </React.Fragment>
       )}
