@@ -51,6 +51,9 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
       ) : (
         <React.Fragment>
           {/* <Header /> */}
+          <Suspense fallback={<div>Loading...</div>}>
+            <SocialLoginDynamic />
+          </Suspense>
           {user ? (
             hasNoUserName ? (
               <UserNameDialog />
@@ -59,10 +62,7 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
             )
           ) : (
             <>
-              <p>Landing page</p>
-              <Suspense fallback={<div>Loading...</div>}>
-                <SocialLoginDynamic />
-              </Suspense>
+              <>Landing page</>
             </>
           )}
         </React.Fragment>

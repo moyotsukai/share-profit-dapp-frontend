@@ -3,7 +3,10 @@ import SocialLogin from "@biconomy/web3-auth"
 import { ChainId } from "@biconomy/core-types"
 import { ethers } from "ethers"
 import SmartAccount from "@biconomy/smart-account"
-import { useUserState } from "@/states/userState"
+import { useSetUserState } from "@/states/userState"
+import { signIn } from "@/models/auth/signIn"
+import { createUser } from "@/models/firestore/createUser"
+import { getUser } from "@/models/firestore/getUser"
 
 export default function Auth() {
   const [smartAccount, setSmartAccount] = useState<SmartAccount | null>(null)
@@ -11,8 +14,6 @@ export default function Auth() {
   const sdkRef = useRef<SocialLogin | null>(null)
   const [loading, setLoading] = useState<boolean>(false)
   const [provider, setProvider] = useState<any>(null)
-
-  const [user, setUser] = useUserState()
 
   useEffect(() => {
     let configureLogin: any
@@ -83,9 +84,38 @@ export default function Auth() {
     enableInterval(false)
   }
 
+  const setUser = useSetUserState()
+
+  const onClickLogin = async () => {
+    await login()
+    const address = smartAccount?.address
+    if (address) {
+      const authenticatedUser = await signIn({ address: address })
+      if (!authenticatedUser) {
+        return
+      }
+      const { data: existingUserData } = await getUser(authenticatedUser.uid)
+      if (!existingUserData) {
+        const { data: createdUser } = await createUser({
+          uid: authenticatedUser.uid,
+          name: "",
+          smartAccount: smartAccount
+        })
+        if (!createdUser) {
+          return
+        }
+        setUser(createdUser)
+      } else {
+        setUser(authenticatedUser)
+      }
+    } else {
+      setUser(null)
+    }
+  }
+
   return (
     <div>
-      {!smartAccount && !loading && <button onClick={login}>Login</button>}
+      {!smartAccount && !loading && <button onClick={onClickLogin}>Login</button>}
       {loading && <p>Loading account details...</p>}
       {!!smartAccount && (
         <div>
