@@ -7,12 +7,19 @@ import { useSetUserState } from "@/states/userState"
 import { signIn } from "@/models/auth/signIn"
 import { createUser } from "@/models/firestore/createUser"
 import { getUser } from "@/models/firestore/getUser"
+import { User } from "@/types/User"
+import { asyncTask } from "@/utils/asyncTask"
 
-export default function Auth() {
+export default function Scw({
+  user,
+  setUser,
+}: {
+  user: User | null | undefined
+  setUser: (user: User | null) => void
+}) {
   const [smartAccount, setSmartAccount] = useState<SmartAccount | null>(null)
   const [interval, enableInterval] = useState(false)
   const sdkRef = useRef<SocialLogin | null>(null)
-  const [loading, setLoading] = useState<boolean>(false)
   const [provider, setProvider] = useState<any>(null)
 
   useEffect(() => {
@@ -51,10 +58,9 @@ export default function Auth() {
   async function setupSmartAccount() {
     if (!sdkRef?.current?.provider) return
     sdkRef.current.hideWallet()
-    setLoading(true)
     const web3Provider = new ethers.providers.Web3Provider(sdkRef.current.provider)
     setProvider(web3Provider)
-    try {
+    // try {
       const smartAccount = new SmartAccount(web3Provider, {
         activeNetworkId: ChainId.POLYGON_MUMBAI,
         supportedNetworksIds: [ChainId.POLYGON_MUMBAI],
@@ -67,11 +73,41 @@ export default function Auth() {
       })
       await smartAccount.init()
       setSmartAccount(smartAccount)
-      setLoading(false)
-    } catch (err) {
-      console.log("error setting up smart account... ", err)
-    }
-  }
+
+      // user setup
+      const address = smartAccount?.address
+      if (!address) {
+        return
+      }
+      const authenticatedUser = await signIn({ address: address })
+      const user = await signIn({ address: address })
+      setUser(user)
+  //     if (!authenticatedUser) {
+  //       return
+  //     }
+  //     const { data: existingUserData } = await getUser(authenticatedUser.uid)
+  //     if (!existingUserData) {
+  //       const { data: createdUser } = await createUser({
+  //         uid: authenticatedUser.uid,
+  //         name: "",
+  //         smartAccount: smartAccount,
+  //       })
+  //       console.log("createdUser: ", createdUser)
+  //       if (!createdUser) {
+  //         setLoading(false)
+  //         return
+  //       }
+  //       setUser(createdUser)
+  //       console.log("user: ", user)
+  //     } else {
+  //       setUser(authenticatedUser)
+  //     }
+
+  //     setLoading(false)
+  //   } catch (err) {
+  //     console.log("error setting up smart account... ", err)
+  //   }
+   }
 
   const logout = async () => {
     if (!sdkRef.current) {
@@ -82,41 +118,25 @@ export default function Auth() {
     sdkRef.current.hideWallet()
     setSmartAccount(null)
     enableInterval(false)
+
+    setUser(null)
   }
 
-  const setUser = useSetUserState()
-
-  const onClickLogin = async () => {
-    await login()
-    const address = smartAccount?.address
-    if (address) {
-      const authenticatedUser = await signIn({ address: address })
-      if (!authenticatedUser) {
-        return
-      }
-      const { data: existingUserData } = await getUser(authenticatedUser.uid)
-      if (!existingUserData) {
-        const { data: createdUser } = await createUser({
-          uid: authenticatedUser.uid,
-          name: "",
-          smartAccount: smartAccount
-        })
-        if (!createdUser) {
-          return
-        }
-        setUser(createdUser)
-      } else {
-        setUser(authenticatedUser)
-      }
-    } else {
-      setUser(null)
-    }
-  }
+  // useEffect(() => {
+  //   if (user) {
+  //     //user is already signed in
+  //     //do nothing
+  //   } else {
+  //     //user is not signed in
+  //     asyncTask(async () => {
+  //       await login()
+  //     })
+  //   }
+  // }, [user])
 
   return (
     <div>
-      {!smartAccount && !loading && <button onClick={onClickLogin}>Login</button>}
-      {loading && <p>Loading account details...</p>}
+      {!smartAccount && <button onClick={login}>Login</button>}
       {!!smartAccount && (
         <div>
           <h3>Smart account address:</h3>
