@@ -1,10 +1,11 @@
 import { signIn } from "@/models/auth/signIn"
 import { asyncTask } from "@/utils/asyncTask"
-import React, { useEffect } from "react"
+import React, { useEffect, useState } from "react"
 import { useUserState } from "@/states/userState"
 import LoadingCircle from "../ui/LoadingCircle"
 import UserNameDialog from "../user/UserNameDialog"
 import Header from "../common/Header"
+import SmartAccount from "@biconomy/smart-account"
 
 type Props = {
   children: React.ReactNode

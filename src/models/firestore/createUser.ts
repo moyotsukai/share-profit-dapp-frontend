@@ -4,17 +4,18 @@ import { db } from "../firebase/client"
 import { KEYS } from "./keys"
 import { Res } from "../../types/Res"
 
-export const createUser = async (user: User): Promise<Res<null>> => {
+export const createUser = async (user: User): Promise<Res<User | null>> => {
   const docRef = doc(db, KEYS.USERS, user.uid)
 
   try {
     await setDoc(docRef, user)
     return {
-      data: null,
+      data: user,
       error: null
     }
 
   } catch (error) {
+    console.log(error)
     return {
       data: null,
       error: error

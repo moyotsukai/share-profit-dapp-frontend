@@ -32,6 +32,7 @@ export default function Scw({
         }
       }, 1000)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [interval])
 
   async function login() {
@@ -60,7 +61,7 @@ export default function Scw({
     sdkRef.current.hideWallet()
     const web3Provider = new ethers.providers.Web3Provider(sdkRef.current.provider)
     setProvider(web3Provider)
-    // try {
+    try {
       const smartAccount = new SmartAccount(web3Provider, {
         activeNetworkId: ChainId.POLYGON_MUMBAI,
         supportedNetworksIds: [ChainId.POLYGON_MUMBAI],
@@ -80,34 +81,28 @@ export default function Scw({
         return
       }
       const authenticatedUser = await signIn({ address: address })
-      const user = await signIn({ address: address })
-      setUser(user)
-  //     if (!authenticatedUser) {
-  //       return
-  //     }
-  //     const { data: existingUserData } = await getUser(authenticatedUser.uid)
-  //     if (!existingUserData) {
-  //       const { data: createdUser } = await createUser({
-  //         uid: authenticatedUser.uid,
-  //         name: "",
-  //         smartAccount: smartAccount,
-  //       })
-  //       console.log("createdUser: ", createdUser)
-  //       if (!createdUser) {
-  //         setLoading(false)
-  //         return
-  //       }
-  //       setUser(createdUser)
-  //       console.log("user: ", user)
-  //     } else {
-  //       setUser(authenticatedUser)
-  //     }
-
-  //     setLoading(false)
-  //   } catch (err) {
-  //     console.log("error setting up smart account... ", err)
-  //   }
-   }
+      if (!authenticatedUser) {
+        return
+      }
+      const { data: existingUserData } = await getUser(authenticatedUser.uid)
+      if (!existingUserData) {
+        const { data: createdUser } = await createUser({
+          uid: authenticatedUser.uid,
+          name: "",
+        })
+        console.log("createdUser: ", createdUser)
+        if (!createdUser) {
+          return
+        }
+        setUser(createdUser)
+        console.log("user: ", user)
+      } else {
+        setUser(authenticatedUser)
+      }
+    } catch (err) {
+      console.log("error setting up smart account... ", err)
+    }
+  }
 
   const logout = async () => {
     if (!sdkRef.current) {
@@ -122,25 +117,13 @@ export default function Scw({
     setUser(null)
   }
 
-  // useEffect(() => {
-  //   if (user) {
-  //     //user is already signed in
-  //     //do nothing
-  //   } else {
-  //     //user is not signed in
-  //     asyncTask(async () => {
-  //       await login()
-  //     })
-  //   }
-  // }, [user])
-
   return (
     <div>
-      {!smartAccount && <button onClick={login}>Login</button>}
-      {!!smartAccount && (
+      {!user?.smartAccount && <button onClick={login}>Login</button>}
+      {!!user?.smartAccount && (
         <div>
           <h3>Smart account address:</h3>
-          <p>{smartAccount.address}</p>
+          <p>{user?.smartAccount.address}</p>
           <button onClick={logout}>Logout</button>
         </div>
       )}
