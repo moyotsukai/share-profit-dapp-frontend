@@ -15,7 +15,6 @@ import { useGetAssignment } from "@/models/project/useGetAssignment"
 import { useIsProjectOwner } from "@/models/project/useIsProjectOwner"
 import ProjectHeader from "../project/ProjectHeader"
 import ReceiveProceeds from "../project/ReceiveProceeds"
-import Input from "../ui/Input"
 
 export default function ProjectPage() {
   const router = useRouter()

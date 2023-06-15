@@ -1,31 +1,66 @@
 import * as s from "./style"
-import React, { useState } from "react"
+import React, { useContext, useState } from "react"
 import Spacer from "@/components/ui/Spacer"
-import { Web3Button, useAddress, useContract, useContractRead } from "@thirdweb-dev/react"
+import { useContract, useContractRead } from "@thirdweb-dev/react"
 import networkConfig from "../../../../constants/networkMapping.json"
 import accountAbi from "../../../../constants/Account.json"
 import { ethers } from "ethers"
 import { contractAddressesInterface } from "@/types/networkAddress"
-import { Mumbai } from "@thirdweb-dev/chains"
+import { ChainId } from "@biconomy/core-types"
+import { useUserValue } from "@/states/userState"
+import Button from "@/components/ui/Button"
+import { SmartAccountContext } from "@/components/auth/AuthProvider"
 
 type Props = {
   projectTreasuryAddress: string
 }
 
 const ReceiveProceeds: React.FC<Props> = ({ projectTreasuryAddress }) => {
-  const [isWithdrawalButtonUnClickable, setWithdrawalButtonUnClickable] = useState<boolean>(true)
+  const { smartAccount } = useContext(SmartAccountContext)
+
+  const [isWithdrawalButtonClickable, setIsWithdrawalButtonClickable] = useState<boolean>(true)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
   const addresses: contractAddressesInterface = networkConfig
-  const chainString = Mumbai.chainId.toString()
+  const chainString = ChainId.POLYGON_MUMBAI.toString()
   const tokenAddr = addresses[chainString].Usdc[0]
-  const account = useAddress()
+  const user = useUserValue()
+
   const { contract: accountContaract } = useContract(projectTreasuryAddress, accountAbi)
   const { data: releasableToken } = useContractRead(accountContaract, "releasableToken", [
     tokenAddr,
-    account,
+    user?.uid,
   ])
+  console.log("releasableToken: ", releasableToken)
+
+  const getReleasableToken = async () => {
+    
+  }
   if (releasableToken && ethers.utils.formatUnits(parseInt(releasableToken as string)) !== "0.0") {
-    setWithdrawalButtonUnClickable(false)
+    setIsWithdrawalButtonClickable(false)
+  }
+
+  const onWithdrawToken = async () => {
+    setIsWithdrawalButtonClickable(false)
+    setIsLoading(true)
+    if (!smartAccount) return
+    try {
+      const accountInterface = new ethers.utils.Interface(accountAbi)
+      const encodedWithdrawTokenData = accountInterface.encodeFunctionData("withdrawToken", [
+        tokenAddr,
+      ])
+      const tx = {
+        to: projectTreasuryAddress,
+        data: encodedWithdrawTokenData,
+      }
+      const txResponse = await smartAccount.sendTransaction({ transaction: tx })
+      console.log("userOp hash: ", txResponse.hash)
+      const txReciept = await txResponse.wait()
+      console.log("Tx: ", txReciept)
+      setIsLoading(false)
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   return (
@@ -39,17 +74,13 @@ const ReceiveProceeds: React.FC<Props> = ({ projectTreasuryAddress }) => {
 
       <Spacer size={60} />
       <p>Receive Proceeds</p>
-      <Web3Button
-        contractAddress={projectTreasuryAddress}
-        contractAbi={accountAbi}
-        action={(contract) => {
-          contract.call("withdrawToken", [tokenAddr])
-        }}
-        onError={(error) => console.log(error)}
-        isDisabled={isWithdrawalButtonUnClickable}
+      <Button
+        isEnabled={isWithdrawalButtonClickable}
+        isLoading={isLoading}
+        onClick={onWithdrawToken}
       >
         Withdraw USDC
-      </Web3Button>
+      </Button>
     </div>
   )
 }

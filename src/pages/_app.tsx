@@ -6,17 +6,20 @@ import { RecoilRoot } from "recoil"
 import { DndProvider } from "react-dnd"
 import { HTML5Backend } from "react-dnd-html5-backend"
 import "@biconomy/web3-auth/dist/src/style.css"
+import { ThirdwebProvider } from "@thirdweb-dev/react"
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <RecoilRoot>
-      <DndProvider backend={HTML5Backend}>
-        <AuthProvider>
-          <Layout>
-            <Component {...pageProps} />
-          </Layout>
-        </AuthProvider>
-      </DndProvider>
-    </RecoilRoot>
+    <ThirdwebProvider>
+      <RecoilRoot>
+        <DndProvider backend={HTML5Backend}>
+          <AuthProvider>
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+          </AuthProvider>
+        </DndProvider>
+      </RecoilRoot>
+    </ThirdwebProvider>
   )
 }

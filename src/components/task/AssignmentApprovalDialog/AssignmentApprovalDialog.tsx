@@ -20,7 +20,6 @@ import { updateSubmission } from "@/models/firestore/updateSubmission"
 import { z } from "zod"
 import { SubmitHandler, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import Textarea from "@/components/ui/Textarea"
 
 const formInputSchema = z
   .object({

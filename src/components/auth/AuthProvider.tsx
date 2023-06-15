@@ -48,8 +48,7 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
         <SocialLoginDynamic />
         {user === undefined ? (
           <div>
-            <p>Loading</p>
-            <LoadingCircle />
+            <p>Login Page</p>
           </div>
         ) : (
           <React.Fragment>
