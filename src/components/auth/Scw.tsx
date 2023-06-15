@@ -1,16 +1,18 @@
-import { useState, useEffect, useRef } from "react"
+import * as s from "./style"
+import { useState, useEffect, useRef, useContext } from "react"
 import SocialLogin from "@biconomy/web3-auth"
 import { ChainId } from "@biconomy/core-types"
 import { ethers } from "ethers"
 import SmartAccount from "@biconomy/smart-account"
-import { signIn } from "@/models/auth/signIn"
-import { createUser } from "@/models/firestore/createUser"
-import { getUser } from "@/models/firestore/getUser"
 import { useUserState } from "@/states/userState"
 import Button from "../ui/Button"
+import { SmartAccountContext } from "./AuthProvider"
 
 export default function Scw() {
+  const { smartAccount, setSmartAccount } = useContext(SmartAccountContext)
+
   const [interval, enableInterval] = useState(false)
+  // const [smartAccount, setSmartAccount] = useState<SmartAccount | null>(null)
   const sdkRef = useRef<SocialLogin | null>(null)
   const [user, setUser] = useUserState()
 
@@ -24,6 +26,7 @@ export default function Scw() {
         }
       }, 1000)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [interval])
 
   async function login() {
@@ -52,7 +55,7 @@ export default function Scw() {
     sdkRef.current.hideWallet()
     const web3Provider = new ethers.providers.Web3Provider(sdkRef.current.provider)
     try {
-      const smartAccount = new SmartAccount(web3Provider, {
+      const newSmartAccount = new SmartAccount(web3Provider, {
         activeNetworkId: ChainId.POLYGON_MUMBAI,
         supportedNetworksIds: [ChainId.POLYGON_MUMBAI],
         networkConfig: [
@@ -62,36 +65,9 @@ export default function Scw() {
           },
         ],
       })
-      await smartAccount.init()
-
-      // user setup
-      const address = smartAccount?.address
-      if (!address) {
-        return
-      }
-      const authenticatedUser = await signIn({ address: address })
-      if (!authenticatedUser) { return }
-      const { data: existingUserData } = await getUser(authenticatedUser.uid)
-      if (!existingUserData) {
-        const { data: createdUser } = await createUser({
-          uid: authenticatedUser.uid,
-          name: "",
-        })
-        console.log("createdUser: ", createdUser)
-        if (!createdUser) {
-          return
-        }
-        setUser({
-          ...createdUser,
-          smartAccount: smartAccount
-        })
-        console.log("user: ", user)
-      } else {
-        setUser({
-          ...authenticatedUser,
-          smartAccount: smartAccount
-        })
-      }
+      await newSmartAccount.init().then(() => {
+        setSmartAccount(newSmartAccount)
+      })
     } catch (err) {
       console.log("error setting up smart account... ", err)
     }
@@ -111,22 +87,12 @@ export default function Scw() {
 
   return (
     <div>
-      {!user?.smartAccount && (
-        <Button
-          onClick={login}
-        >
-          Login
-        </Button>
-      )}
-      {user?.smartAccount && (
-        <div>
+      {!smartAccount && <Button onClick={login}>Login</Button>}
+      {smartAccount && (
+        <div css={s.userInfo}>
           <h3>Smart account address:</h3>
-          <p>{user?.smartAccount.address}</p>
-          <Button
-            onClick={logout}
-          >
-            Logout
-          </Button>
+          <p>{smartAccount.address}</p>
+          <Button onClick={logout}>Logout</Button>
         </div>
       )}
     </div>

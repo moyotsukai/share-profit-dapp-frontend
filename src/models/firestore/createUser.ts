@@ -10,7 +10,7 @@ export const createUser = async (user: User): Promise<Res<User | null>> => {
   try {
     await setDoc(docRef, user)
     return {
-      data: user,
+      data: null,
       error: null
     }
 
