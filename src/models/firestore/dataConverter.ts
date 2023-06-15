@@ -10,6 +10,7 @@ export const userFromFirebase = (data: any): User => {
     uid: data?.uid ?? "",
     nonce: data?.nonce ?? "",
     name: data?.name ?? "",
+    smartAccount: data?.smartAccount ?? "",
   }
 }
 
@@ -62,7 +63,7 @@ export const assignmentApplicationFromFirebase = (data: any): AssignmentApplicat
     message: (data?.message ?? "").replace(/\\n/g, "\n"),
     stage: data?.stage ?? "inReview",
     commentsFromProjectOwner: data?.commentsFromProjectOwner,
-    user: userFromFirebase(data?.user)
+    user: userFromFirebase(data?.user),
   }
 }
 
@@ -77,7 +78,7 @@ export const submissionFromFirebase = (data: any): Submission => {
     message: (data?.message ?? "").replace(/\\n/g, "\n"),
     stage: data?.stage ?? "inReview",
     commentsFromProjectOwner: data?.commentsFromProjectOwner,
-    user: userFromFirebase(data?.user)
+    user: userFromFirebase(data?.user),
   }
 }
 
