@@ -12,13 +12,13 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <ThirdwebProvider>
       <RecoilRoot>
-        <DndProvider backend={HTML5Backend}>
-          <AuthProvider>
+        <AuthProvider>
+          <DndProvider backend={HTML5Backend}>
             <Layout>
               <Component {...pageProps} />
             </Layout>
-          </AuthProvider>
-        </DndProvider>
+          </DndProvider>
+        </AuthProvider>
       </RecoilRoot>
     </ThirdwebProvider>
   )

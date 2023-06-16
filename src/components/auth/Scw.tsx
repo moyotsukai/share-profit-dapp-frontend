@@ -1,26 +1,26 @@
 import * as s from "./style"
-import { useState, useEffect, useRef, useContext } from "react"
+import React, { useState, useEffect, useRef, useContext, useCallback } from "react"
 import SocialLogin from "@biconomy/web3-auth"
-import { ChainId } from "@biconomy/core-types"
+import { ChainId, SmartAccountState, SmartAccountVersion } from "@biconomy/core-types"
 import { ethers } from "ethers"
 import SmartAccount from "@biconomy/smart-account"
 import { useUserState } from "@/states/userState"
 import Button from "../ui/Button"
-import { SmartAccountContext } from "./AuthProvider"
+import { SmartAccountContext, SocialLoginContext } from "./AuthProvider"
 
 export default function Scw() {
   const { smartAccount, setSmartAccount } = useContext(SmartAccountContext)
+  const { sdkRef } = useContext(SocialLoginContext)
 
   const [interval, enableInterval] = useState(false)
-  // const [smartAccount, setSmartAccount] = useState<SmartAccount | null>(null)
-  const sdkRef = useRef<SocialLogin | null>(null)
+  // const sdkRef = useRef<SocialLogin | null>(null)
   const [user, setUser] = useUserState()
 
   useEffect(() => {
     let configureLogin: any
     if (interval) {
       configureLogin = setInterval(() => {
-        if (sdkRef.current?.provider) {
+        if (sdkRef?.current?.provider) {
           setupSmartAccount()
           clearInterval(configureLogin)
         }
@@ -83,6 +83,7 @@ export default function Scw() {
     enableInterval(false)
 
     setUser(null)
+    setSmartAccount(null)
   }
 
   return (

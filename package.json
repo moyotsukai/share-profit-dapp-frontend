@@ -38,6 +38,7 @@
     "react-dom": "18.2.0",
     "react-hook-form": "^7.43.9",
     "recoil": "^0.7.7",
+    "recoil-persist": "^4.2.0",
     "typescript": "5.0.3",
     "zod": "^3.21.4"
   }
