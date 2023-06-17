@@ -15,11 +15,11 @@ import { createAssignmentApplication } from "@/models/firestore/createAssignment
 import { Project } from "@/types/Project"
 import { useSetAssignmentApplicationsState } from "@/states/assignmentApplicatinsState"
 import Textarea from "@/components/ui/Textarea"
+import { User } from "@/types/User"
 
-const formInputSchema = z
-  .object({
-    message: z.string()
-  })
+const formInputSchema = z.object({
+  message: z.string(),
+})
 
 type AssignmentApplication = z.infer<typeof formInputSchema>
 
@@ -28,11 +28,17 @@ type Props = {
 }
 
 const AssignmentForm: React.FC<Props> = ({ task }) => {
-
-  const user = useUserValue()
+  const userWithSmartAccount = useUserValue()
+  const user: User = {
+    uid: userWithSmartAccount?.uid!,
+    nonce: userWithSmartAccount?.nonce ?? undefined,
+    name: userWithSmartAccount?.name!,
+  }
   const [project, setProject] = useProjectState()
   const [isEditing, setIsEditing] = useState<boolean>(false)
-  const { register, handleSubmit, reset } = useForm<AssignmentApplication>({ resolver: zodResolver(formInputSchema) })
+  const { register, handleSubmit, reset } = useForm<AssignmentApplication>({
+    resolver: zodResolver(formInputSchema),
+  })
   const [isButtonEnabled, setIsButtonEnabled] = useState<boolean>(true)
   const [isButtonLoading, setIsButtonLoading] = useState<boolean>(false)
   const setAssignmentApplication = useSetAssignmentApplicationsState()
@@ -47,7 +53,9 @@ const AssignmentForm: React.FC<Props> = ({ task }) => {
   }
 
   const onSubmit: SubmitHandler<AssignmentApplication> = async (data) => {
-    if (!user || !project) { return }
+    if (!user || !project) {
+      return
+    }
     setIsButtonEnabled(false)
     setIsButtonLoading(true)
 
@@ -57,13 +65,16 @@ const AssignmentForm: React.FC<Props> = ({ task }) => {
       taskId: task.id,
       userId: user.uid,
       message: data.message,
-      stage: "inReview"
+      stage: "inReview",
     }
     const { data: createdAssignmentApplication } = await createAssignmentApplication({
       assignmentApplication: assignmentApplication,
-      user: user
+      user: user,
     })
-    if (!createdAssignmentApplication) { return }
+    console.log(user)
+    if (!createdAssignmentApplication) {
+      return
+    }
 
     //update task
     await updateTaskArray({
@@ -71,7 +82,7 @@ const AssignmentForm: React.FC<Props> = ({ task }) => {
       taskId: task.id,
       key: "assignmentApplicationIds",
       value: createdAssignmentApplication.id,
-      method: "union"
+      method: "union",
     })
 
     //update project state
@@ -83,22 +94,19 @@ const AssignmentForm: React.FC<Props> = ({ task }) => {
             ...$0,
             assignmentApplicationIds: [
               ...$0.assignmentApplicationIds,
-              createdAssignmentApplication.id
-            ]
+              createdAssignmentApplication.id,
+            ],
           }
         } else {
           return $0
         }
-      })
+      }),
     }
     setProject(newProject)
 
     //set assignmentApplicationsState
     setAssignmentApplication((curretValue) => {
-      return [
-        ...curretValue,
-        createdAssignmentApplication
-      ]
+      return [...curretValue, createdAssignmentApplication]
     })
 
     setIsEditing(false)
@@ -106,57 +114,44 @@ const AssignmentForm: React.FC<Props> = ({ task }) => {
 
   return (
     <>
-      {!isEditing
-        ? (
-          <Button
-            onClick={onApplyForAssignment}
-            style="outlined"
-          >
-            Apply for Assignment
-          </Button>
-        )
-        : (
-          <div>
-            <Title style="subtitle">
-              Apply for Assignment
-            </Title>
+      {!isEditing ? (
+        <Button onClick={onApplyForAssignment} style="outlined">
+          Apply for Assignment
+        </Button>
+      ) : (
+        <div>
+          <Title style="subtitle">Apply for Assignment</Title>
+          <Spacer size={20} />
+
+          <form>
+            <div>
+              <label>
+                <p>Message</p>
+              </label>
+              <textarea
+                placeholder="When and how you want to work on the task..."
+                {...register("message")}
+              />
+            </div>
             <Spacer size={20} />
 
-            <form>
-              <div>
-                <label>
-                  <p>
-                    Message
-                  </p>
-                </label>
-                <textarea
-                  placeholder="When and how you want to work on the task..."
-                  {...register("message")}
-                />
-              </div>
-              <Spacer size={20} />
-
-              <div css={s.buttonGroupStyle}>
-                <Button
-                  onClick={handleSubmit(onSubmit)}
-                  isEnabled={isButtonEnabled}
-                  isLoading={isButtonLoading}
-                  style="contained"
-                >
-                  Register
-                </Button>
-                <Spacer size={6} isVertical={false} />
-                <Button
-                  onClick={onCancel}
-                  style="outlined"
-                >
-                  Cancel
-                </Button>
-              </div>
-            </form>
-          </div>
-        )
-      }
+            <div css={s.buttonGroupStyle}>
+              <Button
+                onClick={handleSubmit(onSubmit)}
+                isEnabled={isButtonEnabled}
+                isLoading={isButtonLoading}
+                style="contained"
+              >
+                Register
+              </Button>
+              <Spacer size={6} isVertical={false} />
+              <Button onClick={onCancel} style="outlined">
+                Cancel
+              </Button>
+            </div>
+          </form>
+        </div>
+      )}
     </>
   )
 }

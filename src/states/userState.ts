@@ -1,14 +1,10 @@
-import { User } from "@/types/User"
+import { UserWithSmartAccount } from "@/types/User"
 import { atom, useRecoilState, useRecoilValue, useSetRecoilState } from "recoil"
-import { recoilPersist } from "recoil-persist"
 
-const { persistAtom } = recoilPersist()
-
-const userState = atom<User | null | undefined>({
+const userState = atom<UserWithSmartAccount | null | undefined>({
   key: "userState",
   default: undefined,
   dangerouslyAllowMutability: true,
-  // effects_UNSTABLE: [persistAtom],
 })
 
 export const useUserValue = () => useRecoilValue(userState)

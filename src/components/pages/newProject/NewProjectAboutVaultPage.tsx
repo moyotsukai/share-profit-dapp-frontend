@@ -85,7 +85,7 @@ export default function NewProjectAboutVaultPage() {
         {
           method: "POST",
           body: JSON.stringify({
-            name: "Securities",
+            name: "Account",
             address: newVaultAddress,
             abi: JSON.stringify(accountAbi),
             whitelistedMethods: ["withdrawEth", "withdrawToken"],

@@ -5,7 +5,7 @@
   },
   "80001": {
     "SecuritiesFactory": ["0x646936FC3B9578305389a533591c25597f6a659F"],
-    "AccountFactory": ["0xA3E162D96547c057fD7025731696E9Af1415c298"],
+    "AccountFactory": ["0x2Eb418008Bf039C8c7bF0a3095Ee948D89E37b5F"],
     "Usdc": ["0x0fa8781a83e46826621b3bc094ea2a0212e71b23"]
   }
 }

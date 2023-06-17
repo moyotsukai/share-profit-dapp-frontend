@@ -1,7 +1,7 @@
 import * as s from "./style"
-import React, { useState, useEffect, useRef, useContext, useCallback } from "react"
+import { useState, useEffect, useContext } from "react"
 import SocialLogin from "@biconomy/web3-auth"
-import { ChainId, SmartAccountState, SmartAccountVersion } from "@biconomy/core-types"
+import { ChainId } from "@biconomy/core-types"
 import { ethers } from "ethers"
 import SmartAccount from "@biconomy/smart-account"
 import { useUserState } from "@/states/userState"
@@ -9,7 +9,7 @@ import Button from "../ui/Button"
 import { SmartAccountContext, SocialLoginContext } from "./AuthProvider"
 
 export default function Scw() {
-  const { smartAccount, setSmartAccount } = useContext(SmartAccountContext)
+  const { setSmartAccount, setProvider } = useContext(SmartAccountContext)
   const { sdkRef } = useContext(SocialLoginContext)
 
   const [interval, enableInterval] = useState(false)
@@ -54,6 +54,7 @@ export default function Scw() {
     if (!sdkRef?.current?.provider) return
     sdkRef.current.hideWallet()
     const web3Provider = new ethers.providers.Web3Provider(sdkRef.current.provider)
+    setProvider(web3Provider)
     try {
       const newSmartAccount = new SmartAccount(web3Provider, {
         activeNetworkId: ChainId.POLYGON_MUMBAI,
@@ -74,12 +75,12 @@ export default function Scw() {
   }
 
   const logout = async () => {
-    if (!sdkRef.current) {
+    if (!user?.socialLogin) {
       console.error("Web3Modal not initialized.")
       return
     }
-    await sdkRef.current.logout()
-    sdkRef.current.hideWallet()
+    await user?.socialLogin.logout()
+    user?.socialLogin.hideWallet()
     enableInterval(false)
 
     setUser(null)
@@ -88,11 +89,11 @@ export default function Scw() {
 
   return (
     <div>
-      {!smartAccount && <Button onClick={login}>Login</Button>}
-      {smartAccount && (
+      {!user?.smartAccount && <Button onClick={login}>Login</Button>}
+      {user?.smartAccount && (
         <div css={s.userInfo}>
           <h3>Smart account address:</h3>
-          <p>{smartAccount.address}</p>
+          <p>{user?.smartAccount.address}</p>
           <Button onClick={logout}>Logout</Button>
         </div>
       )}

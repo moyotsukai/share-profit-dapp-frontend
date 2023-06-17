@@ -7,6 +7,7 @@ type Props = {
 }
 
 const SbtOwners: React.FC<Props> = ({ sbtOwners }) => {
+  console.log(sbtOwners)
 
   return (
     <ul>

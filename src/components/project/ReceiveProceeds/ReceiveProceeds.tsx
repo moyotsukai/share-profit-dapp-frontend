@@ -1,5 +1,5 @@
 import * as s from "./style"
-import React, { useContext, useState } from "react"
+import React, { useContext, useEffect, useState } from "react"
 import Spacer from "@/components/ui/Spacer"
 import { useContract, useContractRead } from "@thirdweb-dev/react"
 import networkConfig from "../../../../constants/networkMapping.json"
@@ -16,28 +16,20 @@ type Props = {
 }
 
 const ReceiveProceeds: React.FC<Props> = ({ projectTreasuryAddress }) => {
-  const { smartAccount } = useContext(SmartAccountContext)
+  const { smartAccount, provider } = useContext(SmartAccountContext)
 
-  const [isWithdrawalButtonClickable, setIsWithdrawalButtonClickable] = useState<boolean>(true)
+  const [releasableToken, setReleasableToken] = useState<string>("0.0")
+  const [isWithdrawalButtonClickable, setIsWithdrawalButtonClickable] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
   const addresses: contractAddressesInterface = networkConfig
   const chainString = ChainId.POLYGON_MUMBAI.toString()
   const tokenAddr = addresses[chainString].Usdc[0]
-  const user = useUserValue()
-
-  const { contract: accountContaract } = useContract(projectTreasuryAddress, accountAbi)
-  const { data: releasableToken } = useContractRead(accountContaract, "releasableToken", [
-    tokenAddr,
-    user?.uid,
-  ])
-  console.log("releasableToken: ", releasableToken)
 
   const getReleasableToken = async () => {
-    
-  }
-  if (releasableToken && ethers.utils.formatUnits(parseInt(releasableToken as string)) !== "0.0") {
-    setIsWithdrawalButtonClickable(false)
+    const contract = new ethers.Contract(projectTreasuryAddress, accountAbi, provider)
+    const currentReleasableToken = await contract.releasableEth(smartAccount?.address)
+    setReleasableToken(ethers.utils.formatEther(currentReleasableToken))
   }
 
   const onWithdrawToken = async () => {
@@ -58,16 +50,29 @@ const ReceiveProceeds: React.FC<Props> = ({ projectTreasuryAddress }) => {
       const txReciept = await txResponse.wait()
       console.log("Tx: ", txReciept)
       setIsLoading(false)
+      setReleasableToken("0.0")
     } catch (error) {
       console.log(error)
     }
   }
 
+  useEffect(() => {
+    getReleasableToken()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  useEffect(() => {
+    if (releasableToken !== "0.0") {
+      setIsWithdrawalButtonClickable(true)
+    }
+  }, [releasableToken])
+
   return (
     <div>
       <p>Unreceived Proceeds</p>
       {releasableToken ? (
-        <div>{ethers.utils.formatUnits(parseInt(releasableToken as string), 6)} USDC</div>
+        // <div>{ethers.utils.formatUnits(parseInt(releasableToken as strdiv>ing), 6)} USDC</div>
+        <div>{releasableToken} USDC</div>
       ) : (
         <div>0.0 USDC</div>
       )}

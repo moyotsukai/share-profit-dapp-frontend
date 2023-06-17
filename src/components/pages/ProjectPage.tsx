@@ -28,20 +28,20 @@ export default function ProjectPage() {
   const [_, setProjectIdQueryString] = useState<string>("")
   const projectTreasuryAddress = project?.vaultAddress ?? ""
 
-  useEffect(() => {
-    setProjectIdQueryString((currentValue) => {
-      if (typeof projectId !== "string") {
-        return currentValue
-      }
-      if (!projectId) {
-        return currentValue
-      }
-      if (currentValue && projectId !== currentValue) {
-        router.reload()
-      }
-      return projectId
-    })
-  }, [projectId])
+  // useEffect(() => {
+  //   setProjectIdQueryString((currentValue) => {
+  //     if (typeof projectId !== "string") {
+  //       return currentValue
+  //     }
+  //     if (!projectId) {
+  //       return currentValue
+  //     }
+  //     if (currentValue && projectId !== currentValue) {
+  //       router.reload()
+  //     }
+  //     return projectId
+  //   })
+  // }, [projectId])
 
   //set if user needs to enter invitation code
   useEffect(() => {

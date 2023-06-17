@@ -15,7 +15,9 @@ type Props = {
 export const SmartAccountContext = createContext<{
   smartAccount: SmartAccount | null
   setSmartAccount: React.Dispatch<React.SetStateAction<SmartAccount | null>>
-}>({ smartAccount: null, setSmartAccount: () => {} })
+  provider: any
+  setProvider: React.Dispatch<React.SetStateAction<any>>
+}>({ smartAccount: null, setSmartAccount: () => {}, provider: null, setProvider: () => {} })
 
 export const SocialLoginContext = createContext<{
   sdkRef: React.MutableRefObject<SocialLogin | null | undefined>
@@ -25,6 +27,7 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
   const [user, setUser] = useUserState()
   const hasNoUserName = user && !user.name
   const [smartAccount, setSmartAccount] = useState<SmartAccount | null>(null)
+  const [provider, setProvider] = useState<any>(null)
   const sdkRef = useRef<SocialLogin | null | undefined>(null)
 
   const SocialLoginDynamic = dynamic(() => import("./Scw").then((res) => res.default), {
@@ -32,50 +35,56 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
   })
 
   useEffect(() => {
-    console.log(smartAccount)
     // user setup
-    const address = smartAccount?.address
-    if (!address) {
-      return
-    }
-    asyncTask(async () => {
-      const authenticatedUser = await signIn({ address: address })
-      console.log("authenticatedUser: ", authenticatedUser)
-      if (!authenticatedUser) {
+    if (smartAccount && sdkRef.current) {
+      const address = smartAccount?.address
+      if (!address) {
         return
       }
-      setUser({...authenticatedUser})
-      // setUser({ ...authenticatedUser, socialLogin: sdkRef.current })
-    })
+      asyncTask(async () => {
+        const authenticatedUser = await signIn({ address: address })
+        if (!authenticatedUser) {
+          return
+        }
+        setUser({
+          ...authenticatedUser,
+          socialLogin: sdkRef.current,
+          smartAccount: smartAccount,
+          provider: provider,
+        })
+      })
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [smartAccount])
-  console.log(sdkRef.current)
-  console.log("usr", user)
-
+  
   return (
     <>
       <SocialLoginContext.Provider value={{ sdkRef }}>
-        <SmartAccountContext.Provider value={{ smartAccount, setSmartAccount }}>
+        <SmartAccountContext.Provider
+          value={{ smartAccount, setSmartAccount, provider, setProvider }}
+        >
           <SocialLoginDynamic />
-          {user === undefined ? (
+          {/* {user === undefined ? (
             <div>
-              <p>Login Page</p>
+              <p>This is Login Page</p>
+              <p>Please Login</p>
             </div>
-          ) : (
-            <React.Fragment>
-              {user ? (
-                hasNoUserName ? (
-                  <UserNameDialog />
-                ) : (
-                  children
-                )
+          ) : ( */}
+          <React.Fragment>
+            {user ? (
+              hasNoUserName ? (
+                <UserNameDialog />
               ) : (
-                <>
-                  <>Landing page</>
-                </>
-              )}
-            </React.Fragment>
-          )}
+                children
+              )
+            ) : (
+              <div>
+                <p>This is Login Page</p>
+                <p>Please Login</p>
+              </div>
+            )}
+          </React.Fragment>
+          {/* )} */}
         </SmartAccountContext.Provider>
       </SocialLoginContext.Provider>
     </>
