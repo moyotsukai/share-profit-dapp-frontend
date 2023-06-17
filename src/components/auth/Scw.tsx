@@ -1,5 +1,5 @@
 import * as s from "./style"
-import { useState, useEffect, useContext } from "react"
+import { useState, useEffect, useContext, useRef } from "react"
 import SocialLogin from "@biconomy/web3-auth"
 import { ChainId } from "@biconomy/core-types"
 import { ethers } from "ethers"
@@ -31,45 +31,63 @@ export default function Scw({
   const { setSmartAccount, setProvider } = useContext(SmartAccountContext)
   const { sdkRef } = useContext(SocialLoginContext)
 
-  const [interval, enableInterval] = useState<boolean>(false)
+  // const [interval, enableInterval] = useState<boolean>(false)
+  let interval = false
   const [user, setUser] = useUserState()
 
-  useEffect(() => {
-    let configureLogin: any
-    if (interval) {
-      configureLogin = setInterval(() => {
-        if (sdkRef?.current?.provider) {
-          setupSmartAccount()
-          clearInterval(configureLogin)
-        }
-      }, 1000)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [interval])
+  // useEffect(() => {
+  //   let configureLogin: any
+  //   console.log(interval)
+  //   if (interval) {
+  //     configureLogin = setInterval(() => {
+  //       console.log(sdkRef.current?.provider)
+  //       if (sdkRef.current?.provider) {
+  //         console.log("AAA")
+  //         setupSmartAccount()
+  //         clearInterval(configureLogin)
+  //       }
+  //     }, 1000)
+  //   }
+  // }, [interval])
 
   async function login() {
-    console.log("user", user)
     setIsSetting(true)
     if (!sdkRef.current) {
       const socialLoginSDK = new SocialLogin()
       const signature1 = await socialLoginSDK.whitelistUrl("http://localhost:3000/")
-      const signature2 = await socialLoginSDK.whitelistUrl(
-        "https://share-profit-dapp-frontend-git-develop-shinchan-git.vercel.app/"
-      )
+      // const signature2 = await socialLoginSDK.whitelistUrl(
+      //   "https://share-profit-dapp-frontend-git-develop-shinchan-git.vercel.app/"
+      // )
       await socialLoginSDK.init({
         chainId: ethers.utils.hexValue(ChainId.POLYGON_MUMBAI).toString(),
         // network: "testnet",
         whitelistUrls: {
           "http://localhost:3000/": signature1,
-          "https://share-profit-dapp-frontend-git-develop-shinchan-git.vercel.app/": signature2,
+          // "https://share-profit-dapp-frontend-git-develop-shinchan-git.vercel.app/": signature2,
         },
       })
       sdkRef.current = socialLoginSDK
     }
     if (!sdkRef.current.provider) {
+      // console.log("BBB")
+      // sdkRef.current.showWallet()
+      // interval = true
+      // console.log(interval)
+      console.log("BBB")
       sdkRef.current.showWallet()
-      enableInterval(true)
+      interval = true
+      console.log(interval)
+
+      const configureLogin = setInterval(() => {
+        console.log(sdkRef.current?.provider)
+        if (sdkRef.current?.provider) {
+          console.log("AAA")
+          setupSmartAccount()
+          clearInterval(configureLogin)
+        }
+      }, 1000)
     } else {
+      console.log("CCC")
       setupSmartAccount()
     }
   }
@@ -107,7 +125,7 @@ export default function Scw({
     }
     await user?.socialLogin.logout()
     user?.socialLogin.hideWallet()
-    enableInterval(false)
+    interval = false
 
     sdkRef.current = null
     setUser(undefined)
