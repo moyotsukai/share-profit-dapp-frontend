@@ -8,7 +8,7 @@ import LoadingCircle from "../ui/LoadingCircle/LoadingCircle"
 import TaskBoard from "../task/TaskBoard"
 import Assignments from "../task/Assignments"
 import ProjectOverview from "../project/ProjectOverview/ProjectOverview"
-import SbtOwners from "../project/SbtOwners"
+import ProjectMembers from "../project/ProjectMembers"
 import { useGetSbtHolders } from "@/models/project/useGetSbtHolders"
 import { useGetProject } from "@/models/project/useGetProject"
 import { useGetAssignment } from "@/models/project/useGetAssignment"
@@ -87,7 +87,7 @@ export default function ProjectPage() {
             <TabBar.List>
               <TabBar.Trigger value="overview">Overview</TabBar.Trigger>
               <TabBar.Trigger value="tasks">Tasks</TabBar.Trigger>
-              <TabBar.Trigger value="sbt-owners">SBT Owners</TabBar.Trigger>
+              <TabBar.Trigger value="project-members">Project Members</TabBar.Trigger>
               <TabBar.Trigger value="receive-proceeds">Receive Proceeds</TabBar.Trigger>
               {isProjectOwner && <TabBar.Trigger value="assignments">Assignments</TabBar.Trigger>}
             </TabBar.List>
@@ -100,8 +100,8 @@ export default function ProjectPage() {
               <TaskBoard />
             </TabBar.Content>
 
-            <TabBar.Content value="sbt-owners">
-              <SbtOwners sbtOwners={sbtHolders} />
+            <TabBar.Content value="project-members">
+              <ProjectMembers projectMembers={sbtHolders} />
             </TabBar.Content>
 
             <TabBar.Content value="receive-proceeds">

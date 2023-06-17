@@ -1,13 +1,11 @@
 import * as s from "./style"
 import React, { useContext, useEffect, useState } from "react"
 import Spacer from "@/components/ui/Spacer"
-import { useContract, useContractRead } from "@thirdweb-dev/react"
 import networkConfig from "../../../../constants/networkMapping.json"
 import accountAbi from "../../../../constants/Account.json"
 import { ethers } from "ethers"
 import { contractAddressesInterface } from "@/types/networkAddress"
 import { ChainId } from "@biconomy/core-types"
-import { useUserValue } from "@/states/userState"
 import Button from "@/components/ui/Button"
 import { SmartAccountContext } from "@/components/auth/AuthProvider"
 
@@ -29,6 +27,7 @@ const ReceiveProceeds: React.FC<Props> = ({ projectTreasuryAddress }) => {
   const getReleasableToken = async () => {
     const contract = new ethers.Contract(projectTreasuryAddress, accountAbi, provider)
     const currentReleasableToken = await contract.releasableToken(tokenAddr, smartAccount?.address)
+    console.log(currentReleasableToken)
     setReleasableToken(ethers.utils.formatEther(currentReleasableToken))
   }
 
@@ -45,7 +44,28 @@ const ReceiveProceeds: React.FC<Props> = ({ projectTreasuryAddress }) => {
         to: projectTreasuryAddress,
         data: encodedWithdrawTokenData,
       }
+      // const contract = new ethers.Contract(projectTreasuryAddress, accountAbi, provider)
+      // const myTx = await contract.populateTransaction.withdrawToken(tokenAddr)
+      // const tx = {
+      //   to: projectTreasuryAddress,
+      //   data: myTx.data,
+      // }
+      // const quotes = await smartAccount.getFeeQuotes({
+      //   transaction: tx,
+      // })
+      // console.log("quotes: ", quotes)
+      // const transaction = await smartAccount.createUserPaidTransaction({
+      //   transaction: tx,
+      //   feeQuote: quotes[0],
+      // })
       const txResponse = await smartAccount.sendTransaction({ transaction: tx })
+      // const txResponse = await smartAccount.sendUserPaidTransaction({
+      //   tx: transaction,
+      //   gasLimit: {
+      //     hex: "0xC3500",
+      //     type: "hex",
+      //   },
+      // })
       console.log("userOp hash: ", txResponse.hash)
       const txReciept = await txResponse.wait()
       console.log("Tx: ", txReciept)
