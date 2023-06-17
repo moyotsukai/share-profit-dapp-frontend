@@ -1,17 +1,29 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useFetchEffect } from "./useFetchEffect"
 import { Holder, SbtOwner } from "@/types/SbtOwner"
 import securitiesAbi from "../../../constants/Securities.json"
 import { holdersFromChain } from "../firestore/dataConverter"
 import { getUser } from "../firestore/getUser"
-import { useContract, useContractRead } from "@thirdweb-dev/react"
+import { ethers } from "ethers"
+import { useUserValue } from "@/states/userState"
+import { useRouter } from "next/router"
+import { useGetProject } from "./useGetProject"
 
-export const useGetSbtHolders = (sbtAddress: string) => {
+export const useGetSbtHolders = () => {
+  const router = useRouter()
+  const { projectId, taskId } = router.query
+  const { project } = useGetProject(projectId)
   const [sbtOwners, setSbtOwners] = useState<SbtOwner[]>([])
-  const { contract: sbtContract } = useContract(sbtAddress, securitiesAbi)
-  const { data: sbtHolders, error: getHoldersError } = useContractRead(sbtContract, "getHolders")
-  if (getHoldersError) {
-    console.error(getHoldersError)
+  const user = useUserValue()
+
+  const getHolders = async () => {
+    console.log("provider", user?.provider)
+    console.log("project", project)
+    console.log("sbtAddress", project?.sbtAddress)
+    const contract = new ethers.Contract(project?.sbtAddress!, securitiesAbi, user?.provider)
+    const sbtHolders = await contract.getHolders()
+    console.log("holders", sbtHolders)
+    return sbtHolders
   }
 
   //get SBT holders
@@ -20,9 +32,12 @@ export const useGetSbtHolders = (sbtAddress: string) => {
       //get sbt holders
       let holders: Holder[] = []
       try {
-        const receivedHolders = sbtHolders
+        const receivedHolders = await getHolders()
+        console.log("receivedHolders", receivedHolders)
         holders = holdersFromChain(receivedHolders)
-      } catch {}
+      } catch (error) {
+        console.log(error)
+      }
 
       //get users
       for (let i = 0; i < holders.length; i++) {
@@ -46,9 +61,9 @@ export const useGetSbtHolders = (sbtAddress: string) => {
         })
       }
     },
-    [],
+    [project, user],
     {
-      skipFetch: [],
+      skipFetch: [!project, !user],
     }
   )
 

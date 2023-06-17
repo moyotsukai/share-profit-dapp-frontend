@@ -1,9 +1,10 @@
-import { User, UserWithSmartAccount } from "@/types/User"
+import { UserWithSmartAccount } from "@/types/User"
 import { atom, useRecoilState, useRecoilValue, useSetRecoilState } from "recoil"
 
 const userState = atom<UserWithSmartAccount | null | undefined>({
   key: "userState",
-  default: undefined
+  default: undefined,
+  dangerouslyAllowMutability: true,
 })
 
 export const useUserValue = () => useRecoilValue(userState)

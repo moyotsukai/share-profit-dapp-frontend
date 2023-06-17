@@ -4,7 +4,7 @@ import ErrorMessage from "@/components/ui/ErrorMessage"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
-import { useState } from "react"
+import { useContext, useState } from "react"
 import { useRouter } from "next/router"
 import { PATHS } from "../paths"
 import { usePageLeaveConfirmation } from "@/models/project/usePageLeaveConfirmation"
@@ -16,12 +16,11 @@ import { useStorageUpload } from "@thirdweb-dev/react"
 import { ethers } from "ethers"
 import { updateProject } from "@/models/firestore/updateProject"
 import { contractAddressesInterface } from "../../../types/networkAddress"
-import { Mumbai } from "@thirdweb-dev/chains"
 import PageContainer from "@/components/ui/PageContainer"
-import { useUserValue } from "@/states/userState"
 import LoadingCircle from "@/components/ui/LoadingCircle/LoadingCircle"
-import { ToastContainer, toast } from "react-toastify"
-import "react-toastify/dist/ReactToastify.css"
+import Button from "@/components/ui/Button/Button"
+import { SmartAccountContext } from "../../auth/AuthProvider"
+import { ChainId } from "@biconomy/core-types"
 
 const formInputSchema = z.object({
   sbtTokenName: z.string().nonempty({ message: "Required" }),
@@ -31,6 +30,8 @@ const formInputSchema = z.object({
 type NewProjectAboutSbt = z.infer<typeof formInputSchema>
 
 export default function NewProjectAboutSbtPage() {
+  const { smartAccount } = useContext(SmartAccountContext)
+
   const router = useRouter()
   const metadataTemplate = {
     name: "",
@@ -39,7 +40,7 @@ export default function NewProjectAboutSbtPage() {
   }
 
   const addresses: contractAddressesInterface = networkConfig
-  const chainString = Mumbai.chainId.toString()
+  const chainString = ChainId.POLYGON_MUMBAI.toString()
   // sbt factory address
   const sbtFactoryAddr = addresses[chainString].SecuritiesFactory[0]
   const { mutateAsync: upload } = useStorageUpload()
@@ -47,7 +48,6 @@ export default function NewProjectAboutSbtPage() {
   const [isButtonEnabled, setIsButtonEnabled] = useState<boolean>(true)
   const [isPageLeaveAllowed, setIsPageLeaveAllowed] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState<boolean>(false)
-  const user = useUserValue()
   usePageLeaveConfirmation(isPageLeaveAllowed)
   const {
     register,
@@ -58,18 +58,9 @@ export default function NewProjectAboutSbtPage() {
   const onDeploySbt = async () => {
     setIsPageLeaveAllowed(true)
     setIsLoading(true)
+    setIsButtonEnabled(false)
+    if (!smartAccount) return
     try {
-      toast.info("processing count on the blockchain!", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "dark",
-      })
-      const smartAccount = user?.smartAccount!
       const sbtTokenName = getValues("sbtTokenName")
       const sbtImage = getValues("sbtImage")
       const uri = await uploadToIpfs({ tokenName: sbtTokenName, tokenImage: sbtImage })
@@ -111,9 +102,6 @@ export default function NewProjectAboutSbtPage() {
         .then((json) => console.log(json))
         .catch((err) => console.log(err))
 
-      setIsButtonEnabled(false)
-      setIsPageLeaveAllowed(true)
-
       await updateProjectData({ sbtTokenName: sbtTokenName, sbtAddress: newSbtAddress })
 
       if (!editingProject || !editingProject?.id) {
@@ -129,17 +117,7 @@ export default function NewProjectAboutSbtPage() {
       setIsLoading(false)
       router.push(PATHS.NEW_PROJECT.ABOUT_VAULT)
     } catch (error) {
-      console.log({ error })
-      toast.error("error occured check the console", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "dark",
-      })
+      console.log(error)
     }
   }
 
@@ -229,28 +207,9 @@ export default function NewProjectAboutSbtPage() {
           <LoadingCircle />
         ) : (
           <>
-            <ToastContainer
-              position="top-right"
-              autoClose={5000}
-              hideProgressBar={true}
-              newestOnTop={false}
-              closeOnClick
-              rtl={false}
-              pauseOnFocusLoss
-              draggable
-              pauseOnHover
-              theme="dark"
-            />
-            <button
-              // contractAddress={sbtFactoryAddr}
-              // contractAbi={securitiesFactoryAbi}
-              // action={onDeploySbt}
-              // onError={(error) => console.log(error)}
-              // isDisabled={!isButtonEnabled}
-              onClick={onDeploySbt}
-            >
+            <Button isEnabled={isButtonEnabled} isLoading={isLoading} onClick={onDeploySbt}>
               Deploy SBT
-            </button>
+            </Button>
           </>
         )}
       </form>

@@ -20,25 +20,36 @@ import { updateSubmission } from "@/models/firestore/updateSubmission"
 import { z } from "zod"
 import { SubmitHandler, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import Textarea from "@/components/ui/Textarea"
+import { ethers } from "ethers"
+import securitiesAbi from "../../../../constants/Securities.json"
+import { useUserValue } from "@/states/userState"
+import { useRouter } from "next/router"
+import { useGetProject } from "@/models/project/useGetProject"
 
-const formInputSchema = z
-  .object({
-    commentFromPrjectOwner: z
-      .string()
-  })
+const formInputSchema = z.object({
+  commentFromPrjectOwner: z.string(),
+})
 
 type AssignmentApproval = z.infer<typeof formInputSchema>
 
 type Props = {
-  type: "assignmentApplication" | "submission",
-  assignment: AssignmentApplication | Submission,
-  tasks: Task[],
+  type: "assignmentApplication" | "submission"
+  assignment: AssignmentApplication | Submission
+  tasks: Task[]
   isEditable?: boolean
 }
 
-const AssignmentApprovalDialog: React.FC<Props> = ({ type, assignment, tasks, isEditable = true }: Props) => {
-
+const AssignmentApprovalDialog: React.FC<Props> = ({
+  type,
+  assignment,
+  tasks,
+  isEditable = true,
+}: Props) => {
+  const router = useRouter()
+  const { projectId } = router.query
+  const { project } = useGetProject(projectId)
+  const sbtAddr = project?.sbtAddress
+  const user = useUserValue()
   const task = tasks.find(($0) => $0.id === assignment.taskId)
   const setProject = useSetProjectState()
   const setAssignmentApplications = useSetAssignmentApplicationsState()
@@ -47,20 +58,32 @@ const AssignmentApprovalDialog: React.FC<Props> = ({ type, assignment, tasks, is
   const [isButtonLoading, setIsButtonLoading] = useState<boolean>(false)
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false)
   const [fileDownloadUrl, setFileDownloadUrl] = useState<string>("")
-  const { register, handleSubmit } = useForm<AssignmentApproval>({ resolver: zodResolver(formInputSchema) })
-
-  useFetchEffect(async () => {
-    if (type !== "submission") { return }
-    const submission = assignment as Submission
-    const { data: url } = await downloadFileFromUrl(submission.fileUrl ?? "")
-    if (!url) { return }
-    setFileDownloadUrl(url)
-  }, [], {
-    skipFetch: []
+  const { register, handleSubmit } = useForm<AssignmentApproval>({
+    resolver: zodResolver(formInputSchema),
   })
 
+  useFetchEffect(
+    async () => {
+      if (type !== "submission") {
+        return
+      }
+      const submission = assignment as Submission
+      const { data: url } = await downloadFileFromUrl(submission.fileUrl ?? "")
+      if (!url) {
+        return
+      }
+      setFileDownloadUrl(url)
+    },
+    [],
+    {
+      skipFetch: [],
+    }
+  )
+
   const onApprove: SubmitHandler<AssignmentApproval> = async (data) => {
-    if (!task) { return }
+    if (!task) {
+      return
+    }
     setIsButtonEnabled(false)
     setIsButtonLoading(true)
 
@@ -71,23 +94,22 @@ const AssignmentApprovalDialog: React.FC<Props> = ({ type, assignment, tasks, is
         taskId: task.id,
         task: {
           stage: "inProgress",
-          asigneeIds: [
-            ...task.asigneeIds,
-            assignment.userId
-          ]
-        }
+          asigneeIds: [...task.asigneeIds, assignment.userId],
+        },
       })
       await updateAssignmentApplication({
         assignmentApplicationId: assignment.id,
         assignmentApplication: {
           stage: "accepted",
-          commentsFromProjectOwner: data.commentFromPrjectOwner
-        }
+          commentsFromProjectOwner: data.commentFromPrjectOwner,
+        },
       })
 
       //set project state
       setProject((currentValue) => {
-        if (!currentValue) { return currentValue }
+        if (!currentValue) {
+          return currentValue
+        }
         const newTasks: Task[] = currentValue.tasks.map(($0) => {
           if ($0.id === task.id) {
             return { ...$0, stage: "inProgress" }
@@ -97,7 +119,7 @@ const AssignmentApprovalDialog: React.FC<Props> = ({ type, assignment, tasks, is
         })
         return {
           ...currentValue,
-          tasks: newTasks
+          tasks: newTasks,
         }
       })
       //ここはSWRのmutatorで書き換える
@@ -107,7 +129,7 @@ const AssignmentApprovalDialog: React.FC<Props> = ({ type, assignment, tasks, is
             return {
               ...$0,
               stage: "accepted",
-              commentsFromProjectOwner: data.commentFromPrjectOwner
+              commentsFromProjectOwner: data.commentFromPrjectOwner,
             }
           } else {
             return $0
@@ -115,25 +137,26 @@ const AssignmentApprovalDialog: React.FC<Props> = ({ type, assignment, tasks, is
         })
         return newAssignmentApplications
       })
-
     } else {
       //update submission
       await updateTask({
         projectId: assignment.projectId,
         taskId: task.id,
-        task: { stage: "done" }
+        task: { stage: "done" },
       })
       await updateSubmission({
         submissionId: assignment.id,
         submission: {
           stage: "accepted",
-          commentsFromProjectOwner: data.commentFromPrjectOwner
-        }
+          commentsFromProjectOwner: data.commentFromPrjectOwner,
+        },
       })
 
       //set project state
       setProject((currentValue) => {
-        if (!currentValue) { return currentValue }
+        if (!currentValue) {
+          return currentValue
+        }
         const newTasks: Task[] = currentValue.tasks.map(($0) => {
           if ($0.id === task.id) {
             return { ...$0, stage: "done" }
@@ -143,7 +166,7 @@ const AssignmentApprovalDialog: React.FC<Props> = ({ type, assignment, tasks, is
         })
         return {
           ...currentValue,
-          tasks: newTasks
+          tasks: newTasks,
         }
       })
       //ここはSWRのmutatorで書き換える
@@ -153,7 +176,7 @@ const AssignmentApprovalDialog: React.FC<Props> = ({ type, assignment, tasks, is
             return {
               ...$0,
               stage: "accepted",
-              commentsFromProjectOwner: data.commentFromPrjectOwner
+              commentsFromProjectOwner: data.commentFromPrjectOwner,
             }
           } else {
             return $0
@@ -163,13 +186,43 @@ const AssignmentApprovalDialog: React.FC<Props> = ({ type, assignment, tasks, is
       })
     }
 
+    await mintSbt()
+
     setIsDialogOpen(false)
     setIsButtonEnabled(true)
     setIsButtonLoading(false)
   }
 
+  const mintSbt = async () => {
+    if (!user?.smartAccount) {
+      console.log("smartAccount is not found")
+      return
+    }
+    try {
+      const sbtInterface = new ethers.utils.Interface(securitiesAbi)
+      const encodedMintData = sbtInterface.encodeFunctionData("mint", [
+        10,
+        user?.smartAccount.address,
+      ])
+      const tx = {
+        to: sbtAddr!,
+        data: encodedMintData,
+      }
+      const txResponse = await user?.smartAccount.sendTransaction({
+        transaction: tx,
+      })
+      console.log("userOp hash: ", txResponse.hash)
+      const txReciept = await txResponse.wait()
+      console.log("tx: ", txReciept)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   const onReject: SubmitHandler<AssignmentApproval> = async (data) => {
-    if (!task) { return }
+    if (!task) {
+      return
+    }
     setIsButtonEnabled(false)
     setIsButtonLoading(true)
 
@@ -178,26 +231,28 @@ const AssignmentApprovalDialog: React.FC<Props> = ({ type, assignment, tasks, is
       await updateTask({
         projectId: assignment.projectId,
         taskId: task.id,
-        task: { stage: "todo" }
+        task: { stage: "todo" },
       })
       await updateAssignmentApplication({
         assignmentApplicationId: assignment.id,
         assignmentApplication: {
           stage: "rejected",
-          commentsFromProjectOwner: data.commentFromPrjectOwner
-        }
+          commentsFromProjectOwner: data.commentFromPrjectOwner,
+        },
       })
       await updateTaskArray({
         projectId: assignment.projectId,
         taskId: task.id,
         key: "assignmentApplicationIds",
         value: assignment.id,
-        method: "remove"
+        method: "remove",
       })
 
       //set project state
       setProject((currentValue) => {
-        if (!currentValue) { return currentValue }
+        if (!currentValue) {
+          return currentValue
+        }
         const newTasks: Task[] = currentValue.tasks.map(($0) => {
           if ($0.id === task.id) {
             return { ...$0, stage: "todo" }
@@ -207,7 +262,7 @@ const AssignmentApprovalDialog: React.FC<Props> = ({ type, assignment, tasks, is
         })
         return {
           ...currentValue,
-          tasks: newTasks
+          tasks: newTasks,
         }
       })
       //ここはSWRのmutatorで書き換える
@@ -217,7 +272,7 @@ const AssignmentApprovalDialog: React.FC<Props> = ({ type, assignment, tasks, is
             return {
               ...$0,
               stage: "rejected",
-              commentsFromProjectOwner: data.commentFromPrjectOwner
+              commentsFromProjectOwner: data.commentFromPrjectOwner,
             }
           } else {
             return $0
@@ -225,15 +280,14 @@ const AssignmentApprovalDialog: React.FC<Props> = ({ type, assignment, tasks, is
         })
         return newAssignmentApplications
       })
-
     } else {
       //update submission
       await updateSubmission({
         submissionId: assignment.id,
         submission: {
           stage: "rejected",
-          commentsFromProjectOwner: data.commentFromPrjectOwner
-        }
+          commentsFromProjectOwner: data.commentFromPrjectOwner,
+        },
       })
 
       //set project state
@@ -257,25 +311,19 @@ const AssignmentApprovalDialog: React.FC<Props> = ({ type, assignment, tasks, is
 
   return (
     <li>
-      {task &&
+      {task && (
         <Dialog.Root open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <Dialog.Trigger asChild>
             <button css={s.addNewTaskButtonStyle}>
-              <p>
-                {task.title}
-              </p>
-              <p>
-                @{assignment.user.name}
-              </p>
+              <p>{task.title}</p>
+              <p>@{assignment.user.name}</p>
             </button>
           </Dialog.Trigger>
           <Dialog.Portal>
             <Dialog.Overlay css={s.dialogOverlayStyle} />
-            <Dialog.Content css={s.dialogContentStyle} >
+            <Dialog.Content css={s.dialogContentStyle}>
               <div css={s.titleContainerStyle}>
-                <Dialog.Title >
-                  {task.title}
-                </Dialog.Title>
+                <Dialog.Title>{task.title}</Dialog.Title>
                 <div css={s.closeButtonSpacerStyle} />
                 <Dialog.Close asChild>
                   <button aria-label="Close" css={s.closeButtonStyle}>
@@ -285,93 +333,53 @@ const AssignmentApprovalDialog: React.FC<Props> = ({ type, assignment, tasks, is
               </div>
 
               <Spacer size={30} />
-              <Title style="subtitle">
-                Assignment
-              </Title>
-              <p>
-                {`@${assignment.user.name}`}
-              </p>
+              <Title style="subtitle">Assignment</Title>
+              <p>{`@${assignment.user.name}`}</p>
 
-              {type === "assignmentApplication" &&
+              {type === "assignmentApplication" && (
                 <div>
                   <Spacer size={30} />
-                  <Title style="subtitle">
-                    Message
-                  </Title>
-                  {assignment.message ?
-                    (
-                      <p>
-                        {assignment.message}
-                      </p>
-                    )
-                    : (
-                      <p>
-                        No message.
-                      </p>
-                    )
-                  }
+                  <Title style="subtitle">Message</Title>
+                  {assignment.message ? <p>{assignment.message}</p> : <p>No message.</p>}
                 </div>
-              }
+              )}
 
-              {type === "submission" &&
+              {type === "submission" && (
                 <div>
-                  {(assignment as Submission).link &&
+                  {(assignment as Submission).link && (
                     <>
                       <Spacer size={30} />
-                      <Title style="subtitle">
-                        Link
-                      </Title>
+                      <Title style="subtitle">Link</Title>
                       <Link href={(assignment as Submission).link ?? ""}>
                         {(assignment as Submission).link ?? ""}
                       </Link>
                     </>
-                  }
+                  )}
 
-                  {fileDownloadUrl &&
+                  {fileDownloadUrl && (
                     <>
                       <Spacer size={30} />
-                      <Title style="subtitle">
-                        Attached File
-                      </Title>
-                      <a
-                        href={fileDownloadUrl}
-                        download={true}
-                        css={s.fileDownloadLinkStyle}
-                      >
+                      <Title style="subtitle">Attached File</Title>
+                      <a href={fileDownloadUrl} download={true} css={s.fileDownloadLinkStyle}>
                         {extractFileNameFromUrl((assignment as Submission).fileUrl ?? "")}
                       </a>
                     </>
-                  }
+                  )}
 
                   <Spacer size={30} />
-                  <Title style="subtitle">
-                    Message
-                  </Title>
-                  {assignment.message ?
-                    (
-                      <p>
-                        {assignment.message}
-                      </p>
-                    )
-                    : (
-                      <p>
-                        No message.
-                      </p>
-                    )
-                  }
+                  <Title style="subtitle">Message</Title>
+                  {assignment.message ? <p>{assignment.message}</p> : <p>No message.</p>}
                 </div>
-              }
+              )}
 
-              {isEditable &&
+              {isEditable && (
                 <>
                   <Spacer size={30} />
                   <div>
                     <form>
                       <div>
                         <label>
-                          <p>
-                            Add Comments
-                          </p>
+                          <p>Add Comments</p>
                         </label>
                         <textarea
                           placeholder="Comments from project owner..."
@@ -401,22 +409,18 @@ const AssignmentApprovalDialog: React.FC<Props> = ({ type, assignment, tasks, is
                     </form>
                   </div>
                 </>
-              }
-              {!isEditable && assignment.commentsFromProjectOwner &&
+              )}
+              {!isEditable && assignment.commentsFromProjectOwner && (
                 <>
                   <Spacer size={30} />
-                  <Title style="subtitle">
-                    Comments from Project Owner
-                  </Title>
-                  <p>
-                    {assignment.commentsFromProjectOwner}
-                  </p>
+                  <Title style="subtitle">Comments from Project Owner</Title>
+                  <p>{assignment.commentsFromProjectOwner}</p>
                 </>
-              }
+              )}
             </Dialog.Content>
           </Dialog.Portal>
         </Dialog.Root>
-      }
+      )}
     </li>
   )
 }
