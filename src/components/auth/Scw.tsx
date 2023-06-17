@@ -48,6 +48,7 @@ export default function Scw({
   }, [interval])
 
   async function login() {
+    console.log("user", user)
     setIsSetting(true)
     if (!sdkRef.current) {
       const socialLoginSDK = new SocialLogin()
@@ -104,9 +105,11 @@ export default function Scw({
     user?.socialLogin.hideWallet()
     enableInterval(false)
 
-    setUser(null)
+    sdkRef.current = null
+    setUser(undefined)
     setSmartAccount(null)
   }
+  console.log("user", user)
 
   return (
     <div>

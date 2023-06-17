@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useFetchEffect } from "./useFetchEffect"
 import { Holder, SbtOwner } from "@/types/SbtOwner"
 import securitiesAbi from "../../../constants/Securities.json"
-import { holdersFromChain } from "../firestore/dataConverter"
 import { getUser } from "../firestore/getUser"
 import { ethers } from "ethers"
 import { useUserValue } from "@/states/userState"
@@ -16,32 +15,31 @@ export const useGetSbtHolders = () => {
   const [sbtOwners, setSbtOwners] = useState<SbtOwner[]>([])
   const user = useUserValue()
 
-  const getHolders = async () => {
+  const getSbtAmountOfEachHolder = async (memberAddr: string) => {
     console.log("provider", user?.provider)
     console.log("project", project)
     console.log("sbtAddress", project?.sbtAddress)
     const contract = new ethers.Contract(project?.sbtAddress!, securitiesAbi, user?.provider)
-    const sbtHolders = await contract.getHolders()
-    console.log("holders", sbtHolders)
-    return sbtHolders
+    const sbtAmount = await contract.balanceOfHolder(memberAddr)
+    console.log("sbtAmount", sbtAmount)
+    return sbtAmount
   }
 
   //get SBT holders
   useFetchEffect(
     async () => {
-      //get sbt holders
-      // let holders: Holder[] = []
-      // try {
-      //   const receivedHolders = await getHolders()
-      //   console.log("receivedHolders", receivedHolders)
-      //   holders = holdersFromChain(receivedHolders)
-      // } catch (error) {
-      //   console.log(error)
-      // }
       const addressArray: string[] = project?.memberIds ?? []
 
-      //はっしー
-      const holders: Holder[] = []
+      let holders: Holder[] = []
+      for (let i = 0; i < addressArray.length; i++) {
+        const holder = {
+          address: addressArray[i],
+          amount: ethers.BigNumber.from(
+            (await getSbtAmountOfEachHolder(addressArray[i])).toString()
+          ).toNumber(),
+        }
+        holders.push(holder)
+      }
 
       //get users
       for (let i = 0; i < holders.length; i++) {
@@ -60,7 +58,7 @@ export const useGetSbtHolders = () => {
             {
               ...owner,
               address: holder.address,
-              amount: holder.amount
+              amount: holder.amount,
             },
           ]
         })
