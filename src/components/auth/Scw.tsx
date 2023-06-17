@@ -53,11 +53,15 @@ export default function Scw({
     if (!sdkRef.current) {
       const socialLoginSDK = new SocialLogin()
       const signature1 = await socialLoginSDK.whitelistUrl("http://localhost:3000/")
+      const signature2 = await socialLoginSDK.whitelistUrl(
+        "https://share-profit-dapp-frontend-git-develop-shinchan-git.vercel.app/"
+      )
       await socialLoginSDK.init({
         chainId: ethers.utils.hexValue(ChainId.POLYGON_MUMBAI).toString(),
         // network: "testnet",
         whitelistUrls: {
           "http://localhost:3000/": signature1,
+          "https://share-profit-dapp-frontend-git-develop-shinchan-git.vercel.app/": signature2,
         },
       })
       sdkRef.current = socialLoginSDK
