@@ -30,14 +30,18 @@ export const useGetSbtHolders = () => {
   useFetchEffect(
     async () => {
       //get sbt holders
-      let holders: Holder[] = []
-      try {
-        const receivedHolders = await getHolders()
-        console.log("receivedHolders", receivedHolders)
-        holders = holdersFromChain(receivedHolders)
-      } catch (error) {
-        console.log(error)
-      }
+      // let holders: Holder[] = []
+      // try {
+      //   const receivedHolders = await getHolders()
+      //   console.log("receivedHolders", receivedHolders)
+      //   holders = holdersFromChain(receivedHolders)
+      // } catch (error) {
+      //   console.log(error)
+      // }
+      const addressArray: string[] = project?.memberIds ?? []
+
+      //はっしー
+      const holders: Holder[] = []
 
       //get users
       for (let i = 0; i < holders.length; i++) {
@@ -56,6 +60,7 @@ export const useGetSbtHolders = () => {
             {
               ...owner,
               address: holder.address,
+              amount: holder.amount
             },
           ]
         })

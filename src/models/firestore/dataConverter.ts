@@ -10,7 +10,6 @@ export const userFromFirebase = (data: any): User => {
     uid: data?.uid ?? "",
     nonce: data?.nonce ?? "",
     name: data?.name ?? "",
-    smartAccount: data?.smartAccount ?? "",
   }
 }
 
@@ -87,6 +86,7 @@ export const holdersFromChain = (data: any): Holder[] => {
     return data.map(($0) => {
       return {
         address: $0.address ?? "",
+        amount: $0.amount ?? 0
       }
     })
   } else {
