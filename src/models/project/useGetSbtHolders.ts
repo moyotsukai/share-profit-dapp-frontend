@@ -6,31 +6,39 @@ import { holdersFromChain } from "../firestore/dataConverter"
 import { getUser } from "../firestore/getUser"
 import { ethers } from "ethers"
 import { useUserValue } from "@/states/userState"
+import { useRouter } from "next/router"
+import { useGetProject } from "./useGetProject"
 
-export const useGetSbtHolders = (sbtAddress: string) => {
+export const useGetSbtHolders = () => {
+  const router = useRouter()
+  const { projectId, taskId } = router.query
+  const { project } = useGetProject(projectId)
   const [sbtOwners, setSbtOwners] = useState<SbtOwner[]>([])
   const user = useUserValue()
 
   const getHolders = async () => {
-    const contract = new ethers.Contract(sbtAddress, securitiesAbi, user?.provider)
+    console.log("aaa")
+    console.log("project", project)
+    console.log("sbtAddress", project?.sbtAddress)
+    const contract = new ethers.Contract(project?.sbtAddress!, securitiesAbi, user?.provider)
     const sbtHolders = await contract.getHolders()
     console.log("holders", sbtHolders)
     return sbtHolders
   }
-  console.log("sbtAddress", sbtAddress)
-  useEffect(() => {
-    getHolders()
-  }, [])
 
   //get SBT holders
   useFetchEffect(
     async () => {
       //get sbt holders
+      if (!project) return
       let holders: Holder[] = []
       try {
         const receivedHolders = await getHolders()
+        console.log("receivedHolders", receivedHolders)
         holders = holdersFromChain(receivedHolders)
-      } catch {}
+      } catch (error) {
+        console.log(error)
+      }
 
       //get users
       for (let i = 0; i < holders.length; i++) {

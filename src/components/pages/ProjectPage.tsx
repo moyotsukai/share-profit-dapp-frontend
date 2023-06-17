@@ -22,11 +22,13 @@ export default function ProjectPage() {
   const user = useUserValue()
   const [isVerified, setIsVerified] = useState<boolean>(false)
   const { project } = useGetProject(projectId)
-  const sbtHolders = useGetSbtHolders(project?.sbtAddress ?? "")
+  const sbtHolders = useGetSbtHolders()
   const { assignmentApplications, submissions } = useGetAssignment(project)
   const isProjectOwner = useIsProjectOwner(project)
   const [_, setProjectIdQueryString] = useState<string>("")
   const projectTreasuryAddress = project?.vaultAddress ?? ""
+
+  console.log("Account address: ", project?.vaultAddress)
 
   // useEffect(() => {
   //   setProjectIdQueryString((currentValue) => {

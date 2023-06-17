@@ -24,11 +24,11 @@ const ReceiveProceeds: React.FC<Props> = ({ projectTreasuryAddress }) => {
 
   const addresses: contractAddressesInterface = networkConfig
   const chainString = ChainId.POLYGON_MUMBAI.toString()
-  const tokenAddr = addresses[chainString].Usdc[0]
+  const tokenAddr = addresses[chainString].TT[0]
 
   const getReleasableToken = async () => {
     const contract = new ethers.Contract(projectTreasuryAddress, accountAbi, provider)
-    const currentReleasableToken = await contract.releasableEth(smartAccount?.address)
+    const currentReleasableToken = await contract.releasableToken(tokenAddr, smartAccount?.address)
     setReleasableToken(ethers.utils.formatEther(currentReleasableToken))
   }
 
@@ -53,6 +53,7 @@ const ReceiveProceeds: React.FC<Props> = ({ projectTreasuryAddress }) => {
       setReleasableToken("0.0")
     } catch (error) {
       console.log(error)
+      setIsLoading(false)
     }
   }
 

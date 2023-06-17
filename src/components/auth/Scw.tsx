@@ -8,12 +8,30 @@ import { useUserState } from "@/states/userState"
 import Button from "../ui/Button"
 import { SmartAccountContext, SocialLoginContext } from "./AuthProvider"
 
-export default function Scw() {
+const truncateStr = (fullStr: string, strLen: number) => {
+  if (fullStr.length <= strLen) return
+
+  const separator = "..."
+  const separatorLen = separator.length
+  const charsToShow = strLen - separatorLen
+  const frontChars = Math.ceil(charsToShow / 2)
+  const backChars = Math.floor(charsToShow / 2)
+  return (
+    fullStr.substring(0, frontChars) + separator + fullStr.substring(fullStr.length - backChars)
+  )
+}
+
+export default function Scw({
+  isSetting,
+  setIsSetting,
+}: {
+  isSetting: boolean
+  setIsSetting: React.Dispatch<React.SetStateAction<boolean>>
+}) {
   const { setSmartAccount, setProvider } = useContext(SmartAccountContext)
   const { sdkRef } = useContext(SocialLoginContext)
 
-  const [interval, enableInterval] = useState(false)
-  // const sdkRef = useRef<SocialLogin | null>(null)
+  const [interval, enableInterval] = useState<boolean>(false)
   const [user, setUser] = useUserState()
 
   useEffect(() => {
@@ -30,6 +48,7 @@ export default function Scw() {
   }, [interval])
 
   async function login() {
+    setIsSetting(true)
     if (!sdkRef.current) {
       const socialLoginSDK = new SocialLogin()
       const signature1 = await socialLoginSDK.whitelistUrl("http://localhost:3000/")
@@ -68,10 +87,12 @@ export default function Scw() {
       })
       await newSmartAccount.init().then(() => {
         setSmartAccount(newSmartAccount)
+        console.log("Your smart account address: ", newSmartAccount.address)
       })
     } catch (err) {
       console.log("error setting up smart account... ", err)
     }
+    setIsSetting(false)
   }
 
   const logout = async () => {
@@ -89,12 +110,21 @@ export default function Scw() {
 
   return (
     <div>
-      {!user?.smartAccount && <Button onClick={login}>Login</Button>}
+      {!user?.smartAccount &&
+        (!isSetting ? (
+          <Button onClick={login}>Login</Button>
+        ) : (
+          <p>setting up your Smart Account...</p>
+        ))}
       {user?.smartAccount && (
         <div css={s.userInfo}>
-          <h3>Smart account address:</h3>
-          <p>{user?.smartAccount.address}</p>
-          <Button onClick={logout}>Logout</Button>
+          <div css={s.userAddr}>
+            <p>Smart Account address</p>
+            <p>{truncateStr(user?.smartAccount.address, 15)}</p>
+          </div>
+          <div css={s.button}>
+            <Button onClick={logout}>Logout</Button>
+          </div>
         </div>
       )}
     </div>

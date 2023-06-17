@@ -29,6 +29,7 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
   const [smartAccount, setSmartAccount] = useState<SmartAccount | null>(null)
   const [provider, setProvider] = useState<any>(null)
   const sdkRef = useRef<SocialLogin | null | undefined>(null)
+  const [isSetting, setIsSetting] = useState<boolean>(false)
 
   const SocialLoginDynamic = dynamic(() => import("./Scw").then((res) => res.default), {
     ssr: false,
@@ -56,20 +57,14 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [smartAccount])
-  
+
   return (
     <>
       <SocialLoginContext.Provider value={{ sdkRef }}>
         <SmartAccountContext.Provider
           value={{ smartAccount, setSmartAccount, provider, setProvider }}
         >
-          <SocialLoginDynamic />
-          {/* {user === undefined ? (
-            <div>
-              <p>This is Login Page</p>
-              <p>Please Login</p>
-            </div>
-          ) : ( */}
+          <SocialLoginDynamic isSetting={isSetting} setIsSetting={setIsSetting} />
           <React.Fragment>
             {user ? (
               hasNoUserName ? (
@@ -77,6 +72,8 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
               ) : (
                 children
               )
+            ) : isSetting ? (
+              <LoadingCircle />
             ) : (
               <div>
                 <p>This is Login Page</p>
