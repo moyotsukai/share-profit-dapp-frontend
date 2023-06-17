@@ -17,7 +17,7 @@ export const useGetSbtHolders = () => {
   const user = useUserValue()
 
   const getHolders = async () => {
-    console.log("aaa")
+    console.log("provider", user?.provider)
     console.log("project", project)
     console.log("sbtAddress", project?.sbtAddress)
     const contract = new ethers.Contract(project?.sbtAddress!, securitiesAbi, user?.provider)
@@ -30,7 +30,6 @@ export const useGetSbtHolders = () => {
   useFetchEffect(
     async () => {
       //get sbt holders
-      if (!project) return
       let holders: Holder[] = []
       try {
         const receivedHolders = await getHolders()
@@ -62,9 +61,9 @@ export const useGetSbtHolders = () => {
         })
       }
     },
-    [],
+    [project, user],
     {
-      skipFetch: [],
+      skipFetch: [!project, !user],
     }
   )
 
