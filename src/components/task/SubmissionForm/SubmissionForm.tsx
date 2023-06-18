@@ -16,9 +16,6 @@ import { uploadSubmissionFile } from "@/models/storage/uploadSubmissionFile"
 import { createSubmission } from "@/models/firestore/createSubmission"
 import { updateSubmission } from "@/models/firestore/updateSubmission"
 import { useSetSubmissionsState } from "@/states/submissionsState"
-import Input from "@/components/ui/Input"
-import InputFile from "@/components/ui/InputFile"
-import Textarea from "@/components/ui/Textarea"
 
 const formInputSchema = z
   .object({

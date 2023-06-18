@@ -13,8 +13,6 @@ import { useProjectState } from "@/states/projectState"
 import { Project } from "@/types/Project"
 import { updateProject } from "@/models/firestore/updateProject"
 import { createTask } from "@/models/firestore/createTask"
-import Input from "@/components/ui/Input"
-import Textarea from "@/components/ui/Textarea"
 
 const formInputSchema = z
   .object({

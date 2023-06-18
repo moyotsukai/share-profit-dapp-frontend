@@ -28,8 +28,6 @@ export default function ProjectPage() {
   const [_, setProjectIdQueryString] = useState<string>("")
   const projectTreasuryAddress = project?.vaultAddress ?? ""
 
-  console.log("Account address: ", project?.vaultAddress)
-
   // useEffect(() => {
   //   setProjectIdQueryString((currentValue) => {
   //     if (typeof projectId !== "string") {
