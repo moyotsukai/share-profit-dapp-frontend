@@ -3,7 +3,8 @@ import { atom, useRecoilState, useRecoilValue, useSetRecoilState } from "recoil"
 
 const submissionsState = atom<Submission[]>({
   key: "submissionsState",
-  default: []
+  default: [],
+  dangerouslyAllowMutability: true,
 })
 
 export const useSubmissionsValue = () => useRecoilValue(submissionsState)
