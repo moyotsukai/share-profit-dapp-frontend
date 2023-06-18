@@ -152,7 +152,7 @@ const AssignmentApprovalDialog: React.FC<Props> = ({
         },
       })
 
-      await mintSbt()
+      await mintSbt(assignment.userId, task.bountySbt)
 
       //set project state
       setProject((currentValue) => {
@@ -193,17 +193,14 @@ const AssignmentApprovalDialog: React.FC<Props> = ({
     setIsButtonLoading(false)
   }
 
-  const mintSbt = async () => {
+  const mintSbt = async (to: string, sbtAmount: number) => {
     if (!user?.smartAccount) {
       console.log("smartAccount is not found")
       return
     }
     try {
       const sbtInterface = new ethers.utils.Interface(securitiesAbi)
-      const encodedMintData = sbtInterface.encodeFunctionData("mint", [
-        10,
-        user?.smartAccount.address,
-      ])
+      const encodedMintData = sbtInterface.encodeFunctionData("mint", [sbtAmount, to])
       const tx = {
         to: sbtAddr!,
         data: encodedMintData,
