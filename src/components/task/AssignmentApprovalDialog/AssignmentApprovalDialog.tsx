@@ -152,6 +152,8 @@ const AssignmentApprovalDialog: React.FC<Props> = ({
         },
       })
 
+      await mintSbt()
+
       //set project state
       setProject((currentValue) => {
         if (!currentValue) {
@@ -185,8 +187,6 @@ const AssignmentApprovalDialog: React.FC<Props> = ({
         return newSubmissions
       })
     }
-
-    await mintSbt()
 
     setIsDialogOpen(false)
     setIsButtonEnabled(true)

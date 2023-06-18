@@ -8,7 +8,7 @@ import { useUserState } from "@/states/userState"
 import Button from "../ui/Button"
 import { SmartAccountContext, SocialLoginContext } from "./AuthProvider"
 
-const truncateStr = (fullStr: string, strLen: number) => {
+export const truncateStr = (fullStr: string, strLen: number) => {
   if (fullStr.length <= strLen) return
 
   const separator = "..."
@@ -60,7 +60,7 @@ export default function Scw({
       )
       await socialLoginSDK.init({
         chainId: ethers.utils.hexValue(ChainId.POLYGON_MUMBAI).toString(),
-        // network: "testnet",
+        network: "testnet",
         whitelistUrls: {
           "http://localhost:3000/": signature1,
           "https://share-profit-dapp-frontend-git-develop-shinchan-git.vercel.app/": signature2,

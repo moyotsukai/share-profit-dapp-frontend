@@ -1,5 +1,5 @@
 import React, { createContext, useEffect, useRef, useState } from "react"
-import { useUserState, useUserValue } from "@/states/userState"
+import { useUserState } from "@/states/userState"
 import LoadingCircle from "../ui/LoadingCircle"
 import UserNameDialog from "../user/UserNameDialog"
 import dynamic from "next/dynamic"
@@ -34,6 +34,8 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
   const SocialLoginDynamic = dynamic(() => import("./Scw").then((res) => res.default), {
     ssr: false,
   })
+
+  console.log(user)
 
   useEffect(() => {
     // user setup
