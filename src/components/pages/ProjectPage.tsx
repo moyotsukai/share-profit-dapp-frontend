@@ -95,7 +95,7 @@ export default function ProjectPage() {
             </TabBar.Content>
 
             <TabBar.Content value="tasks">
-              <TaskBoard />
+              <TaskBoard project={project} />
             </TabBar.Content>
 
             <TabBar.Content value="project-members">
