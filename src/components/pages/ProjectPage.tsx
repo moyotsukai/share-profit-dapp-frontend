@@ -15,7 +15,6 @@ import { useGetAssignment } from "@/models/project/useGetAssignment"
 import { useIsProjectOwner } from "@/models/project/useIsProjectOwner"
 import ProjectHeader from "../project/ProjectHeader"
 import ReceiveProceeds from "../project/ReceiveProceeds"
-import Input from "../ui/Input"
 
 export default function ProjectPage() {
   const router = useRouter()
@@ -86,7 +85,7 @@ export default function ProjectPage() {
             <TabBar.List>
               <TabBar.Trigger value="overview">Overview</TabBar.Trigger>
               <TabBar.Trigger value="tasks">Tasks</TabBar.Trigger>
-              <TabBar.Trigger value="sbt-owners">SBT Owners</TabBar.Trigger>
+              <TabBar.Trigger value="project-members">Project Members</TabBar.Trigger>
               <TabBar.Trigger value="receive-proceeds">Receive Proceeds</TabBar.Trigger>
               {isProjectOwner && <TabBar.Trigger value="assignments">Assignments</TabBar.Trigger>}
             </TabBar.List>
@@ -99,7 +98,7 @@ export default function ProjectPage() {
               <TaskBoard />
             </TabBar.Content>
 
-            <TabBar.Content value="sbt-owners">
+            <TabBar.Content value="project-members">
               <SbtOwners sbtOwners={sbtHolders} />
             </TabBar.Content>
 

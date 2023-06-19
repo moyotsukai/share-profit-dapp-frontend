@@ -16,8 +16,6 @@ import Spacer from "@/components/ui/Spacer"
 import Title from "@/components/ui/Title"
 import { usePageLeaveConfirmation } from "@/models/project/usePageLeaveConfirmation"
 import { randomCharactors } from "@/utils/randomCharactors"
-import Input from "@/components/ui/Input"
-import Textarea from "@/components/ui/Textarea"
 import PageContainer from "@/components/ui/PageContainer"
 
 const formInputSchema = z

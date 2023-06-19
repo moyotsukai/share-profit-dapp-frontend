@@ -7,5 +7,10 @@
     "SecuritiesFactory": ["0x2DA866B0Cb728f66b07de749087191f9C19C9947"],
     "AccountFactory": ["0x630A5898fa432ED324435f27265F19179b0Fcc56"],
     "Usdc": ["0x0fa8781a83e46826621b3bc094ea2a0212e71b23"]
+  },
+  "592": {
+    "SecuritiesFactory": ["0x6CC698c464E83C0a7943436f72A1B3665df7184f"],
+    "AccountFactory": ["0x35Db31E08349f225bF11642694Fea5725D0792c5"],
+    "Usdc": ["0x6a2d262d56735dba19dd70682b39f6be9a931d98"]
   }
 }

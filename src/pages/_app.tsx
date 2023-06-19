@@ -5,12 +5,12 @@ import type { AppProps } from "next/app"
 import { RecoilRoot } from "recoil"
 import { DndProvider } from "react-dnd"
 import { HTML5Backend } from "react-dnd-html5-backend"
-import { Mumbai } from "@thirdweb-dev/chains"
+import { Astar } from "@thirdweb-dev/chains"
 import { ThirdwebProvider } from "@thirdweb-dev/react"
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <ThirdwebProvider activeChain={Mumbai}>
+    <ThirdwebProvider activeChain={Astar}>
       <RecoilRoot>
         <DndProvider backend={HTML5Backend}>
           <AuthProvider>

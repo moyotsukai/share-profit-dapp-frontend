@@ -13,9 +13,8 @@ import { z } from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import ErrorMessage from "@/components/ui/ErrorMessage"
-import { Mumbai } from "@thirdweb-dev/chains"
+import { Astar } from "@thirdweb-dev/chains"
 import { contractAddressesInterface } from "../../../types/networkAddress"
-import Input from "@/components/ui/Input"
 import PageContainer from "@/components/ui/PageContainer"
 
 const formInputSchema = z.object({
@@ -31,7 +30,7 @@ type NewProjectAboutVault = z.infer<typeof formInputSchema>
 export default function NewProjectAboutVaultPage() {
   
   const addresses: contractAddressesInterface = networkConfig
-  const chainString = Mumbai.chainId.toString()
+  const chainString = Astar.chainId.toString()
   const accountFactoryAddr = addresses[chainString].AccountFactory[0]
   const adminAddr = "0x8eBD4fAa4fcEEF064dCaEa48A3f75d0D0A3ba3f2"
 

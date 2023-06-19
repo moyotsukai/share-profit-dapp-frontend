@@ -15,8 +15,7 @@ import { SmartContract, Web3Button, useStorageUpload } from "@thirdweb-dev/react
 import { ethers } from "ethers"
 import { updateProject } from "@/models/firestore/updateProject"
 import { contractAddressesInterface } from "../../../types/networkAddress"
-import { Mumbai } from "@thirdweb-dev/chains"
-import Input from "@/components/ui/Input"
+import { Astar } from "@thirdweb-dev/chains"
 import PageContainer from "@/components/ui/PageContainer"
 
 const formInputSchema = z.object({
@@ -35,7 +34,7 @@ export default function NewProjectAboutSbtPage() {
   }
 
   const addresses: contractAddressesInterface = networkConfig
-  const chainString = Mumbai.chainId.toString()
+  const chainString = Astar.chainId.toString()
   // sbt factory address
   const sbtFactoryAddr = addresses[chainString].SecuritiesFactory[0]
   const { mutateAsync: upload } = useStorageUpload()

@@ -6,7 +6,7 @@ import networkConfig from "../../../../constants/networkMapping.json"
 import accountAbi from "../../../../constants/Account.json"
 import { ethers } from "ethers"
 import { contractAddressesInterface } from "@/types/networkAddress"
-import { Mumbai } from "@thirdweb-dev/chains"
+import { Astar } from "@thirdweb-dev/chains"
 
 type Props = {
   projectTreasuryAddress: string
@@ -16,7 +16,7 @@ const ReceiveProceeds: React.FC<Props> = ({ projectTreasuryAddress }) => {
   const [isWithdrawalButtonUnClickable, setWithdrawalButtonUnClickable] = useState<boolean>(true)
 
   const addresses: contractAddressesInterface = networkConfig
-  const chainString = Mumbai.chainId.toString()
+  const chainString = Astar.chainId.toString()
   const tokenAddr = addresses[chainString].Usdc[0]
   const account = useAddress()
   const { contract: accountContaract } = useContract(projectTreasuryAddress, accountAbi)
