@@ -1,5 +1,5 @@
 import * as s from "./style"
-import { useState, useEffect, useContext, useRef } from "react"
+import { useContext } from "react"
 import SocialLogin from "@biconomy/web3-auth"
 import { ChainId } from "@biconomy/core-types"
 import { ethers } from "ethers"
@@ -54,7 +54,7 @@ export default function Scw({
     setIsSetting(true)
     if (!sdkRef.current) {
       const socialLoginSDK = new SocialLogin()
-      const signature1 = await socialLoginSDK.whitelistUrl("http://localhost:3000/")
+      const signature1 = await socialLoginSDK.whitelistUrl("http://localhost:3000")
       const signature2 = await socialLoginSDK.whitelistUrl(
         "https://share-profit-dapp-frontend-git-develop-shinchan-git.vercel.app"
       )
@@ -62,7 +62,7 @@ export default function Scw({
         chainId: ethers.utils.hexValue(ChainId.POLYGON_MUMBAI),
         network: "testnet",
         whitelistUrls: {
-          // "http://localhost:3000": signature1,
+          "http://localhost:3000": signature1,
           "https://share-profit-dapp-frontend-git-develop-shinchan-git.vercel.app": signature2,
         },
       })

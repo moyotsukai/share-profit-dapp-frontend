@@ -5,6 +5,7 @@ export const PATHS = {
     ABOUT_PROJECT: "/new-project/about-project",
     ABOUT_SBT: "/new-project/about-sbt",
     ABOUT_VAULT: "/new-project/about-vault",
+    ABOUT_TASK: "/new-project/about-task"
   },
   PROJECTS: "/projects",
   PROJECT: (projectId: string) => `/projects/${projectId}`,
