@@ -1,5 +1,5 @@
 import * as s from "./style"
-import React, { useRef } from "react"
+import React from "react"
 import { SubmitHandler, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { getProjectsWhere } from "@/models/firestore/getProjectsWhere"
@@ -11,7 +11,7 @@ import { useRouter } from "next/router"
 import Button from "@/components/ui/Button"
 import Title from "@/components/ui/Title"
 import Spacer from "@/components/ui/Spacer"
-import { useAddress } from "@thirdweb-dev/react"
+import { useUserValue } from "@/states/userState"
 
 const formInputSchema = z.object({
   enteredText: z.string().nonempty(),
@@ -20,7 +20,7 @@ const formInputSchema = z.object({
 type SearchProject = z.infer<typeof formInputSchema>
 
 const ProjectSearch: React.FC = () => {
-  const account = useAddress()
+  const user = useUserValue()
   const router = useRouter()
   const { register, handleSubmit } = useForm<SearchProject>({
     resolver: zodResolver(formInputSchema),
@@ -39,13 +39,14 @@ const ProjectSearch: React.FC = () => {
     const project = projects[0]
 
     //add user.uid to member ids
-    if (!account) {
+    console.log(user?.uid)
+    if (!user?.uid) {
       return
     }
     await updateProjectArray({
       projectId: project.id,
       key: "memberIds",
-      value: account,
+      value: user?.uid,
       method: "union",
     })
 

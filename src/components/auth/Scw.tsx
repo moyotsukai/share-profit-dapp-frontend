@@ -56,32 +56,27 @@ export default function Scw({
       const socialLoginSDK = new SocialLogin()
       const signature1 = await socialLoginSDK.whitelistUrl("http://localhost:3000/")
       const signature2 = await socialLoginSDK.whitelistUrl(
-        "https://share-profit-dapp-frontend-git-develop-shinchan-git.vercel.app/"
+        "https://share-profit-dapp-frontend-git-develop-shinchan-git.vercel.app"
       )
       await socialLoginSDK.init({
-        chainId: ethers.utils.hexValue(ChainId.POLYGON_MUMBAI).toString(),
+        chainId: ethers.utils.hexValue(ChainId.POLYGON_MUMBAI),
         network: "testnet",
         whitelistUrls: {
-          "http://localhost:3000/": signature1,
-          "https://share-profit-dapp-frontend-git-develop-shinchan-git.vercel.app/": signature2,
+          // "http://localhost:3000": signature1,
+          "https://share-profit-dapp-frontend-git-develop-shinchan-git.vercel.app": signature2,
         },
       })
       sdkRef.current = socialLoginSDK
     }
     if (!sdkRef.current.provider) {
-      // console.log("BBB")
-      // sdkRef.current.showWallet()
-      // interval = true
-      // console.log(interval)
       console.log("BBB")
+      // sdkRef.current.showWallet()
       sdkRef.current.showWallet()
       interval = true
-      console.log(interval)
 
       const configureLogin = setInterval(() => {
         console.log(sdkRef.current?.provider)
         if (sdkRef.current?.provider) {
-          console.log("AAA")
           setupSmartAccount()
           clearInterval(configureLogin)
         }

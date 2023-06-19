@@ -9,7 +9,6 @@ import Button from "@/components/ui/Button"
 import { useUserState } from "@/states/userState"
 import * as AlertDialog from "@radix-ui/react-alert-dialog"
 import { updateUser } from "@/models/firestore/updateUser"
-import Input from "@/components/ui/Input/Input"
 
 const formInputSchema = z.object({
   name: z.string().nonempty({ message: "Required" }),
