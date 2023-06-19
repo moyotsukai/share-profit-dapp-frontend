@@ -1,5 +1,5 @@
 import * as s from "./style"
-import { useState, useEffect, useContext, useRef } from "react"
+import { useContext } from "react"
 import SocialLogin from "@biconomy/web3-auth"
 import { ChainId } from "@biconomy/core-types"
 import { ethers } from "ethers"
