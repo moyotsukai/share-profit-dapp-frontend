@@ -139,7 +139,7 @@ export default function NewProjectAboutVaultPage() {
 
       <div>
         <label>
-          <p>Founder&apos;s share of the profit(%)</p>
+          <h3>Founder&apos;s share of the profit(%)</h3>
           <input
             type="number"
             placeholder="Proportion"
