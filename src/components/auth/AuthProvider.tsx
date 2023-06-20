@@ -1,3 +1,4 @@
+import * as s from "./style"
 import React, { createContext, useEffect, useRef, useState } from "react"
 import { useUserState } from "@/states/userState"
 import LoadingCircle from "../ui/LoadingCircle"
@@ -7,6 +8,7 @@ import SmartAccount from "@biconomy/smart-account"
 import { asyncTask } from "@/utils/asyncTask"
 import { signIn } from "@/models/auth/signIn"
 import SocialLogin from "@biconomy/web3-auth"
+import Spacer from "../ui/Spacer/Spacer"
 
 type Props = {
   children: React.ReactNode
@@ -68,20 +70,7 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
         >
           <SocialLoginDynamic isSetting={isSetting} setIsSetting={setIsSetting} />
           <React.Fragment>
-            {user ? (
-              hasNoUserName ? (
-                <UserNameDialog />
-              ) : (
-                children
-              )
-            ) : isSetting ? (
-              <LoadingCircle />
-            ) : (
-              <div>
-                <p>This is Login Page</p>
-                <p>Please Login</p>
-              </div>
-            )}
+            {user ? hasNoUserName ? <UserNameDialog /> : children : isSetting ? <></> : <></>}
           </React.Fragment>
           {/* )} */}
         </SmartAccountContext.Provider>

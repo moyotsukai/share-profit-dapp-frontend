@@ -7,6 +7,8 @@ import SmartAccount from "@biconomy/smart-account"
 import { useUserState } from "@/states/userState"
 import Button from "../ui/Button"
 import { SmartAccountContext, SocialLoginContext } from "./AuthProvider"
+import Spacer from "../ui/Spacer"
+import LoadingCircle from "../ui/LoadingCircle/LoadingCircle"
 
 export const truncateStr = (fullStr: string, strLen: number) => {
   if (fullStr.length <= strLen) return
@@ -132,9 +134,18 @@ export default function Scw({
     <div>
       {!user?.smartAccount &&
         (!isSetting ? (
-          <Button onClick={login}>Login</Button>
+          <div css={s.container}>
+            <h1>LaunchHub</h1>
+            <Spacer size={30} />
+            <Button onClick={login}>Login</Button>
+            <Spacer size={20} />
+            <p css={s.textContainer}>Let&apos;s turn your dream into reality!</p>
+          </div>
         ) : (
-          <p>setting up your Smart Account...</p>
+          <div css={s.setUpContainer}>
+            <p css={s.setUpTextContainer}>Setting up your Smart Account...</p>
+            <LoadingCircle />
+          </div>
         ))}
       {user?.smartAccount && (
         <div css={s.userInfo}>
