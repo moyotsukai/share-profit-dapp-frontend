@@ -15,6 +15,7 @@ import { useGetAssignment } from "@/models/project/useGetAssignment"
 import { useIsProjectOwner } from "@/models/project/useIsProjectOwner"
 import ProjectHeader from "../project/ProjectHeader"
 import ReceiveProceeds from "../project/ReceiveProceeds"
+import { useSetAttendingProjectState } from "@/states/attendingProjects"
 
 export default function ProjectPage() {
   const router = useRouter()
@@ -22,6 +23,7 @@ export default function ProjectPage() {
   const user = useUserValue()
   const [isVerified, setIsVerified] = useState<boolean>(false)
   const { project } = useGetProject(projectId)
+  const setAttendingProjects = useSetAttendingProjectState()
   const sbtHolders = useGetSbtHolders()
   const { assignmentApplications, submissions } = useGetAssignment(project)
   const isProjectOwner = useIsProjectOwner(project)
@@ -71,6 +73,13 @@ export default function ProjectPage() {
         key: "memberIds",
         value: user.uid,
         method: "union",
+      })
+
+      setAttendingProjects((currentValue) => {
+        return [
+          ...currentValue,
+          project
+        ]
       })
     }
   }

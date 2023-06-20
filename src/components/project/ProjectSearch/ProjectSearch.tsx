@@ -12,6 +12,7 @@ import Button from "@/components/ui/Button"
 import Title from "@/components/ui/Title"
 import Spacer from "@/components/ui/Spacer"
 import { useUserValue } from "@/states/userState"
+import { useSetAttendingProjectState } from "@/states/attendingProjects"
 
 const formInputSchema = z.object({
   enteredText: z.string().nonempty(),
@@ -25,6 +26,7 @@ const ProjectSearch: React.FC = () => {
   const { register, handleSubmit } = useForm<SearchProject>({
     resolver: zodResolver(formInputSchema),
   })
+  const setAttendingProjects = useSetAttendingProjectState()
 
   const onClickSearch: SubmitHandler<SearchProject> = async (data) => {
     //get projects where invitatoin code matches
@@ -48,6 +50,13 @@ const ProjectSearch: React.FC = () => {
       key: "memberIds",
       value: user?.uid,
       method: "union",
+    })
+
+    setAttendingProjects((currentValue) => {
+      return [
+        ...currentValue,
+        project
+      ]
     })
 
     //go to project page

@@ -1,17 +1,17 @@
 import SideTab from "@/components/project/SideProjectTab/SideProjectTab";
 import * as s from "./style";
 import Spacer from "@/components/ui/Spacer/Spacer";
-import React from "react";
+import React, { useEffect } from "react";
 import Divider from "@/components/ui/Divider/Divider";
 import { useFetchEffect } from "@/models/project/useFetchEffect";
 import { getProjectsWhere } from "@/models/firestore/getProjectsWhere";
 import { KEYS } from "@/models/firestore/keys";
 import { useUserValue } from "@/states/userState";
-import { useAttendingProjectState } from "@/states/attendingProjects";
+import { useAttendingProjectState, useAttendingProjectsValue } from "@/states/attendingProjects";
 
 const SideBar: React.FC = () => {
-  const user = useUserValue();
-  const [projects, setProjects] = useAttendingProjectState();
+  const user = useUserValue()
+  const [attendingProjects, setAttendingProjects] = useAttendingProjectState()
 
   //get attending projects
   useFetchEffect(async () => {
@@ -23,10 +23,8 @@ const SideBar: React.FC = () => {
       value: user.uid,
     })
 
-    if (!data) {
-      return;
-    }
-    setProjects(data);
+    if (!data) { return }
+    setAttendingProjects(data)
   }, [user], {
     skipFetch: [!user]
   })
@@ -41,7 +39,7 @@ const SideBar: React.FC = () => {
 
       <p css={s.labelStyle}>Projects</p>
 
-      {projects.map((project, index) => (
+      {attendingProjects.map((project, index) => (
         <React.Fragment key={index}>
           <Spacer size={6} />
           <SideTab type="project" project={project} />
@@ -51,7 +49,7 @@ const SideBar: React.FC = () => {
       <Spacer size={6} />
       <SideTab type="new" project={null} />
     </div>
-  );
-};
+  )
+}
 
-export default SideBar;
+export default SideBar
