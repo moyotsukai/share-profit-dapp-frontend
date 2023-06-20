@@ -187,7 +187,7 @@ export default function NewProjectAboutSbtPage() {
       <form>
         <div>
           <label>
-            <p>Token Name</p>
+            <h3>Token Name</h3>
             <input type="text" placeholder="Token name..." {...register("sbtTokenName")} />
             {errors.sbtTokenName && <ErrorMessage>{errors.sbtTokenName?.message}</ErrorMessage>}
           </label>
@@ -196,7 +196,7 @@ export default function NewProjectAboutSbtPage() {
 
         <div>
           <label>
-            <p>Token Image</p>
+            <h3>Token Image</h3>
           </label>
           <input type="file" accept=".jpg, .jpeg, .png" {...register("sbtImage")} />
           {errors.sbtImage && <ErrorMessage>{errors.sbtImage?.message}</ErrorMessage>}
